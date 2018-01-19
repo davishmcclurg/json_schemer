@@ -32,7 +32,7 @@ class JsonSchemerTest < Minitest::Test
           'minItems' => 2,
           'uniqueItems' => true,
           'contains' => {
-            'type' => 'string'
+            'type' => 'integer'
           }
         }
       },
@@ -42,6 +42,14 @@ class JsonSchemerTest < Minitest::Test
       'propertyNames' => {
         'type' => 'string',
         'pattern' => '\w+'
+      },
+      'dependencies' => {
+        'one' => [
+          'two'
+        ],
+        'two' => {
+          'minProperties' => 1
+        }
       }
     }
     data = {

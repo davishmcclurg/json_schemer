@@ -137,8 +137,16 @@ module JsonSchemer
       properties = schema['properties']
       pattern_properties = schema['patternProperties']
       additional_properties = schema['additionalProperties']
-      # dependencies = schema['dependencies']
+      dependencies = schema['dependencies']
       property_names = schema['propertyNames']
+
+      if dependencies
+        dependencies.each do |key, value|
+          next unless data.key?(key)
+          subschema = value.is_a?(Array) ? { 'required' => value } : value
+          validate_object(subschema, data, &block)
+        end
+      end
 
       yield 'invalid max properties' if max_properties && data.size > max_properties
       yield 'invalid min properties' if min_properties && data.size < min_properties
@@ -148,7 +156,7 @@ module JsonSchemer
       data.each_pair do |key, value|
         validate(property_names, key, &block) unless property_names.nil?
 
-        if properties.key?(key)
+        if properties && properties.key?(key)
           validate(properties[key], value, &block)
           next
         end
