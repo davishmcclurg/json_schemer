@@ -4,6 +4,8 @@ require "json_schemer/version"
 
 module JsonSchemer
   class << self
+    BOOLEANS = [true, false].freeze
+
     def validate(schema, data)
       return enum_for(:validate, schema, data) unless block_given?
 
@@ -25,7 +27,7 @@ module JsonSchemer
       when 'null'
         yield 'invalid null' unless data.nil?
       when 'boolean'
-        yield 'invalid boolean' unless data.is_a?(Boolean)
+        yield 'invalid boolean' unless BOOLEANS.include?(data)
       when 'number'
         validate_number(schema, data, &Proc.new)
       when 'integer'
@@ -36,8 +38,21 @@ module JsonSchemer
         validate_array(schema, data, &Proc.new)
       when 'object'
         validate_object(schema, data, &Proc.new)
+      when Array
+        yield 'invalid type' if type.all? { |subtype| !valid?(schema.merge('type' => subtype), data) }
       else
-        yield 'invalid schema type'
+        case data
+        when Integer
+          validate_integer(schema, data, &Proc.new)
+        when Numeric
+          validate_number(schema, data, &Proc.new)
+        when String
+          validate_string(schema, data, &Proc.new)
+        when Array
+          validate_array(schema, data, &Proc.new)
+        when Hash
+          validate_object(schema, data, &Proc.new)
+        end
       end
     end
 
@@ -54,11 +69,15 @@ module JsonSchemer
       minimum = schema['minimum']
       exclusive_minimum = schema['exclusiveMinimum']
 
-      yield 'invalid multiple of' if multiple_of && (data % multiple_of) != 0
       yield 'invalid maximum' if maximum && data > maximum
       yield 'invalid exclusive maximum' if exclusive_maximum && data >= exclusive_maximum
       yield 'invalid minimum' if minimum && data < minimum
       yield 'invalid exclusive minimum' if exclusive_minimum && data <= exclusive_minimum
+
+      if multiple_of
+        quotient = data / multiple_of.to_f
+        yield 'invalid multiple of' unless quotient.floor == quotient
+      end
     end
 
     def validate_number(schema, data)
@@ -67,7 +86,7 @@ module JsonSchemer
         return
       end
 
-      validate_numeric(schema, data)
+      validate_numeric(schema, data, &Proc.new)
     end
 
     def validate_integer(schema, data)
@@ -76,7 +95,7 @@ module JsonSchemer
         return
       end
 
-      validate_numeric(schema, data)
+      validate_numeric(schema, data, &Proc.new)
     end
 
     def validate_string(schema, data)
@@ -110,7 +129,7 @@ module JsonSchemer
       yield 'invalid max items' if max_items && data.size > max_items
       yield 'invalid min items' if min_items && data.size < min_items
       yield 'invalid unique items' if unique_items && data.size != data.uniq.size
-      yield 'invalid contains' if contains && data.all? { |item| !valid?(contains, item) }
+      yield 'invalid contains' if !contains.nil? && data.all? { |item| !valid?(contains, item) }
 
       if items.is_a?(Array)
         data.each_with_index do |item, index|
@@ -118,6 +137,8 @@ module JsonSchemer
             validate(items[index], item, &block)
           elsif !additional_items.nil?
             validate(additional_items, item, &block)
+          else
+            break
           end
         end
       elsif !items.nil?
@@ -144,7 +165,7 @@ module JsonSchemer
         dependencies.each do |key, value|
           next unless data.key?(key)
           subschema = value.is_a?(Array) ? { 'required' => value } : value
-          validate_object(subschema, data, &block)
+          validate(subschema, data, &block)
         end
       end
 
@@ -153,27 +174,29 @@ module JsonSchemer
       yield 'invalid required' if required && required.any? { |key| !data.key?(key) }
 
       regex_pattern_properties = nil
-      data.each_pair do |key, value|
+      data.each do |key, value|
         validate(property_names, key, &block) unless property_names.nil?
+
+        matched_key = false
 
         if properties && properties.key?(key)
           validate(properties[key], value, &block)
-          next
+          matched_key = true
         end
 
         if pattern_properties
           regex_pattern_properties ||= pattern_properties.map do |pattern, property_schema|
             [Regexp.new(pattern), property_schema]
           end
-          matched = false
           regex_pattern_properties.each do |regex, property_schema|
             if regex.match?(key)
               validate(property_schema, value, &block)
-              matched = true
+              matched_key = true
             end
           end
-          next if matched
         end
+
+        next if matched_key
 
         validate(additional_properties, value, &block) unless additional_properties.nil?
       end

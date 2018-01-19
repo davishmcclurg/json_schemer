@@ -1,4 +1,5 @@
 require "test_helper"
+require "json"
 
 class JsonSchemerTest < Minitest::Test
   def test_that_it_has_a_version_number
@@ -62,5 +63,40 @@ class JsonSchemerTest < Minitest::Test
     errors = JsonSchemer.validate(schema, data)
     p errors.to_a
     assert errors.none?
+  end
+
+  def test_json_schema_test_suite
+    Dir['JSON-Schema-Test-Suite/tests/draft7/**/*.json'].each_with_object({}) do |file, out|
+      JSON.parse(File.read(file)).each do |defn|
+        schema = defn.fetch('schema')
+        tests = defn.fetch('tests')
+        defn.fetch('tests').each do |test|
+          errors = begin
+            JsonSchemer.validate(schema, test.fetch('data')).to_a
+          rescue => e
+            [e.message]
+          end
+          passed = errors.size == 0
+          if passed != test.fetch('valid')
+            out[file] ||= []
+            out[file] << {
+              :schema => schema,
+              :test => test,
+              :errors => errors
+            }
+          end
+        end
+      end
+    end.each do |file, failures|
+      puts "file: #{file}"
+      puts
+      failures.each do |failure|
+        puts "schema: #{failure.fetch(:schema)}"
+        puts "test: #{failure.fetch(:test)}"
+        puts "errors: #{failure.fetch(:errors)}"
+        puts
+      end
+      puts
+    end
   end
 end
