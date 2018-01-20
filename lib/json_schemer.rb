@@ -2,6 +2,8 @@
 
 require "json_schemer/version"
 require "time"
+require "uri"
+require "hana"
 
 module JsonSchemer
   class << self
@@ -9,12 +11,12 @@ module JsonSchemer
     # this is no good
     EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/ix.freeze
 
-    def valid?(schema, data)
-      !validate(schema, data).first
+    def valid?(schema, data, root = schema)
+      !validate(schema, data, root).first
     end
 
-    def validate(schema, data)
-      return enum_for(:validate, schema, data) unless block_given?
+    def validate(schema, data, root = schema)
+      return enum_for(:validate, schema, data, root) unless block_given?
 
       return if schema == true
       if schema == false
@@ -33,19 +35,31 @@ module JsonSchemer
       if_schema = schema['if']
       then_schema = schema['then']
       else_schema = schema['else']
+      ref = schema['$ref']
 
       yield 'invalid enum' if enum && !enum.include?(data)
       yield 'invalid const' if schema.key?('const') && schema['const'] != data
 
-      yield 'invalid all of' if all_of && !all_of.all? { |subschema| valid?(subschema, data) }
-      yield 'invalid any of' if any_of && !any_of.any? { |subschema| valid?(subschema, data) }
-      yield 'invalid one of' if one_of && one_of.count { |subschema| valid?(subschema, data) } != 1
-      yield 'invalid not' if !not_schema.nil? && valid?(not_schema, data)
+      yield 'invalid all of' if all_of && !all_of.all? { |subschema| valid?(subschema, data, root) }
+      yield 'invalid any of' if any_of && !any_of.any? { |subschema| valid?(subschema, data, root) }
+      yield 'invalid one of' if one_of && one_of.count { |subschema| valid?(subschema, data, root) } != 1
+      yield 'invalid not' if !not_schema.nil? && valid?(not_schema, data, root)
 
-      if if_schema && valid?(if_schema, data)
-        yield 'invalid then' if !then_schema.nil? && !valid?(then_schema, data)
+      if if_schema && valid?(if_schema, data, root)
+        yield 'invalid then' if !then_schema.nil? && !valid?(then_schema, data, root)
       elsif if_schema
-        yield 'invalid else' if !else_schema.nil? && !valid?(else_schema, data)
+        yield 'invalid else' if !else_schema.nil? && !valid?(else_schema, data, root)
+      end
+
+      if ref
+        _address, pointer = ref.split('#')
+        ref_schema = Hana::Pointer.new(URI.unescape(pointer || '')).eval(root)
+        if ref_schema == schema
+          yield 'invalid ref'
+        elsif !ref_schema.nil?
+          validate(ref_schema, data, root, &Proc.new)
+        end
+        return
       end
 
       case type
@@ -60,11 +74,11 @@ module JsonSchemer
       when 'string'
         validate_string(schema, data, &Proc.new)
       when 'array'
-        validate_array(schema, data, &Proc.new)
+        validate_array(schema, data, root, &Proc.new)
       when 'object'
-        validate_object(schema, data, &Proc.new)
+        validate_object(schema, data, root, &Proc.new)
       when Array
-        yield 'invalid type' unless type.any? { |subtype| valid?(schema.merge('type' => subtype), data) }
+        yield 'invalid type' unless type.any? { |subtype| valid?(schema.merge('type' => subtype), data, root) }
       else
         case data
         when Integer
@@ -74,9 +88,9 @@ module JsonSchemer
         when String
           validate_string(schema, data, &Proc.new)
         when Array
-          validate_array(schema, data, &Proc.new)
+          validate_array(schema, data, root, &Proc.new)
         when Hash
-          validate_object(schema, data, &Proc.new)
+          validate_object(schema, data, root, &Proc.new)
         end
       end
     end
@@ -165,7 +179,7 @@ module JsonSchemer
       end
     end
 
-    def validate_array(schema, data, &block)
+    def validate_array(schema, data, root, &block)
       unless data.is_a?(Array)
         yield 'invalid array'
         return
@@ -181,24 +195,24 @@ module JsonSchemer
       yield 'invalid max items' if max_items && data.size > max_items
       yield 'invalid min items' if min_items && data.size < min_items
       yield 'invalid unique items' if unique_items && data.size != data.uniq.size
-      yield 'invalid contains' if !contains.nil? && data.all? { |item| !valid?(contains, item) }
+      yield 'invalid contains' if !contains.nil? && data.all? { |item| !valid?(contains, item, root) }
 
       if items.is_a?(Array)
         data.each_with_index do |item, index|
           if index < items.size
-            validate(items[index], item, &block)
+            validate(items[index], item, root, &block)
           elsif !additional_items.nil?
-            validate(additional_items, item, &block)
+            validate(additional_items, item, root, &block)
           else
             break
           end
         end
       elsif !items.nil?
-        data.each { |item| validate(items, item, &block) }
+        data.each { |item| validate(items, item, root, &block) }
       end
     end
 
-    def validate_object(schema, data, &block)
+    def validate_object(schema, data, root, &block)
       unless data.is_a?(Hash)
         yield 'invalid object'
         return
@@ -217,7 +231,7 @@ module JsonSchemer
         dependencies.each do |key, value|
           next unless data.key?(key)
           subschema = value.is_a?(Array) ? { 'required' => value } : value
-          validate(subschema, data, &block)
+          validate(subschema, data, root, &block)
         end
       end
 
@@ -227,12 +241,12 @@ module JsonSchemer
 
       regex_pattern_properties = nil
       data.each do |key, value|
-        validate(property_names, key, &block) unless property_names.nil?
+        validate(property_names, key, root, &block) unless property_names.nil?
 
         matched_key = false
 
         if properties && properties.key?(key)
-          validate(properties[key], value, &block)
+          validate(properties[key], value, root, &block)
           matched_key = true
         end
 
@@ -242,7 +256,7 @@ module JsonSchemer
           end
           regex_pattern_properties.each do |regex, property_schema|
             if regex.match?(key)
-              validate(property_schema, value, &block)
+              validate(property_schema, value, root, &block)
               matched_key = true
             end
           end
@@ -250,7 +264,7 @@ module JsonSchemer
 
         next if matched_key
 
-        validate(additional_properties, value, &block) unless additional_properties.nil?
+        validate(additional_properties, value, root, &block) unless additional_properties.nil?
       end
     end
 
