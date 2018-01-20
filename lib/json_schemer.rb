@@ -20,7 +20,7 @@ module JsonSchemer
 
       return if schema == true
       if schema == false
-        yield 'invalid'
+        yield error(schema, data, nil, 'schema')
         return
       end
 
@@ -37,25 +37,25 @@ module JsonSchemer
       else_schema = schema['else']
       ref = schema['$ref']
 
-      yield 'invalid enum' if enum && !enum.include?(data)
-      yield 'invalid const' if schema.key?('const') && schema['const'] != data
+      yield error(schema, data, nil, 'enum') if enum && !enum.include?(data)
+      yield error(schema, data, nil, 'const') if schema.key?('const') && schema['const'] != data
 
-      yield 'invalid all of' if all_of && !all_of.all? { |subschema| valid?(subschema, data, root) }
-      yield 'invalid any of' if any_of && !any_of.any? { |subschema| valid?(subschema, data, root) }
-      yield 'invalid one of' if one_of && one_of.count { |subschema| valid?(subschema, data, root) } != 1
-      yield 'invalid not' if !not_schema.nil? && valid?(not_schema, data, root)
+      yield error(schema, data, nil, 'allOf') if all_of && !all_of.all? { |subschema| valid?(subschema, data, root) }
+      yield error(schema, data, nil, 'anyOf') if any_of && !any_of.any? { |subschema| valid?(subschema, data, root) }
+      yield error(schema, data, nil, 'oneOf') if one_of && one_of.count { |subschema| valid?(subschema, data, root) } != 1
+      yield error(schema, data, nil, 'not') if !not_schema.nil? && valid?(not_schema, data, root)
 
       if if_schema && valid?(if_schema, data, root)
-        yield 'invalid then' if !then_schema.nil? && !valid?(then_schema, data, root)
+        yield error(schema, data, nil, 'then') if !then_schema.nil? && !valid?(then_schema, data, root)
       elsif if_schema
-        yield 'invalid else' if !else_schema.nil? && !valid?(else_schema, data, root)
+        yield error(schema, data, nil, 'else') if !else_schema.nil? && !valid?(else_schema, data, root)
       end
 
       if ref
         _address, pointer = ref.split('#')
         ref_schema = Hana::Pointer.new(URI.unescape(pointer || '')).eval(root)
         if ref_schema == schema
-          yield 'invalid ref'
+          yield error(schema, data, nil, 'ref')
         elsif !ref_schema.nil?
           validate(ref_schema, data, root, &Proc.new)
         end
@@ -64,9 +64,9 @@ module JsonSchemer
 
       case type
       when 'null'
-        yield 'invalid null' unless data.nil?
+        yield error(schema, data, nil, 'null') unless data.nil?
       when 'boolean'
-        yield 'invalid boolean' unless BOOLEANS.include?(data)
+        yield error(schema, data, nil, 'boolean') unless BOOLEANS.include?(data)
       when 'number'
         validate_number(schema, data, &Proc.new)
       when 'integer'
@@ -78,7 +78,9 @@ module JsonSchemer
       when 'object'
         validate_object(schema, data, root, &Proc.new)
       when Array
-        yield 'invalid type' unless type.any? { |subtype| valid?(schema.merge('type' => subtype), data, root) }
+        if type.all? { |subtype| !valid?(schema.merge('type' => subtype), data, root) }
+          yield error(schema, data, nil, 'type')
+        end
       else
         case data
         when Integer
@@ -97,6 +99,15 @@ module JsonSchemer
 
   private
 
+    def error(schema, data, pointer, type)
+      {
+        'schema' => schema,
+        'data' => data,
+        'pointer' => pointer,
+        'type' => type,
+      }
+    end
+
     def validate_numeric(schema, data)
       multiple_of = schema['multipleOf']
       maximum = schema['maximum']
@@ -104,20 +115,20 @@ module JsonSchemer
       minimum = schema['minimum']
       exclusive_minimum = schema['exclusiveMinimum']
 
-      yield 'invalid maximum' if maximum && data > maximum
-      yield 'invalid exclusive maximum' if exclusive_maximum && data >= exclusive_maximum
-      yield 'invalid minimum' if minimum && data < minimum
-      yield 'invalid exclusive minimum' if exclusive_minimum && data <= exclusive_minimum
+      yield error(schema, data, nil, 'maximum') if maximum && data > maximum
+      yield error(schema, data, nil, 'exclusiveMaximum') if exclusive_maximum && data >= exclusive_maximum
+      yield error(schema, data, nil, 'minimum') if minimum && data < minimum
+      yield error(schema, data, nil, 'exclusiveMinimum') if exclusive_minimum && data <= exclusive_minimum
 
       if multiple_of
         quotient = data / multiple_of.to_f
-        yield 'invalid multiple of' unless quotient.floor == quotient
+        yield error(schema, data, nil, 'multipleOf') unless quotient.floor == quotient
       end
     end
 
     def validate_number(schema, data)
       unless data.is_a?(Numeric)
-        yield 'invalid number'
+        yield error(schema, data, nil, 'number')
         return
       end
 
@@ -126,7 +137,7 @@ module JsonSchemer
 
     def validate_integer(schema, data)
       unless data.is_a?(Integer)
-        yield 'invalid integer'
+        yield error(schema, data, nil, 'integer')
         return
       end
 
@@ -135,7 +146,7 @@ module JsonSchemer
 
     def validate_string(schema, data)
       unless data.is_a?(String)
-        yield 'invalid string'
+        yield error(schema, data, nil, 'string')
         return
       end
 
@@ -144,44 +155,36 @@ module JsonSchemer
       pattern = schema['pattern']
       format = schema['format']
 
-      yield 'invalid max length' if max_length && data.size > max_length
-      yield 'invalid min length' if min_length && data.size < min_length
-      yield 'invalid pattern' if pattern && !Regexp.new(pattern).match?(data)
+      yield error(schema, data, nil, 'maxLength') if max_length && data.size > max_length
+      yield error(schema, data, nil, 'minLength') if min_length && data.size < min_length
+      yield error(schema, data, nil, 'pattern') if pattern && !Regexp.new(pattern).match?(data)
 
       validate_string_format(format, data, &Proc.new) if format
     end
 
     def validate_string_format(format, string)
-      case format
+      valid = case format
       when 'date-time'
-        yield 'invalid date-time' unless valid_date_time?(string)
+        valid_date_time?(string)
       when 'date'
-        yield 'invalid date' unless valid_date_time?("#{string}T04:05:06.123456789+07:00")
+        valid_date_time?("#{string}T04:05:06.123456789+07:00")
       when 'time'
-        yield 'invalid time' unless valid_date_time?("2001-02-03T#{string}")
+        valid_date_time?("2001-02-03T#{string}")
       when 'email'
-        yield 'invalid email' unless valid_email?(string)
+        valid_email?(string)
       when 'idn-email'
-        yield 'invalid idn-email' unless valid_email?(string)
-      when 'hostname'
-      when 'idn-hostname'
-      when 'ipv4'
-      when 'ipv6'
-      when 'uri'
-      when 'uri-reference'
-      when 'iri'
-      when 'iri-reference'
-      when 'uri-template'
-      when 'json-pointer'
-      when 'relative-json-pointer'
+        valid_email?(string)
+      when 'hostname', 'idn-hostname', 'ipv4', 'ipv6', 'uri', 'uri-reference', 'iri', 'iri-reference', 'uri-template', 'json-pointer', 'relative-json-pointer'
+        true
       when 'regex'
-        yield 'invalid regex' unless valid_regex?(string)
+        valid_regex?(string)
       end
+      yield error(schema, data, nil, 'format') unless valid
     end
 
     def validate_array(schema, data, root, &block)
       unless data.is_a?(Array)
-        yield 'invalid array'
+        yield error(schema, data, nil, 'array')
         return
       end
 
@@ -192,10 +195,10 @@ module JsonSchemer
       unique_items = schema['uniqueItems']
       contains = schema['contains']
 
-      yield 'invalid max items' if max_items && data.size > max_items
-      yield 'invalid min items' if min_items && data.size < min_items
-      yield 'invalid unique items' if unique_items && data.size != data.uniq.size
-      yield 'invalid contains' if !contains.nil? && data.all? { |item| !valid?(contains, item, root) }
+      yield error(schema, data, nil, 'maxItems') if max_items && data.size > max_items
+      yield error(schema, data, nil, 'minItems') if min_items && data.size < min_items
+      yield error(schema, data, nil, 'uniqueItems') if unique_items && data.size != data.uniq.size
+      yield error(schema, data, nil, 'contains') if !contains.nil? && data.all? { |item| !valid?(contains, item, root) }
 
       if items.is_a?(Array)
         data.each_with_index do |item, index|
@@ -214,7 +217,7 @@ module JsonSchemer
 
     def validate_object(schema, data, root, &block)
       unless data.is_a?(Hash)
-        yield 'invalid object'
+        yield error(schema, data, nil, 'object')
         return
       end
 
@@ -235,9 +238,9 @@ module JsonSchemer
         end
       end
 
-      yield 'invalid max properties' if max_properties && data.size > max_properties
-      yield 'invalid min properties' if min_properties && data.size < min_properties
-      yield 'invalid required' if required && required.any? { |key| !data.key?(key) }
+      yield error(schema, data, nil, 'maxProperties') if max_properties && data.size > max_properties
+      yield error(schema, data, nil, 'minProperties') if min_properties && data.size < min_properties
+      yield error(schema, data, nil, 'required') if required && required.any? { |key| !data.key?(key) }
 
       regex_pattern_properties = nil
       data.each do |key, value|
