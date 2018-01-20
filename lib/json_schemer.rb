@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
 require "json_schemer/version"
+require "time"
 
 module JsonSchemer
   class << self
     BOOLEANS = [true, false].freeze
+    # this is no good
+    EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/ix.freeze
+
+    def valid?(schema, data)
+      !validate(schema, data).first
+    end
 
     def validate(schema, data)
       return enum_for(:validate, schema, data) unless block_given?
@@ -19,9 +26,27 @@ module JsonSchemer
 
       type = schema['type']
       enum = schema['enum']
+      all_of = schema['allOf']
+      any_of = schema['anyOf']
+      one_of = schema['oneOf']
+      not_schema = schema['not']
+      if_schema = schema['if']
+      then_schema = schema['then']
+      else_schema = schema['else']
 
       yield 'invalid enum' if enum && !enum.include?(data)
       yield 'invalid const' if schema.key?('const') && schema['const'] != data
+
+      yield 'invalid all of' if all_of && !all_of.all? { |subschema| valid?(subschema, data) }
+      yield 'invalid any of' if any_of && !any_of.any? { |subschema| valid?(subschema, data) }
+      yield 'invalid one of' if one_of && one_of.count { |subschema| valid?(subschema, data) } != 1
+      yield 'invalid not' if not_schema && valid?(not_schema, data)
+
+      if if_schema && valid?(if_schema, data)
+        yield 'invalid then' if then_schema && !valid?(then_schema, data)
+      elsif if_schema
+        yield 'invalid else' if else_schema && !valid?(else_schema, data)
+      end
 
       case type
       when 'null'
@@ -54,38 +79,6 @@ module JsonSchemer
           validate_object(schema, data, &Proc.new)
         end
       end
-
-      if all_of = schema['allOf']
-        yield 'invalid all of' unless all_of.all? { |subschema| valid?(subschema, data) }
-      end
-
-      if any_of = schema['anyOf']
-        yield 'invalid any of' unless any_of.any? { |subschema| valid?(subschema, data) }
-      end
-
-      if one_of = schema['oneOf']
-        yield 'invalid one of' unless one_of.count { |subschema| valid?(subschema, data) } == 1
-      end
-
-      if not_schema = schema['not']
-        yield 'invalid not' if valid?(not_schema, data)
-      end
-
-      if if_schema = schema['if']
-        if_valid = valid?(if_schema, data)
-
-        if if_valid && then_schema = schema['then']
-          yield 'invalid then' unless valid?(then_schema, data)
-        end
-
-        if !if_valid && else_schema = schema['else']
-          yield 'invalid else' unless valid?(else_schema, data)
-        end
-      end
-    end
-
-    def valid?(schema, data)
-      !validate(schema, data).first
     end
 
   private
@@ -135,10 +128,41 @@ module JsonSchemer
       max_length = schema['maxLength']
       min_length = schema['minLength']
       pattern = schema['pattern']
+      format = schema['format']
 
       yield 'invalid max length' if max_length && data.size > max_length
       yield 'invalid min length' if min_length && data.size < min_length
       yield 'invalid pattern' if pattern && !Regexp.new(pattern).match?(data)
+
+      validate_string_format(format, data, &Proc.new) if format
+    end
+
+    def validate_string_format(format, string)
+      case format
+      when 'date-time'
+        yield 'invalid date-time' unless valid_date_time?(string)
+      when 'date'
+        yield 'invalid date' unless valid_date_time?("#{string}T04:05:06.123456789+07:00")
+      when 'time'
+        yield 'invalid time' unless valid_date_time?("2001-02-03T#{string}")
+      when 'email'
+        yield 'invalid email' unless valid_email?(string)
+      when 'idn-email'
+        yield 'invalid idn-email' unless valid_email?(string)
+      when 'hostname'
+      when 'idn-hostname'
+      when 'ipv4'
+      when 'ipv6'
+      when 'uri'
+      when 'uri-reference'
+      when 'iri'
+      when 'iri-reference'
+      when 'uri-template'
+      when 'json-pointer'
+      when 'relative-json-pointer'
+      when 'regex'
+        yield 'invalid regex' unless valid_regex?(string)
+      end
     end
 
     def validate_array(schema, data, &block)
@@ -228,6 +252,25 @@ module JsonSchemer
 
         validate(additional_properties, value, &block) unless additional_properties.nil?
       end
+    end
+
+    def valid_date_time?(string)
+      DateTime.rfc3339(string)
+      true
+    rescue ArgumentError => e
+      raise e unless e.message == 'invalid date'
+      false
+    end
+
+    def valid_email?(string)
+      EMAIL_REGEX.match?(string)
+    end
+
+    def valid_regex?(string)
+      Regexp.new(string)
+      true
+    rescue RegexpError
+      false
     end
   end
 end
