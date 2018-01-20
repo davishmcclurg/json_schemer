@@ -67,8 +67,20 @@ module JsonSchemer
         yield 'invalid one of' unless one_of.count { |subschema| valid?(subschema, data) } == 1
       end
 
-      if notnotnot = schema['not']
-        yield 'invalid not' if valid?(notnotnot, data)
+      if not_schema = schema['not']
+        yield 'invalid not' if valid?(not_schema, data)
+      end
+
+      if if_schema = schema['if']
+        if_valid = valid?(if_schema, data)
+
+        if if_valid && then_schema = schema['then']
+          yield 'invalid then' unless valid?(then_schema, data)
+        end
+
+        if !if_valid && else_schema = schema['else']
+          yield 'invalid else' unless valid?(else_schema, data)
+        end
       end
     end
 
