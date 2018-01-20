@@ -5,7 +5,7 @@ require "time"
 
 module JsonSchemer
   class << self
-    BOOLEANS = [true, false].freeze
+    BOOLEANS = Set[true, false].freeze
     # this is no good
     EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/ix.freeze
 
@@ -40,12 +40,12 @@ module JsonSchemer
       yield 'invalid all of' if all_of && !all_of.all? { |subschema| valid?(subschema, data) }
       yield 'invalid any of' if any_of && !any_of.any? { |subschema| valid?(subschema, data) }
       yield 'invalid one of' if one_of && one_of.count { |subschema| valid?(subschema, data) } != 1
-      yield 'invalid not' if not_schema && valid?(not_schema, data)
+      yield 'invalid not' if !not_schema.nil? && valid?(not_schema, data)
 
       if if_schema && valid?(if_schema, data)
-        yield 'invalid then' if then_schema && !valid?(then_schema, data)
+        yield 'invalid then' if !then_schema.nil? && !valid?(then_schema, data)
       elsif if_schema
-        yield 'invalid else' if else_schema && !valid?(else_schema, data)
+        yield 'invalid else' if !else_schema.nil? && !valid?(else_schema, data)
       end
 
       case type
