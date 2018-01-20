@@ -12,7 +12,7 @@ module JsonSchemer
     EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/ix.freeze
 
     def valid?(schema, data, root = schema)
-      !validate(schema, data, root).first
+      validate(schema, data, root).none?
     end
 
     def validate(schema, data, root = schema)
@@ -37,20 +37,6 @@ module JsonSchemer
       else_schema = schema['else']
       ref = schema['$ref']
 
-      yield error(schema, data, nil, 'enum') if enum && !enum.include?(data)
-      yield error(schema, data, nil, 'const') if schema.key?('const') && schema['const'] != data
-
-      yield error(schema, data, nil, 'allOf') if all_of && !all_of.all? { |subschema| valid?(subschema, data, root) }
-      yield error(schema, data, nil, 'anyOf') if any_of && !any_of.any? { |subschema| valid?(subschema, data, root) }
-      yield error(schema, data, nil, 'oneOf') if one_of && one_of.count { |subschema| valid?(subschema, data, root) } != 1
-      yield error(schema, data, nil, 'not') if !not_schema.nil? && valid?(not_schema, data, root)
-
-      if if_schema && valid?(if_schema, data, root)
-        yield error(schema, data, nil, 'then') if !then_schema.nil? && !valid?(then_schema, data, root)
-      elsif if_schema
-        yield error(schema, data, nil, 'else') if !else_schema.nil? && !valid?(else_schema, data, root)
-      end
-
       if ref
         _address, pointer = ref.split('#')
         ref_schema = Hana::Pointer.new(URI.unescape(pointer || '')).eval(root)
@@ -60,6 +46,20 @@ module JsonSchemer
           validate(ref_schema, data, root, &Proc.new)
         end
         return
+      end
+
+      yield error(schema, data, nil, 'enum') if enum && !enum.include?(data)
+      yield error(schema, data, nil, 'const') if schema.key?('const') && schema['const'] != data
+
+      yield error(schema, data, nil, 'allOf') if all_of && !all_of.all? { |subschema| valid?(subschema, data, root) }
+      yield error(schema, data, nil, 'anyOf') if any_of && !any_of.any? { |subschema| valid?(subschema, data, root) }
+      yield error(schema, data, nil, 'oneOf') if one_of && !one_of.one? { |subschema| valid?(subschema, data, root) }
+      yield error(schema, data, nil, 'not') if !not_schema.nil? && valid?(not_schema, data, root)
+
+      if if_schema && valid?(if_schema, data, root)
+        yield error(schema, data, nil, 'then') if !then_schema.nil? && !valid?(then_schema, data, root)
+      elsif if_schema
+        yield error(schema, data, nil, 'else') if !else_schema.nil? && !valid?(else_schema, data, root)
       end
 
       case type
