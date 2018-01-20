@@ -12,15 +12,15 @@ module JsonSchemer
     EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/ix.freeze
 
     def valid?(schema, data, root = schema)
-      validate(schema, data, root).none?
+      validate(schema, data, '#', root).none?
     end
 
-    def validate(schema, data, root = schema)
-      return enum_for(:validate, schema, data, root) unless block_given?
+    def validate(schema, data, pointer = '#', root = schema)
+      return enum_for(:validate, schema, data, pointer, root) unless block_given?
 
       return if schema == true
       if schema == false
-        yield error(schema, data, nil, 'schema')
+        yield error(schema, data, pointer, 'schema')
         return
       end
 
@@ -38,61 +38,61 @@ module JsonSchemer
       ref = schema['$ref']
 
       if ref
-        _address, pointer = ref.split('#')
-        ref_schema = Hana::Pointer.new(URI.unescape(pointer || '')).eval(root)
+        _ref_address, ref_pointer = ref.split('#')
+        ref_schema = Hana::Pointer.new(URI.unescape(ref_pointer || '')).eval(root)
         if ref_schema == schema
-          yield error(schema, data, nil, 'ref')
+          yield error(schema, data, pointer, 'ref')
         elsif !ref_schema.nil?
-          validate(ref_schema, data, root, &Proc.new)
+          validate(ref_schema, data, pointer, root, &Proc.new)
         end
         return
       end
 
-      yield error(schema, data, nil, 'enum') if enum && !enum.include?(data)
-      yield error(schema, data, nil, 'const') if schema.key?('const') && schema['const'] != data
+      yield error(schema, data, pointer, 'enum') if enum && !enum.include?(data)
+      yield error(schema, data, pointer, 'const') if schema.key?('const') && schema['const'] != data
 
-      yield error(schema, data, nil, 'allOf') if all_of && !all_of.all? { |subschema| valid?(subschema, data, root) }
-      yield error(schema, data, nil, 'anyOf') if any_of && !any_of.any? { |subschema| valid?(subschema, data, root) }
-      yield error(schema, data, nil, 'oneOf') if one_of && !one_of.one? { |subschema| valid?(subschema, data, root) }
-      yield error(schema, data, nil, 'not') if !not_schema.nil? && valid?(not_schema, data, root)
+      yield error(schema, data, pointer, 'allOf') if all_of && !all_of.all? { |subschema| valid?(subschema, data, root) }
+      yield error(schema, data, pointer, 'anyOf') if any_of && !any_of.any? { |subschema| valid?(subschema, data, root) }
+      yield error(schema, data, pointer, 'oneOf') if one_of && !one_of.one? { |subschema| valid?(subschema, data, root) }
+      yield error(schema, data, pointer, 'not') if !not_schema.nil? && valid?(not_schema, data, root)
 
       if if_schema && valid?(if_schema, data, root)
-        yield error(schema, data, nil, 'then') if !then_schema.nil? && !valid?(then_schema, data, root)
+        yield error(schema, data, pointer, 'then') if !then_schema.nil? && !valid?(then_schema, data, root)
       elsif if_schema
-        yield error(schema, data, nil, 'else') if !else_schema.nil? && !valid?(else_schema, data, root)
+        yield error(schema, data, pointer, 'else') if !else_schema.nil? && !valid?(else_schema, data, root)
       end
 
       case type
       when 'null'
-        yield error(schema, data, nil, 'null') unless data.nil?
+        yield error(schema, data, pointer, 'null') unless data.nil?
       when 'boolean'
-        yield error(schema, data, nil, 'boolean') unless BOOLEANS.include?(data)
+        yield error(schema, data, pointer, 'boolean') unless BOOLEANS.include?(data)
       when 'number'
-        validate_number(schema, data, &Proc.new)
+        validate_number(schema, data, pointer, &Proc.new)
       when 'integer'
-        validate_integer(schema, data, &Proc.new)
+        validate_integer(schema, data, pointer, &Proc.new)
       when 'string'
-        validate_string(schema, data, &Proc.new)
+        validate_string(schema, data, pointer, &Proc.new)
       when 'array'
-        validate_array(schema, data, root, &Proc.new)
+        validate_array(schema, data, pointer, root, &Proc.new)
       when 'object'
-        validate_object(schema, data, root, &Proc.new)
+        validate_object(schema, data, pointer, root, &Proc.new)
       when Array
         if type.all? { |subtype| !valid?(schema.merge('type' => subtype), data, root) }
-          yield error(schema, data, nil, 'type')
+          yield error(schema, data, pointer, 'type')
         end
       else
         case data
         when Integer
-          validate_integer(schema, data, &Proc.new)
+          validate_integer(schema, data, pointer, &Proc.new)
         when Numeric
-          validate_number(schema, data, &Proc.new)
+          validate_number(schema, data, pointer, &Proc.new)
         when String
-          validate_string(schema, data, &Proc.new)
+          validate_string(schema, data, pointer, &Proc.new)
         when Array
-          validate_array(schema, data, root, &Proc.new)
+          validate_array(schema, data, pointer, root, &Proc.new)
         when Hash
-          validate_object(schema, data, root, &Proc.new)
+          validate_object(schema, data, pointer, root, &Proc.new)
         end
       end
     end
@@ -108,45 +108,45 @@ module JsonSchemer
       }
     end
 
-    def validate_numeric(schema, data)
+    def validate_numeric(schema, data, pointer)
       multiple_of = schema['multipleOf']
       maximum = schema['maximum']
       exclusive_maximum = schema['exclusiveMaximum']
       minimum = schema['minimum']
       exclusive_minimum = schema['exclusiveMinimum']
 
-      yield error(schema, data, nil, 'maximum') if maximum && data > maximum
-      yield error(schema, data, nil, 'exclusiveMaximum') if exclusive_maximum && data >= exclusive_maximum
-      yield error(schema, data, nil, 'minimum') if minimum && data < minimum
-      yield error(schema, data, nil, 'exclusiveMinimum') if exclusive_minimum && data <= exclusive_minimum
+      yield error(schema, data, pointer, 'maximum') if maximum && data > maximum
+      yield error(schema, data, pointer, 'exclusiveMaximum') if exclusive_maximum && data >= exclusive_maximum
+      yield error(schema, data, pointer, 'minimum') if minimum && data < minimum
+      yield error(schema, data, pointer, 'exclusiveMinimum') if exclusive_minimum && data <= exclusive_minimum
 
       if multiple_of
         quotient = data / multiple_of.to_f
-        yield error(schema, data, nil, 'multipleOf') unless quotient.floor == quotient
+        yield error(schema, data, pointer, 'multipleOf') unless quotient.floor == quotient
       end
     end
 
-    def validate_number(schema, data)
+    def validate_number(schema, data, pointer)
       unless data.is_a?(Numeric)
-        yield error(schema, data, nil, 'number')
+        yield error(schema, data, pointer, 'number')
         return
       end
 
-      validate_numeric(schema, data, &Proc.new)
+      validate_numeric(schema, data, pointer, &Proc.new)
     end
 
-    def validate_integer(schema, data)
+    def validate_integer(schema, data, pointer)
       unless data.is_a?(Integer)
-        yield error(schema, data, nil, 'integer')
+        yield error(schema, data, pointer, 'integer')
         return
       end
 
-      validate_numeric(schema, data, &Proc.new)
+      validate_numeric(schema, data, pointer, &Proc.new)
     end
 
-    def validate_string(schema, data)
+    def validate_string(schema, data, pointer)
       unless data.is_a?(String)
-        yield error(schema, data, nil, 'string')
+        yield error(schema, data, pointer, 'string')
         return
       end
 
@@ -155,14 +155,14 @@ module JsonSchemer
       pattern = schema['pattern']
       format = schema['format']
 
-      yield error(schema, data, nil, 'maxLength') if max_length && data.size > max_length
-      yield error(schema, data, nil, 'minLength') if min_length && data.size < min_length
-      yield error(schema, data, nil, 'pattern') if pattern && !Regexp.new(pattern).match?(data)
+      yield error(schema, data, pointer, 'maxLength') if max_length && data.size > max_length
+      yield error(schema, data, pointer, 'minLength') if min_length && data.size < min_length
+      yield error(schema, data, pointer, 'pattern') if pattern && !Regexp.new(pattern).match?(data)
 
-      validate_string_format(format, data, &Proc.new) if format
+      validate_string_format(format, data, pointer, &Proc.new) if format
     end
 
-    def validate_string_format(format, string)
+    def validate_string_format(format, string, pointer)
       valid = case format
       when 'date-time'
         valid_date_time?(string)
@@ -179,12 +179,12 @@ module JsonSchemer
       when 'regex'
         valid_regex?(string)
       end
-      yield error(schema, data, nil, 'format') unless valid
+      yield error(schema, data, pointer, 'format') unless valid
     end
 
-    def validate_array(schema, data, root, &block)
+    def validate_array(schema, data, pointer, root, &block)
       unless data.is_a?(Array)
-        yield error(schema, data, nil, 'array')
+        yield error(schema, data, pointer, 'array')
         return
       end
 
@@ -195,29 +195,31 @@ module JsonSchemer
       unique_items = schema['uniqueItems']
       contains = schema['contains']
 
-      yield error(schema, data, nil, 'maxItems') if max_items && data.size > max_items
-      yield error(schema, data, nil, 'minItems') if min_items && data.size < min_items
-      yield error(schema, data, nil, 'uniqueItems') if unique_items && data.size != data.uniq.size
-      yield error(schema, data, nil, 'contains') if !contains.nil? && data.all? { |item| !valid?(contains, item, root) }
+      yield error(schema, data, pointer, 'maxItems') if max_items && data.size > max_items
+      yield error(schema, data, pointer, 'minItems') if min_items && data.size < min_items
+      yield error(schema, data, pointer, 'uniqueItems') if unique_items && data.size != data.uniq.size
+      yield error(schema, data, pointer, 'contains') if !contains.nil? && data.all? { |item| !valid?(contains, item, root) }
 
       if items.is_a?(Array)
         data.each_with_index do |item, index|
           if index < items.size
-            validate(items[index], item, root, &block)
+            validate(items[index], item, "#{pointer}/#{index}", root, &block)
           elsif !additional_items.nil?
-            validate(additional_items, item, root, &block)
+            validate(additional_items, item, "#{pointer}/#{index}", root, &block)
           else
             break
           end
         end
       elsif !items.nil?
-        data.each { |item| validate(items, item, root, &block) }
+        data.each_with_index do |item, index|
+          validate(items, item, "#{pointer}/#{index}", root, &block)
+        end
       end
     end
 
-    def validate_object(schema, data, root, &block)
+    def validate_object(schema, data, pointer, root, &block)
       unless data.is_a?(Hash)
-        yield error(schema, data, nil, 'object')
+        yield error(schema, data, pointer, 'object')
         return
       end
 
@@ -234,22 +236,22 @@ module JsonSchemer
         dependencies.each do |key, value|
           next unless data.key?(key)
           subschema = value.is_a?(Array) ? { 'required' => value } : value
-          validate(subschema, data, root, &block)
+          validate(subschema, data, pointer, root, &block)
         end
       end
 
-      yield error(schema, data, nil, 'maxProperties') if max_properties && data.size > max_properties
-      yield error(schema, data, nil, 'minProperties') if min_properties && data.size < min_properties
-      yield error(schema, data, nil, 'required') if required && required.any? { |key| !data.key?(key) }
+      yield error(schema, data, pointer, 'maxProperties') if max_properties && data.size > max_properties
+      yield error(schema, data, pointer, 'minProperties') if min_properties && data.size < min_properties
+      yield error(schema, data, pointer, 'required') if required && required.any? { |key| !data.key?(key) }
 
       regex_pattern_properties = nil
       data.each do |key, value|
-        validate(property_names, key, root, &block) unless property_names.nil?
+        validate(property_names, key, pointer, root, &block) unless property_names.nil?
 
         matched_key = false
 
         if properties && properties.key?(key)
-          validate(properties[key], value, root, &block)
+          validate(properties[key], value, "#{pointer}/#{key}", root, &block)
           matched_key = true
         end
 
@@ -259,7 +261,7 @@ module JsonSchemer
           end
           regex_pattern_properties.each do |regex, property_schema|
             if regex.match?(key)
-              validate(property_schema, value, root, &block)
+              validate(property_schema, value, "#{pointer}/#{key}", root, &block)
               matched_key = true
             end
           end
@@ -267,7 +269,7 @@ module JsonSchemer
 
         next if matched_key
 
-        validate(additional_properties, value, root, &block) unless additional_properties.nil?
+        validate(additional_properties, value, "#{pointer}/#{key}", root, &block) unless additional_properties.nil?
       end
     end
 
