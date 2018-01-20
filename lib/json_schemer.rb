@@ -39,7 +39,7 @@ module JsonSchemer
       when 'object'
         validate_object(schema, data, &Proc.new)
       when Array
-        yield 'invalid type' if type.all? { |subtype| !valid?(schema.merge('type' => subtype), data) }
+        yield 'invalid type' unless type.any? { |subtype| valid?(schema.merge('type' => subtype), data) }
       else
         case data
         when Integer
@@ -53,6 +53,22 @@ module JsonSchemer
         when Hash
           validate_object(schema, data, &Proc.new)
         end
+      end
+
+      if all_of = schema['allOf']
+        yield 'invalid all of' unless all_of.all? { |subschema| valid?(subschema, data) }
+      end
+
+      if any_of = schema['anyOf']
+        yield 'invalid any of' unless any_of.any? { |subschema| valid?(subschema, data) }
+      end
+
+      if one_of = schema['oneOf']
+        yield 'invalid one of' unless one_of.count { |subschema| valid?(subschema, data) } == 1
+      end
+
+      if notnotnot = schema['not']
+        yield 'invalid not' if valid?(notnotnot, data)
       end
     end
 
