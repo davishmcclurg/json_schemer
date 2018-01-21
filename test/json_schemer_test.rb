@@ -73,7 +73,7 @@ class JsonSchemerTest < Minitest::Test
         defn.fetch('tests').each do |test|
           errors = begin
             JsonSchemer.validate(schema, test.fetch('data')).to_a
-          rescue => e
+          rescue StandardError, NotImplementedError => e
             [e.message]
           end
           passed = errors.size == 0

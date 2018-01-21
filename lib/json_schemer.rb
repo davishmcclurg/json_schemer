@@ -3,13 +3,21 @@
 require "json_schemer/version"
 require "time"
 require "uri"
+require "ipaddr"
 require "hana"
+require "addressable"
 
 module JsonSchemer
   class << self
     BOOLEANS = Set[true, false].freeze
     # this is no good
-    EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/ix.freeze
+    EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/i.freeze
+    LABEL_REGEX_STRING = '\p{L}([\p{L}\p{N}\-]*[\p{L}\p{N}])?'
+    HOSTNAME_REGEX = /\A(#{LABEL_REGEX_STRING}\.)*#{LABEL_REGEX_STRING}\z/i.freeze
+    URI_PARSER = URI::RFC3986_Parser.new.freeze
+    JSON_POINTER_REGEX_STRING = '(\/([^~\/]|~[01])*)*'
+    JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
+    RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
 
     def valid?(schema, data, root = schema)
       validate(schema, data, '#', root).none?
@@ -136,7 +144,7 @@ module JsonSchemer
     end
 
     def validate_integer(schema, data, pointer)
-      unless data.is_a?(Integer)
+      if !data.is_a?(Numeric) || (!data.is_a?(Integer) && data.floor != data)
         yield error(schema, data, pointer, 'integer')
         return
       end
@@ -159,25 +167,45 @@ module JsonSchemer
       yield error(schema, data, pointer, 'minLength') if min_length && data.size < min_length
       yield error(schema, data, pointer, 'pattern') if pattern && !Regexp.new(pattern).match?(data)
 
-      validate_string_format(format, data, pointer, &Proc.new) if format
+      validate_string_format(schema, data, pointer, format, &Proc.new) if format
     end
 
-    def validate_string_format(format, string, pointer)
+    def validate_string_format(schema, data, pointer, format)
       valid = case format
       when 'date-time'
-        valid_date_time?(string)
+        valid_date_time?(data)
       when 'date'
-        valid_date_time?("#{string}T04:05:06.123456789+07:00")
+        valid_date_time?("#{data}T04:05:06.123456789+07:00")
       when 'time'
-        valid_date_time?("2001-02-03T#{string}")
+        valid_date_time?("2001-02-03T#{data}")
       when 'email'
-        valid_email?(string)
+        data.ascii_only? && EMAIL_REGEX.match?(data)
       when 'idn-email'
-        valid_email?(string)
-      when 'hostname', 'idn-hostname', 'ipv4', 'ipv6', 'uri', 'uri-reference', 'iri', 'iri-reference', 'uri-template', 'json-pointer', 'relative-json-pointer'
-        true
+        EMAIL_REGEX.match?(data)
+      when 'hostname'
+        data.ascii_only? && valid_hostname?(data)
+      when 'idn-hostname'
+        valid_hostname?(data)
+      when 'ipv4'
+        valid_ip?(data, :v4)
+      when 'ipv6'
+        valid_ip?(data, :v6)
+      when 'uri'
+        valid_uri?(data, ascii_only: true, absolute_only: true)
+      when 'uri-reference'
+        valid_uri?(data, ascii_only: true, absolute_only: false)
+      when 'iri'
+        valid_uri?(data, ascii_only: false, absolute_only: true)
+      when 'iri-reference'
+        valid_uri?(data, ascii_only: false, absolute_only: false)
+      when 'uri-template'
+        raise NotImplementedError
+      when 'json-pointer'
+        JSON_POINTER_REGEX.match?(data)
+      when 'relative-json-pointer'
+        RELATIVE_JSON_POINTER_REGEX.match?(data)
       when 'regex'
-        valid_regex?(string)
+        valid_regex?(data)
       end
       yield error(schema, data, pointer, 'format') unless valid
     end
@@ -273,20 +301,36 @@ module JsonSchemer
       end
     end
 
-    def valid_date_time?(string)
-      DateTime.rfc3339(string)
+    def valid_date_time?(data)
+      DateTime.rfc3339(data)
       true
     rescue ArgumentError => e
       raise e unless e.message == 'invalid date'
       false
     end
 
-    def valid_email?(string)
-      EMAIL_REGEX.match?(string)
+    def valid_hostname?(data)
+      HOSTNAME_REGEX.match?(data) && data.split('.').all? { |label| label.size <= 63 }
     end
 
-    def valid_regex?(string)
-      Regexp.new(string)
+    def valid_ip?(data, type)
+      ip_address = IPAddr.new(data)
+      type == :v4 ? ip_address.ipv4? : ip_address.ipv6?
+    rescue IPAddr::InvalidAddressError
+      false
+    end
+
+    def valid_uri?(data, ascii_only:, absolute_only:)
+      return false if ascii_only && !data.ascii_only?
+      URI_PARSER.parse(data) if ascii_only
+      uri = Addressable::URI.parse(data)
+      absolute_only ? uri.absolute? : true
+    rescue URI::InvalidURIError, Addressable::URI::InvalidURIError
+      false
+    end
+
+    def valid_regex?(data)
+      Regexp.new(data)
       true
     rescue RegexpError
       false
