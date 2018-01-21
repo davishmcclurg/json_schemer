@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "json_schemer/version"
+require 'net/http'
 require "json"
 require "base64"
 require "time"
@@ -48,12 +49,23 @@ module JsonSchemer
       ref = schema['$ref']
 
       if ref
-        _ref_address, ref_pointer = ref.split('#')
-        ref_schema = Hana::Pointer.new(URI.unescape(ref_pointer || '')).eval(root)
+        ref_address, ref_fragment = ref.split('#')
+        ref_root = if ref_address && !ref_address.empty?
+          ref_uri = URI.parse(ref_address)
+          if ref_uri.absolute?
+            JSON.parse(Net::HTTP.get(ref_uri))
+          else
+            raise NotImplementedError
+          end
+        else
+          root
+        end
+        ref_pointer = Hana::Pointer.new(URI.unescape(ref_fragment || ''))
+        ref_schema = ref_pointer.eval(ref_root)
         if ref_schema == schema
           yield error(schema, data, pointer, 'ref')
         elsif !ref_schema.nil?
-          validate(ref_schema, data, pointer, root, &Proc.new)
+          validate(ref_schema, data, pointer, ref_root, &Proc.new)
         end
         return
       end
@@ -73,6 +85,47 @@ module JsonSchemer
       end
 
       case type
+      when nil
+        validate_class(schema, data, pointer, root, &Proc.new)
+      when String
+        validate_type(schema, data, pointer, root, type, &Proc.new)
+      when Array
+        if valid_type = type.find { |subtype| valid?({ 'type' => subtype }, data, root) }
+          validate_type(schema, data, pointer, root, valid_type, &Proc.new)
+        else
+          yield error(schema, data, pointer, 'type')
+        end
+      end
+    end
+
+  private
+
+    def error(schema, data, pointer, type)
+      {
+        'schema' => schema,
+        'data' => data,
+        'pointer' => pointer,
+        'type' => type,
+      }
+    end
+
+    def validate_class(schema, data, pointer, root)
+      case data
+      when Integer
+        validate_integer(schema, data, pointer, &Proc.new)
+      when Numeric
+        validate_number(schema, data, pointer, &Proc.new)
+      when String
+        validate_string(schema, data, pointer, &Proc.new)
+      when Array
+        validate_array(schema, data, pointer, root, &Proc.new)
+      when Hash
+        validate_object(schema, data, pointer, root, &Proc.new)
+      end
+    end
+
+    def validate_type(schema, data, pointer, root, type)
+      case type
       when 'null'
         yield error(schema, data, pointer, 'null') unless data.nil?
       when 'boolean'
@@ -87,35 +140,7 @@ module JsonSchemer
         validate_array(schema, data, pointer, root, &Proc.new)
       when 'object'
         validate_object(schema, data, pointer, root, &Proc.new)
-      when Array
-        if type.all? { |subtype| !valid?(schema.merge('type' => subtype), data, root) }
-          yield error(schema, data, pointer, 'type')
-        end
-      else
-        case data
-        when Integer
-          validate_integer(schema, data, pointer, &Proc.new)
-        when Numeric
-          validate_number(schema, data, pointer, &Proc.new)
-        when String
-          validate_string(schema, data, pointer, &Proc.new)
-        when Array
-          validate_array(schema, data, pointer, root, &Proc.new)
-        when Hash
-          validate_object(schema, data, pointer, root, &Proc.new)
-        end
       end
-    end
-
-  private
-
-    def error(schema, data, pointer, type)
-      {
-        'schema' => schema,
-        'data' => data,
-        'pointer' => pointer,
-        'type' => type,
-      }
     end
 
     def validate_numeric(schema, data, pointer)
@@ -365,8 +390,7 @@ module JsonSchemer
 
     def valid_uri?(data, ascii_only:, absolute_only:)
       return false if ascii_only && !data.ascii_only?
-      URI_PARSER.parse(data) if ascii_only
-      uri = Addressable::URI.parse(data)
+      uri = ascii_only ? URI_PARSER.parse(data) : Addressable::URI.parse(data)
       absolute_only ? uri.absolute? : true
     rescue URI::InvalidURIError, Addressable::URI::InvalidURIError
       false
