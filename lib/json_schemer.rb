@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "json_schemer/version"
+require "json"
+require "base64"
 require "time"
 require "uri"
 require "ipaddr"
@@ -162,12 +164,37 @@ module JsonSchemer
       min_length = schema['minLength']
       pattern = schema['pattern']
       format = schema['format']
+      content_encoding = schema['contentEncoding']
+      content_media_type = schema['contentMediaType']
 
       yield error(schema, data, pointer, 'maxLength') if max_length && data.size > max_length
       yield error(schema, data, pointer, 'minLength') if min_length && data.size < min_length
       yield error(schema, data, pointer, 'pattern') if pattern && !Regexp.new(pattern).match?(data)
 
       validate_string_format(schema, data, pointer, format, &Proc.new) if format
+
+      if content_encoding || content_media_type
+        decoded_data = data
+
+        if content_encoding
+          decoded_data = case content_encoding.downcase
+          when 'base64'
+            safe_strict_decode64(data)
+          else # '7bit', '8bit', 'binary', 'quoted-printable'
+            raise NotImplementedError
+          end
+          yield error(schema, data, pointer, 'contentEncoding') unless decoded_data
+        end
+
+        if content_media_type && decoded_data
+          case content_media_type.downcase
+          when 'application/json'
+            yield error(schema, data, pointer, 'contentMediaType') unless valid_json?(decoded_data)
+          else
+            raise NotImplementedError
+          end
+        end
+      end
     end
 
     def validate_string_format(schema, data, pointer, format)
@@ -299,6 +326,22 @@ module JsonSchemer
 
         validate(additional_properties, value, "#{pointer}/#{key}", root, &block) unless additional_properties.nil?
       end
+    end
+
+    def safe_strict_decode64(data)
+      begin
+        Base64.strict_decode64(data)
+      rescue ArgumentError => e
+        raise e unless e.message = 'invalid base64'
+        nil
+      end
+    end
+
+    def valid_json?(data)
+      JSON.parse(data)
+      true
+    rescue JSON::ParserError
+      false
     end
 
     def valid_date_time?(data)
