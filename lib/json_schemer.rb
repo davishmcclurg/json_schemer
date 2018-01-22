@@ -2,13 +2,13 @@
 
 require "json_schemer/version"
 
-require "addressable"
 require "base64"
 require "ecma-re-validator"
 require "hana"
 require "ipaddr"
 require "json"
 require 'net/http'
+require "rdf"
 require "time"
 require "uri"
 
@@ -299,13 +299,13 @@ module JsonSchemer
       when 'ipv6'
         valid_ip?(data, :v6)
       when 'uri'
-        valid_uri?(data, ascii_only: true, absolute_only: true)
+        data.ascii_only? && RDF::URI::IRI.match?(data)
       when 'uri-reference'
-        valid_uri?(data, ascii_only: true, absolute_only: false)
+        data.ascii_only? && (RDF::URI::IRI.match?(data) || RDF::URI::IRELATIVE_REF.match?(data))
       when 'iri'
-        valid_uri?(data, ascii_only: false, absolute_only: true)
+        RDF::URI::IRI.match?(data)
       when 'iri-reference'
-        valid_uri?(data, ascii_only: false, absolute_only: false)
+        RDF::URI::IRI.match?(data) || RDF::URI::IRELATIVE_REF.match?(data)
       when 'uri-template'
         raise NotImplementedError
       when 'json-pointer'
@@ -441,13 +441,6 @@ module JsonSchemer
       ip_address = IPAddr.new(data)
       type == :v4 ? ip_address.ipv4? : ip_address.ipv6?
     rescue IPAddr::InvalidAddressError
-      false
-    end
-
-    def valid_uri?(data, ascii_only:, absolute_only:)
-      uri = ascii_only ? URI.parse(data) : Addressable::URI.parse(data)
-      absolute_only ? uri.absolute? : true
-    rescue URI::InvalidURIError, Addressable::URI::InvalidURIError
       false
     end
 
