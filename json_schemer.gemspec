@@ -35,4 +35,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "hana", "~> 1.3.3"
   spec.add_runtime_dependency "addressable", "~> 2.5"
+  spec.add_runtime_dependency "ecma-re-validator", "~> 0.1.2"
 end

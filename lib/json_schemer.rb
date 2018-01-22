@@ -9,6 +9,7 @@ require "uri"
 require "ipaddr"
 require "hana"
 require "addressable"
+require "ecma-re-validator"
 
 module JsonSchemer
   class Resolver
@@ -312,7 +313,7 @@ module JsonSchemer
       when 'relative-json-pointer'
         RELATIVE_JSON_POINTER_REGEX.match?(data)
       when 'regex'
-        valid_regex?(data)
+        EcmaReValidator.valid?(data)
       end
       yield error(schema, data, pointer, 'format') unless valid
     end
@@ -453,13 +454,6 @@ module JsonSchemer
 
     def valid_json_pointer?(data)
       JSON_POINTER_REGEX.match?(data)
-    end
-
-    def valid_regex?(data)
-      Regexp.new(data)
-      true
-    rescue RegexpError
-      false
     end
 
     def pointer_uri(schema, pointer)
