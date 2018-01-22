@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 require "json_schemer/version"
-require 'net/http'
-require "json"
+
+require "addressable"
 require "base64"
+require "ecma-re-validator"
+require "hana"
+require "ipaddr"
+require "json"
+require 'net/http'
 require "time"
 require "uri"
-require "ipaddr"
-require "hana"
-require "addressable"
-require "ecma-re-validator"
 
 module JsonSchemer
   class Resolver
@@ -58,7 +59,6 @@ module JsonSchemer
     EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/i.freeze
     LABEL_REGEX_STRING = '\p{L}([\p{L}\p{N}\-]*[\p{L}\p{N}])?'
     HOSTNAME_REGEX = /\A(#{LABEL_REGEX_STRING}\.)*#{LABEL_REGEX_STRING}\z/i.freeze
-    URI_PARSER = URI::RFC3986_Parser.new.freeze
     JSON_POINTER_REGEX_STRING = '(\/([^~\/]|~[01])*)*'
     JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
     RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
@@ -445,8 +445,7 @@ module JsonSchemer
     end
 
     def valid_uri?(data, ascii_only:, absolute_only:)
-      return false if ascii_only && !data.ascii_only?
-      uri = ascii_only ? URI_PARSER.parse(data) : Addressable::URI.parse(data)
+      uri = ascii_only ? URI.parse(data) : Addressable::URI.parse(data)
       absolute_only ? uri.absolute? : true
     rescue URI::InvalidURIError, Addressable::URI::InvalidURIError
       false
