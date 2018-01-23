@@ -54,7 +54,7 @@ module JsonSchemer
     end
   end
 
-  class << self
+  class Schema
     BOOLEANS = Set[true, false].freeze
     # this is no good
     EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/i.freeze
@@ -64,22 +64,25 @@ module JsonSchemer
     JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
     RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
 
-    def valid?(schema, data, pointer = '#', root = schema, parent_uri = nil, resolver = nil)
-      validate(schema, data, pointer, root, parent_uri, resolver).none?
+    def initialize(schema, resolver = nil)
+      @root = schema
+      @resolver = resolver || Resolver.new(schema)
     end
 
-    def validate(schema, data, pointer = '#', root = schema, parent_uri = nil, resolver = nil)
-      return enum_for(:validate, schema, data, pointer, root, parent_uri, resolver) unless block_given?
+    def valid?(data, schema = root, pointer = '#', parent_uri = nil)
+      validate(data, schema, pointer, parent_uri).none?
+    end
+
+    def validate(data, schema = root, pointer = '#', parent_uri = nil)
+      return enum_for(:validate, data, schema, pointer, parent_uri) unless block_given?
 
       return if schema == true
       if schema == false
-        yield error(schema, data, pointer, 'schema')
+        yield error(data, schema, pointer, 'schema')
         return
       end
 
       return if schema.empty?
-
-      resolver ||= Resolver.new(schema)
 
       type = schema['type']
       enum = schema['enum']
@@ -96,149 +99,146 @@ module JsonSchemer
       parent_uri = Resolver.join(parent_uri, id)
 
       if ref
-        validate_ref(schema, data, pointer, root, parent_uri, resolver, ref, &Proc.new)
+        validate_ref(data, schema, pointer, parent_uri, ref, &Proc.new)
         return
       end
 
-      yield error(schema, data, pointer, 'enum') if enum && !enum.include?(data)
-      yield error(schema, data, pointer, 'const') if schema.key?('const') && schema['const'] != data
+      yield error(data, schema, pointer, 'enum') if enum && !enum.include?(data)
+      yield error(data, schema, pointer, 'const') if schema.key?('const') && schema['const'] != data
 
-      yield error(schema, data, pointer, 'allOf') if all_of && !all_of.all? { |subschema| valid?(subschema, data, pointer, root, parent_uri, resolver) }
-      yield error(schema, data, pointer, 'anyOf') if any_of && !any_of.any? { |subschema| valid?(subschema, data, pointer, root, parent_uri, resolver) }
-      yield error(schema, data, pointer, 'oneOf') if one_of && !one_of.one? { |subschema| valid?(subschema, data, pointer, root, parent_uri, resolver) }
-      yield error(schema, data, pointer, 'not') if !not_schema.nil? && valid?(not_schema, data, pointer, root, parent_uri, resolver)
+      yield error(data, schema, pointer, 'allOf') if all_of && !all_of.all? { |subschema| valid?(data, subschema, pointer, parent_uri) }
+      yield error(data, schema, pointer, 'anyOf') if any_of && !any_of.any? { |subschema| valid?(data, subschema, pointer, parent_uri) }
+      yield error(data, schema, pointer, 'oneOf') if one_of && !one_of.one? { |subschema| valid?(data, subschema, pointer, parent_uri) }
+      yield error(data, schema, pointer, 'not') if !not_schema.nil? && valid?(data, not_schema, pointer, parent_uri)
 
-      if if_schema && valid?(if_schema, data, pointer, root, parent_uri, resolver)
-        yield error(schema, data, pointer, 'then') if !then_schema.nil? && !valid?(then_schema, data, pointer, root, parent_uri, resolver)
+      if if_schema && valid?(data, if_schema, pointer, parent_uri)
+        yield error(data, schema, pointer, 'then') if !then_schema.nil? && !valid?(data, then_schema, pointer, parent_uri)
       elsif if_schema
-        yield error(schema, data, pointer, 'else') if !else_schema.nil? && !valid?(else_schema, data, pointer, root, parent_uri, resolver)
+        yield error(data, schema, pointer, 'else') if !else_schema.nil? && !valid?(data, else_schema, pointer, parent_uri)
       end
 
       case type
       when nil
-        validate_class(schema, data, pointer, root, parent_uri, resolver, &Proc.new)
+        validate_class(data, schema, pointer, parent_uri, &Proc.new)
       when String
-        validate_type(schema, data, pointer, root, parent_uri, resolver, type, &Proc.new)
+        validate_type(data, schema, pointer, parent_uri, type, &Proc.new)
       when Array
-        if valid_type = type.find { |subtype| valid?({ 'type' => subtype }, data, pointer, root, parent_uri, resolver) }
-          validate_type(schema, data, pointer, root, parent_uri, resolver, valid_type, &Proc.new)
+        if valid_type = type.find { |subtype| valid?(data, { 'type' => subtype }, pointer, parent_uri) }
+          validate_type(data, schema, pointer, parent_uri, valid_type, &Proc.new)
         else
-          yield error(schema, data, pointer, 'type')
+          yield error(data, schema, pointer, 'type')
         end
       end
     end
 
   private
 
-    def error(schema, data, pointer, type)
+    attr_reader :root, :resolver
+
+    def error(data, schema, pointer, type)
       {
-        'schema' => schema,
         'data' => data,
+        'schema' => schema,
         'pointer' => pointer,
         'type' => type,
       }
     end
 
-    def validate_class(schema, data, pointer, root, parent_uri, resolver)
+    def validate_class(data, schema, pointer, parent_uri)
       case data
       when Integer
-        validate_integer(schema, data, pointer, &Proc.new)
+        validate_integer(data, schema, pointer, &Proc.new)
       when Numeric
-        validate_number(schema, data, pointer, &Proc.new)
+        validate_number(data, schema, pointer, &Proc.new)
       when String
-        validate_string(schema, data, pointer, &Proc.new)
+        validate_string(data, schema, pointer, &Proc.new)
       when Array
-        validate_array(schema, data, pointer, root, parent_uri, resolver, &Proc.new)
+        validate_array(data, schema, pointer, parent_uri, &Proc.new)
       when Hash
-        validate_object(schema, data, pointer, root, parent_uri, resolver, &Proc.new)
+        validate_object(data, schema, pointer, parent_uri, &Proc.new)
       end
     end
 
-    def validate_type(schema, data, pointer, root, parent_uri, resolver, type)
+    def validate_type(data, schema, pointer, parent_uri, type)
       case type
       when 'null'
-        yield error(schema, data, pointer, 'null') unless data.nil?
+        yield error(data, schema, pointer, 'null') unless data.nil?
       when 'boolean'
-        yield error(schema, data, pointer, 'boolean') unless BOOLEANS.include?(data)
+        yield error(data, schema, pointer, 'boolean') unless BOOLEANS.include?(data)
       when 'number'
-        validate_number(schema, data, pointer, &Proc.new)
+        validate_number(data, schema, pointer, &Proc.new)
       when 'integer'
-        validate_integer(schema, data, pointer, &Proc.new)
+        validate_integer(data, schema, pointer, &Proc.new)
       when 'string'
-        validate_string(schema, data, pointer, &Proc.new)
+        validate_string(data, schema, pointer, &Proc.new)
       when 'array'
-        validate_array(schema, data, pointer, root, parent_uri, resolver, &Proc.new)
+        validate_array(data, schema, pointer, parent_uri, &Proc.new)
       when 'object'
-        validate_object(schema, data, pointer, root, parent_uri, resolver, &Proc.new)
+        validate_object(data, schema, pointer, parent_uri, &Proc.new)
       end
     end
 
-    def validate_ref(schema, data, pointer, root, parent_uri, resolver, ref)
+    def validate_ref(data, schema, pointer, parent_uri, ref)
       ref_uri = Resolver.join(parent_uri, ref)
 
-      ref_schema, ref_root, ref_parent_uri, ref_resolver = if valid_json_pointer?(ref_uri.fragment)
-        ref_fragment = URI.unescape(ref_uri.fragment || '')
-        ref_pointer = Hana::Pointer.new(ref_fragment)
+      if valid_json_pointer?(ref_uri.fragment)
+        ref_pointer = Hana::Pointer.new(URI.unescape(ref_uri.fragment || ''))
         if ref.start_with?('#')
-          [ref_pointer.eval(root), root, pointer_uri(root, ref_pointer), resolver]
+          validate(data, ref_pointer.eval(root), pointer, pointer_uri(root, ref_pointer), &Proc.new)
         else
           ref_root = JSON.parse(Net::HTTP.get(ref_uri))
-          [ref_pointer.eval(ref_root), ref_root, pointer_uri(ref_root, ref_pointer), nil]
+          ref_object = self.class.new(ref_root)
+          ref_object.validate(data, ref_pointer.eval(ref_root), pointer, pointer_uri(ref_root, ref_pointer), &Proc.new)
         end
       elsif resolver.key?(ref_uri.to_s)
-        [resolver.fetch(ref_uri.to_s), root, ref_uri.to_s, resolver]
+        validate(data, resolver.fetch(ref_uri.to_s), pointer, ref_uri, &Proc.new)
       else
         ref_root = JSON.parse(Net::HTTP.get(ref_uri))
         ref_resolver = Resolver.new(ref_root)
-        [ref_resolver.fetch(ref_uri.to_s, ref_root), ref_root, ref_uri.to_s, ref_resolver]
-      end
-
-      if ref_schema == schema
-        yield error(schema, data, pointer, 'ref')
-      elsif !ref_schema.nil?
-        validate(ref_schema, data, pointer, ref_root, ref_parent_uri, ref_resolver, &Proc.new)
+        ref_object = self.class.new(ref_root, ref_resolver)
+        ref_object.validate(data, ref_resolver.fetch(ref_uri.to_s, ref_root), pointer, ref_uri, &Proc.new)
       end
     end
 
-    def validate_numeric(schema, data, pointer)
+    def validate_numeric(data, schema, pointer)
       multiple_of = schema['multipleOf']
       maximum = schema['maximum']
       exclusive_maximum = schema['exclusiveMaximum']
       minimum = schema['minimum']
       exclusive_minimum = schema['exclusiveMinimum']
 
-      yield error(schema, data, pointer, 'maximum') if maximum && data > maximum
-      yield error(schema, data, pointer, 'exclusiveMaximum') if exclusive_maximum && data >= exclusive_maximum
-      yield error(schema, data, pointer, 'minimum') if minimum && data < minimum
-      yield error(schema, data, pointer, 'exclusiveMinimum') if exclusive_minimum && data <= exclusive_minimum
+      yield error(data, schema, pointer, 'maximum') if maximum && data > maximum
+      yield error(data, schema, pointer, 'exclusiveMaximum') if exclusive_maximum && data >= exclusive_maximum
+      yield error(data, schema, pointer, 'minimum') if minimum && data < minimum
+      yield error(data, schema, pointer, 'exclusiveMinimum') if exclusive_minimum && data <= exclusive_minimum
 
       if multiple_of
         quotient = data / multiple_of.to_f
-        yield error(schema, data, pointer, 'multipleOf') unless quotient.floor == quotient
+        yield error(data, schema, pointer, 'multipleOf') unless quotient.floor == quotient
       end
     end
 
-    def validate_number(schema, data, pointer)
+    def validate_number(data, schema, pointer)
       unless data.is_a?(Numeric)
-        yield error(schema, data, pointer, 'number')
+        yield error(data, schema, pointer, 'number')
         return
       end
 
-      validate_numeric(schema, data, pointer, &Proc.new)
+      validate_numeric(data, schema, pointer, &Proc.new)
     end
 
-    def validate_integer(schema, data, pointer)
+    def validate_integer(data, schema, pointer)
       if !data.is_a?(Numeric) || (!data.is_a?(Integer) && data.floor != data)
-        yield error(schema, data, pointer, 'integer')
+        yield error(data, schema, pointer, 'integer')
         return
       end
 
-      validate_numeric(schema, data, pointer, &Proc.new)
+      validate_numeric(data, schema, pointer, &Proc.new)
     end
 
-    def validate_string(schema, data, pointer)
+    def validate_string(data, schema, pointer)
       unless data.is_a?(String)
-        yield error(schema, data, pointer, 'string')
+        yield error(data, schema, pointer, 'string')
         return
       end
 
@@ -249,11 +249,11 @@ module JsonSchemer
       content_encoding = schema['contentEncoding']
       content_media_type = schema['contentMediaType']
 
-      yield error(schema, data, pointer, 'maxLength') if max_length && data.size > max_length
-      yield error(schema, data, pointer, 'minLength') if min_length && data.size < min_length
-      yield error(schema, data, pointer, 'pattern') if pattern && !Regexp.new(pattern).match?(data)
+      yield error(data, schema, pointer, 'maxLength') if max_length && data.size > max_length
+      yield error(data, schema, pointer, 'minLength') if min_length && data.size < min_length
+      yield error(data, schema, pointer, 'pattern') if pattern && !Regexp.new(pattern).match?(data)
 
-      validate_string_format(schema, data, pointer, format, &Proc.new) if format
+      validate_string_format(data, schema, pointer, format, &Proc.new) if format
 
       if content_encoding || content_media_type
         decoded_data = data
@@ -265,13 +265,13 @@ module JsonSchemer
           else # '7bit', '8bit', 'binary', 'quoted-printable'
             raise NotImplementedError
           end
-          yield error(schema, data, pointer, 'contentEncoding') unless decoded_data
+          yield error(data, schema, pointer, 'contentEncoding') unless decoded_data
         end
 
         if content_media_type && decoded_data
           case content_media_type.downcase
           when 'application/json'
-            yield error(schema, data, pointer, 'contentMediaType') unless valid_json?(decoded_data)
+            yield error(data, schema, pointer, 'contentMediaType') unless valid_json?(decoded_data)
           else
             raise NotImplementedError
           end
@@ -279,7 +279,7 @@ module JsonSchemer
       end
     end
 
-    def validate_string_format(schema, data, pointer, format)
+    def validate_string_format(data, schema, pointer, format)
       valid = case format
       when 'date-time'
         valid_date_time?(data)
@@ -316,12 +316,12 @@ module JsonSchemer
       when 'regex'
         EcmaReValidator.valid?(data)
       end
-      yield error(schema, data, pointer, 'format') unless valid
+      yield error(data, schema, pointer, 'format') unless valid
     end
 
-    def validate_array(schema, data, pointer, root, parent_uri, resolver, &block)
+    def validate_array(data, schema, pointer, parent_uri, &block)
       unless data.is_a?(Array)
-        yield error(schema, data, pointer, 'array')
+        yield error(data, schema, pointer, 'array')
         return
       end
 
@@ -332,31 +332,31 @@ module JsonSchemer
       unique_items = schema['uniqueItems']
       contains = schema['contains']
 
-      yield error(schema, data, pointer, 'maxItems') if max_items && data.size > max_items
-      yield error(schema, data, pointer, 'minItems') if min_items && data.size < min_items
-      yield error(schema, data, pointer, 'uniqueItems') if unique_items && data.size != data.uniq.size
-      yield error(schema, data, pointer, 'contains') if !contains.nil? && data.all? { |item| !valid?(contains, item, pointer, root, parent_uri, resolver) }
+      yield error(data, schema, pointer, 'maxItems') if max_items && data.size > max_items
+      yield error(data, schema, pointer, 'minItems') if min_items && data.size < min_items
+      yield error(data, schema, pointer, 'uniqueItems') if unique_items && data.size != data.uniq.size
+      yield error(data, schema, pointer, 'contains') if !contains.nil? && data.all? { |item| !valid?(item, contains, pointer, parent_uri) }
 
       if items.is_a?(Array)
         data.each_with_index do |item, index|
           if index < items.size
-            validate(items[index], item, "#{pointer}/#{index}", root, parent_uri, resolver, &block)
+            validate(item, items[index], "#{pointer}/#{index}", parent_uri, &block)
           elsif !additional_items.nil?
-            validate(additional_items, item, "#{pointer}/#{index}", root, parent_uri, resolver, &block)
+            validate(item, additional_items, "#{pointer}/#{index}", parent_uri, &block)
           else
             break
           end
         end
       elsif !items.nil?
         data.each_with_index do |item, index|
-          validate(items, item, "#{pointer}/#{index}", root, parent_uri, resolver, &block)
+          validate(item, items, "#{pointer}/#{index}", parent_uri, &block)
         end
       end
     end
 
-    def validate_object(schema, data, pointer, root, parent_uri, resolver, &block)
+    def validate_object(data, schema, pointer, parent_uri, &block)
       unless data.is_a?(Hash)
-        yield error(schema, data, pointer, 'object')
+        yield error(data, schema, pointer, 'object')
         return
       end
 
@@ -373,22 +373,22 @@ module JsonSchemer
         dependencies.each do |key, value|
           next unless data.key?(key)
           subschema = value.is_a?(Array) ? { 'required' => value } : value
-          validate(subschema, data, pointer, root, parent_uri, resolver, &block)
+          validate(data, subschema, pointer, parent_uri, &block)
         end
       end
 
-      yield error(schema, data, pointer, 'maxProperties') if max_properties && data.size > max_properties
-      yield error(schema, data, pointer, 'minProperties') if min_properties && data.size < min_properties
-      yield error(schema, data, pointer, 'required') if required && required.any? { |key| !data.key?(key) }
+      yield error(data, schema, pointer, 'maxProperties') if max_properties && data.size > max_properties
+      yield error(data, schema, pointer, 'minProperties') if min_properties && data.size < min_properties
+      yield error(data, schema, pointer, 'required') if required && required.any? { |key| !data.key?(key) }
 
       regex_pattern_properties = nil
       data.each do |key, value|
-        validate(property_names, key, pointer, root, parent_uri, resolver, &block) unless property_names.nil?
+        validate(key, property_names, pointer, parent_uri, &block) unless property_names.nil?
 
         matched_key = false
 
         if properties && properties.key?(key)
-          validate(properties[key], value, "#{pointer}/#{key}", root, parent_uri, resolver, &block)
+          validate(value, properties[key], "#{pointer}/#{key}", parent_uri, &block)
           matched_key = true
         end
 
@@ -398,7 +398,7 @@ module JsonSchemer
           end
           regex_pattern_properties.each do |regex, property_schema|
             if regex.match?(key)
-              validate(property_schema, value, "#{pointer}/#{key}", root, parent_uri, resolver, &block)
+              validate(value, property_schema, "#{pointer}/#{key}", parent_uri, &block)
               matched_key = true
             end
           end
@@ -406,7 +406,7 @@ module JsonSchemer
 
         next if matched_key
 
-        validate(additional_properties, value, "#{pointer}/#{key}", root, parent_uri, resolver, &block) unless additional_properties.nil?
+        validate(value, additional_properties, "#{pointer}/#{key}", parent_uri, &block) unless additional_properties.nil?
       end
     end
 

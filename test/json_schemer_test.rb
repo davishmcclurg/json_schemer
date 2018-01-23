@@ -59,9 +59,9 @@ class JsonSchemerTest < Minitest::Test
       'three' => [1, 2],
       '123' => 'x'
     }
-    # assert JsonSchemer.valid?(schema, data)
-    errors = JsonSchemer.validate(schema, data)
-    p errors.to_a
+    schema = JsonSchemer::Schema.new(schema)
+    assert schema.valid?(data)
+    errors = schema.validate(data)
     assert errors.none?
   end
 
@@ -72,7 +72,7 @@ class JsonSchemerTest < Minitest::Test
         tests = defn.fetch('tests')
         defn.fetch('tests').each do |test|
           errors = begin
-            JsonSchemer.validate(schema, test.fetch('data')).to_a
+            JsonSchemer::Schema.new(schema).validate(test.fetch('data')).to_a
           rescue StandardError, NotImplementedError => e
             [e.message]
           end
