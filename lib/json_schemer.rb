@@ -14,46 +14,6 @@ require "uri"
 require "uri_template"
 
 module JsonSchemer
-  class Resolver
-    extend Forwardable
-
-    def_delegators :ids, :fetch, :key?
-
-    def self.join(a, b)
-      if a && b
-        URI.join(a, b)
-      elsif b
-        URI.parse(b)
-      else
-        a
-      end
-    end
-
-    def initialize(schema)
-      @schema = schema
-    end
-
-  private
-
-    def ids
-      @ids ||= resolve(@schema)
-    end
-
-    def resolve(schema, ids = {}, parent_uri = nil)
-      if schema.is_a?(Array)
-        schema.each { |subschema| resolve(subschema, ids, parent_uri) }
-      elsif schema.is_a?(Hash)
-        id = schema['$id']
-        uri = self.class.join(parent_uri, id)
-        ids[uri.to_s] = schema unless uri == parent_uri
-        if definitions = schema['definitions']
-          definitions.each_value { |subschema| resolve(subschema, ids, uri) }
-        end
-      end
-      ids
-    end
-  end
-
   class Schema
     BOOLEANS = Set[true, false].freeze
     # this is no good
@@ -64,9 +24,8 @@ module JsonSchemer
     JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
     RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
 
-    def initialize(schema, resolver = nil)
+    def initialize(schema)
       @root = schema
-      @resolver = resolver || Resolver.new(schema)
     end
 
     def valid?(data, schema = root, pointer = '#', parent_uri = nil)
@@ -96,7 +55,7 @@ module JsonSchemer
       ref = schema['$ref']
       id = schema['$id']
 
-      parent_uri = Resolver.join(parent_uri, id)
+      parent_uri = join_uri(parent_uri, id)
 
       if ref
         validate_ref(data, schema, pointer, parent_uri, ref, &Proc.new)
@@ -131,9 +90,15 @@ module JsonSchemer
       end
     end
 
+  protected
+
+    def ids
+      @ids ||= resolve_ids(root)
+    end
+
   private
 
-    attr_reader :root, :resolver
+    attr_reader :root
 
     def error(data, schema, pointer, type)
       {
@@ -179,7 +144,7 @@ module JsonSchemer
     end
 
     def validate_ref(data, schema, pointer, parent_uri, ref)
-      ref_uri = Resolver.join(parent_uri, ref)
+      ref_uri = join_uri(parent_uri, ref)
 
       if valid_json_pointer?(ref_uri.fragment)
         ref_pointer = Hana::Pointer.new(URI.unescape(ref_uri.fragment || ''))
@@ -190,13 +155,12 @@ module JsonSchemer
           ref_object = self.class.new(ref_root)
           ref_object.validate(data, ref_pointer.eval(ref_root), pointer, pointer_uri(ref_root, ref_pointer), &Proc.new)
         end
-      elsif resolver.key?(ref_uri.to_s)
-        validate(data, resolver.fetch(ref_uri.to_s), pointer, ref_uri, &Proc.new)
+      elsif ids.key?(ref_uri.to_s)
+        validate(data, ids.fetch(ref_uri.to_s), pointer, ref_uri, &Proc.new)
       else
         ref_root = JSON.parse(Net::HTTP.get(ref_uri))
-        ref_resolver = Resolver.new(ref_root)
-        ref_object = self.class.new(ref_root, ref_resolver)
-        ref_object.validate(data, ref_resolver.fetch(ref_uri.to_s, ref_root), pointer, ref_uri, &Proc.new)
+        ref_object = self.class.new(ref_root)
+        ref_object.validate(data, ref_object.ids.fetch(ref_uri.to_s, ref_root), pointer, ref_uri, &Proc.new)
       end
     end
 
@@ -456,6 +420,16 @@ module JsonSchemer
       JSON_POINTER_REGEX.match?(data)
     end
 
+    def join_uri(a, b)
+      if a && b
+        URI.join(a, b)
+      elsif b
+        URI.parse(b)
+      else
+        a
+      end
+    end
+
     def pointer_uri(schema, pointer)
       uri_parts = nil
       pointer.reduce(schema) do |obj, token|
@@ -467,6 +441,20 @@ module JsonSchemer
         obj.fetch(token)
       end
       uri_parts ? URI.join(*uri_parts) : nil
+    end
+
+    def resolve_ids(schema, ids = {}, parent_uri = nil)
+      if schema.is_a?(Array)
+        schema.each { |subschema| resolve_ids(subschema, ids, parent_uri) }
+      elsif schema.is_a?(Hash)
+        id = schema['$id']
+        uri = join_uri(parent_uri, id)
+        ids[uri.to_s] = schema unless uri == parent_uri
+        if definitions = schema['definitions']
+          definitions.each_value { |subschema| resolve_ids(subschema, ids, uri) }
+        end
+      end
+      ids
     end
   end
 end
