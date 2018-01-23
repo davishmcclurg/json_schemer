@@ -5,22 +5,13 @@ require "json_schemer/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "json_schemer"
-  spec.version       = JsonSchemer::VERSION
+  spec.version       = JSONSchemer::VERSION
   spec.authors       = ["David Harsha"]
   spec.email         = ["davishmcclurg@gmail.com"]
 
-  spec.summary       = "SUMMARY"
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = "JSON Schema draft-07 validator"
+  spec.homepage      = "https://github.com/davishmcclurg/json_schemer"
   spec.license       = "MIT"
-
-  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
-  # to allow pushing to a single host or delete this section to allow pushing to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
-  else
-    raise "RubyGems 2.0 or newer is required to protect against " \
-      "public gem pushes."
-  end
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})

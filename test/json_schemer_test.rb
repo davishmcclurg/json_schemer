@@ -1,9 +1,9 @@
 require "test_helper"
 require "json"
 
-class JsonSchemerTest < Minitest::Test
+class JSONSchemerTest < Minitest::Test
   def test_that_it_has_a_version_number
-    refute_nil ::JsonSchemer::VERSION
+    refute_nil ::JSONSchemer::VERSION
   end
 
   def test_it_does_something_useful
@@ -59,7 +59,7 @@ class JsonSchemerTest < Minitest::Test
       'three' => [1, 2],
       '123' => 'x'
     }
-    schema = JsonSchemer::Schema.new(schema)
+    schema = JSONSchemer::Schema.new(schema)
     assert schema.valid?(data)
     errors = schema.validate(data)
     assert errors.none?
@@ -72,7 +72,7 @@ class JsonSchemerTest < Minitest::Test
         tests = defn.fetch('tests')
         defn.fetch('tests').each do |test|
           errors = begin
-            JsonSchemer::Schema.new(schema).validate(test.fetch('data')).to_a
+            JSONSchemer::Schema.new(schema).validate(test.fetch('data')).to_a
           rescue StandardError, NotImplementedError => e
             [e.message]
           end

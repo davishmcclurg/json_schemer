@@ -1,8 +1,6 @@
-# JsonSchemer
+# JSONSchemer
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/json_schemer`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+JSON Schema draft-07 validator
 
 ## Installation
 
@@ -22,7 +20,20 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require 'json_schemer'
+
+schema = {
+  'type' => 'integer'
+}
+schemer = JSONSchemer::Schema.new(schema)
+
+schemer.valid?(1)
+# => true
+
+schemer.valid?(1.1)
+# => false
+```
 
 ## Development
 
@@ -32,7 +43,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/json_schemer.
+Bug reports and pull requests are welcome on GitHub at https://github.com/davishmcclurg/json_schemer.
 
 ## License
 

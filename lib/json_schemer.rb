@@ -13,7 +13,7 @@ require "time"
 require "uri"
 require "uri_template"
 
-module JsonSchemer
+module JSONSchemer
   class Schema
     BOOLEANS = Set[true, false].freeze
     # this is no good
