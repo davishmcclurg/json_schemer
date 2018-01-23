@@ -91,9 +91,9 @@ class JsonSchemerTest < Minitest::Test
       puts "file: #{file}"
       puts
       failures.each do |failure|
-        puts "schema: #{failure.fetch(:schema)}"
-        puts "test: #{failure.fetch(:test)}"
-        puts "errors: #{failure.fetch(:errors)}"
+        puts "schema: #{JSON.pretty_generate(failure.fetch(:schema))}"
+        puts "test: #{JSON.pretty_generate(failure.fetch(:test))}"
+        puts "errors: #{JSON.pretty_generate(failure.fetch(:errors))}"
         puts
       end
       puts
