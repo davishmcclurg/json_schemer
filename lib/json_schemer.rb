@@ -11,6 +11,7 @@ require 'net/http'
 require "rdf"
 require "time"
 require "uri"
+require "uri_template"
 
 module JsonSchemer
   class Resolver
@@ -307,7 +308,7 @@ module JsonSchemer
       when 'iri-reference'
         RDF::URI::IRI.match?(data) || RDF::URI::IRELATIVE_REF.match?(data)
       when 'uri-template'
-        raise NotImplementedError
+        valid_uri_template?(data)
       when 'json-pointer'
         valid_json_pointer?(data)
       when 'relative-json-pointer'
@@ -441,6 +442,13 @@ module JsonSchemer
       ip_address = IPAddr.new(data)
       type == :v4 ? ip_address.ipv4? : ip_address.ipv6?
     rescue IPAddr::InvalidAddressError
+      false
+    end
+
+    def valid_uri_template?(data)
+      URITemplate.new(data)
+      true
+    rescue URITemplate::Invalid
       false
     end
 
