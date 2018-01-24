@@ -24,15 +24,28 @@ Or install it yourself as:
 require 'json_schemer'
 
 schema = {
-  'type' => 'integer'
+  'type' => 'object',
+  'properties' => {
+    'abc' => {
+      'type' => 'integer',
+      'minimum' => 11
+    }
+  }
 }
 schemer = JSONSchemer::Schema.new(schema)
 
-schemer.valid?(1)
+# true/false validation
+
+schemer.valid?({ 'abc' => 11 })
 # => true
 
-schemer.valid?(1.1)
+schemer.valid?({ 'abc' => 10 })
 # => false
+
+# error validation (`validate` returns an enumerator)
+
+schemer.validate({ 'abc' => 10 }).to_a
+# => [{"data"=>10, "schema"=>{"type"=>"integer", "minimum"=>11}, "pointer"=>"#/abc", "type"=>"minimum"}]
 ```
 
 ## Development
