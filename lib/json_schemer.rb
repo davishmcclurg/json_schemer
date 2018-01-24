@@ -208,7 +208,7 @@ module JSONSchemer
 
       yield error(data, schema, pointer, 'maxLength') if max_length && data.size > max_length
       yield error(data, schema, pointer, 'minLength') if min_length && data.size < min_length
-      yield error(data, schema, pointer, 'pattern') if pattern && !Regexp.new(pattern).match?(data)
+      yield error(data, schema, pointer, 'pattern') if pattern && Regexp.new(pattern) !~ data
 
       validate_string_format(data, schema, pointer, format, &Proc.new) if format
 
@@ -245,9 +245,9 @@ module JSONSchemer
       when 'time'
         valid_date_time?("2001-02-03T#{data}")
       when 'email'
-        data.ascii_only? && Format::EMAIL_REGEX.match?(data)
+        data.ascii_only? && valid_email?(data)
       when 'idn-email'
-        Format::EMAIL_REGEX.match?(data)
+        valid_email?(data)
       when 'hostname'
         data.ascii_only? && valid_hostname?(data)
       when 'idn-hostname'
@@ -257,19 +257,19 @@ module JSONSchemer
       when 'ipv6'
         valid_ip?(data, :v6)
       when 'uri'
-        data.ascii_only? && Format::IRI.match?(data)
+        data.ascii_only? && valid_iri?(data)
       when 'uri-reference'
-        data.ascii_only? && (Format::IRI.match?(data) || Format::IRELATIVE_REF.match?(data))
+        data.ascii_only? && (valid_iri?(data) || valid_iri_reference?(data))
       when 'iri'
-        Format::IRI.match?(data)
+        valid_iri?(data)
       when 'iri-reference'
-        Format::IRI.match?(data) || Format::IRELATIVE_REF.match?(data)
+        valid_iri?(data) || valid_iri_reference?(data)
       when 'uri-template'
         valid_uri_template?(data)
       when 'json-pointer'
         valid_json_pointer?(data)
       when 'relative-json-pointer'
-        Format::RELATIVE_JSON_POINTER_REGEX.match?(data)
+        valid_relative_json_pointer?(data)
       when 'regex'
         EcmaReValidator.valid?(data)
       end
@@ -354,7 +354,7 @@ module JSONSchemer
             [Regexp.new(pattern), property_schema]
           end
           regex_pattern_properties.each do |regex, property_schema|
-            if regex.match?(key)
+            if regex =~ key
               validate(value, property_schema, "#{pointer}/#{key}", parent_uri, &block)
               matched_key = true
             end
@@ -391,8 +391,12 @@ module JSONSchemer
       false
     end
 
+    def valid_email?(data)
+      !!(Format::EMAIL_REGEX =~ data)
+    end
+
     def valid_hostname?(data)
-      Format::HOSTNAME_REGEX.match?(data) && data.split('.').all? { |label| label.size <= 63 }
+      !!(Format::HOSTNAME_REGEX =~ data && data.split('.').all? { |label| label.size <= 63 })
     end
 
     def valid_ip?(data, type)
@@ -400,6 +404,14 @@ module JSONSchemer
       type == :v4 ? ip_address.ipv4? : ip_address.ipv6?
     rescue IPAddr::InvalidAddressError
       false
+    end
+
+    def valid_iri?(data)
+      !!(Format::IRI =~ data)
+    end
+
+    def valid_iri_reference?(data)
+      !!(Format::IRELATIVE_REF =~ data)
     end
 
     def valid_uri_template?(data)
@@ -410,7 +422,11 @@ module JSONSchemer
     end
 
     def valid_json_pointer?(data)
-      Format::JSON_POINTER_REGEX.match?(data)
+      !!(Format::JSON_POINTER_REGEX =~ data)
+    end
+
+    def valid_relative_json_pointer?(data)
+      !!(Format::RELATIVE_JSON_POINTER_REGEX =~ data)
     end
 
     def join_uri(a, b)
