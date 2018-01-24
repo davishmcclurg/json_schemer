@@ -24,6 +24,13 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
 
+  # spec.add_development_dependency "benchmark-ips", "~> 2.7.2"
+  # spec.add_development_dependency "jschema", "~> 0.2.1"
+  # spec.add_development_dependency "json-schema", "~> 2.8.0"
+  # spec.add_development_dependency "json_schema", "~> 0.17.0"
+  # spec.add_development_dependency "json_validation", "~> 0.1.0"
+  # spec.add_development_dependency "jsonschema", "~> 2.0.2"
+
   spec.add_runtime_dependency "ecma-re-validator", "~> 0.1.2"
   spec.add_runtime_dependency "hana", "~> 1.3.3"
   spec.add_runtime_dependency "uri_template", "~> 0.7.0"
