@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "json_schemer/version"
+require "json_schemer/format"
 
 require "base64"
 require "ecma-re-validator"
@@ -8,7 +9,6 @@ require "hana"
 require "ipaddr"
 require "json"
 require 'net/http'
-require "rdf"
 require "time"
 require "uri"
 require "uri_template"
@@ -16,13 +16,6 @@ require "uri_template"
 module JSONSchemer
   class Schema
     BOOLEANS = Set[true, false].freeze
-    # this is no good
-    EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/i.freeze
-    LABEL_REGEX_STRING = '\p{L}([\p{L}\p{N}\-]*[\p{L}\p{N}])?'
-    HOSTNAME_REGEX = /\A(#{LABEL_REGEX_STRING}\.)*#{LABEL_REGEX_STRING}\z/i.freeze
-    JSON_POINTER_REGEX_STRING = '(\/([^~\/]|~[01])*)*'
-    JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
-    RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
 
     def initialize(schema)
       @root = schema
@@ -252,9 +245,9 @@ module JSONSchemer
       when 'time'
         valid_date_time?("2001-02-03T#{data}")
       when 'email'
-        data.ascii_only? && EMAIL_REGEX.match?(data)
+        data.ascii_only? && Format::EMAIL_REGEX.match?(data)
       when 'idn-email'
-        EMAIL_REGEX.match?(data)
+        Format::EMAIL_REGEX.match?(data)
       when 'hostname'
         data.ascii_only? && valid_hostname?(data)
       when 'idn-hostname'
@@ -264,19 +257,19 @@ module JSONSchemer
       when 'ipv6'
         valid_ip?(data, :v6)
       when 'uri'
-        data.ascii_only? && RDF::URI::IRI.match?(data)
+        data.ascii_only? && Format::IRI.match?(data)
       when 'uri-reference'
-        data.ascii_only? && (RDF::URI::IRI.match?(data) || RDF::URI::IRELATIVE_REF.match?(data))
+        data.ascii_only? && (Format::IRI.match?(data) || Format::IRELATIVE_REF.match?(data))
       when 'iri'
-        RDF::URI::IRI.match?(data)
+        Format::IRI.match?(data)
       when 'iri-reference'
-        RDF::URI::IRI.match?(data) || RDF::URI::IRELATIVE_REF.match?(data)
+        Format::IRI.match?(data) || Format::IRELATIVE_REF.match?(data)
       when 'uri-template'
         valid_uri_template?(data)
       when 'json-pointer'
         valid_json_pointer?(data)
       when 'relative-json-pointer'
-        RELATIVE_JSON_POINTER_REGEX.match?(data)
+        Format::RELATIVE_JSON_POINTER_REGEX.match?(data)
       when 'regex'
         EcmaReValidator.valid?(data)
       end
@@ -399,7 +392,7 @@ module JSONSchemer
     end
 
     def valid_hostname?(data)
-      HOSTNAME_REGEX.match?(data) && data.split('.').all? { |label| label.size <= 63 }
+      Format::HOSTNAME_REGEX.match?(data) && data.split('.').all? { |label| label.size <= 63 }
     end
 
     def valid_ip?(data, type)
@@ -417,7 +410,7 @@ module JSONSchemer
     end
 
     def valid_json_pointer?(data)
-      JSON_POINTER_REGEX.match?(data)
+      Format::JSON_POINTER_REGEX.match?(data)
     end
 
     def join_uri(a, b)
