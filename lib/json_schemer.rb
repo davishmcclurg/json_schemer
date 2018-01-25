@@ -17,15 +17,16 @@ module JSONSchemer
   class Schema
     BOOLEANS = Set[true, false].freeze
 
-    def initialize(schema)
+    def initialize(schema, format: true)
       @root = schema
+      @format = format
     end
 
-    def valid?(data, schema = root, pointer = '#', parent_uri = nil)
+    def valid?(data, schema = root, pointer = '', parent_uri = nil)
       validate(data, schema, pointer, parent_uri).none?
     end
 
-    def validate(data, schema = root, pointer = '#', parent_uri = nil)
+    def validate(data, schema = root, pointer = '', parent_uri = nil)
       return enum_for(:validate, data, schema, pointer, parent_uri) unless block_given?
 
       return if schema == true
@@ -45,6 +46,7 @@ module JSONSchemer
       if_schema = schema['if']
       then_schema = schema['then']
       else_schema = schema['else']
+      format = schema['format']
       ref = schema['$ref']
       id = schema['$id']
 
@@ -54,6 +56,8 @@ module JSONSchemer
         validate_ref(data, schema, pointer, parent_uri, ref, &Proc.new)
         return
       end
+
+      validate_format(data, schema, pointer, format, &Proc.new) if format && format?
 
       yield error(data, schema, pointer, 'enum') if enum && !enum.include?(data)
       yield error(data, schema, pointer, 'const') if schema.key?('const') && schema['const'] != data
@@ -92,6 +96,10 @@ module JSONSchemer
   private
 
     attr_reader :root
+
+    def format?
+      !!@format
+    end
 
     def error(data, schema, pointer, type)
       {
@@ -157,6 +165,46 @@ module JSONSchemer
       end
     end
 
+    def validate_format(data, schema, pointer, format)
+      valid = case format
+      when 'date-time'
+        valid_date_time?(data)
+      when 'date'
+        valid_date_time?("#{data}T04:05:06.123456789+07:00")
+      when 'time'
+        valid_date_time?("2001-02-03T#{data}")
+      when 'email'
+        data.ascii_only? && valid_email?(data)
+      when 'idn-email'
+        valid_email?(data)
+      when 'hostname'
+        data.ascii_only? && valid_hostname?(data)
+      when 'idn-hostname'
+        valid_hostname?(data)
+      when 'ipv4'
+        valid_ip?(data, :v4)
+      when 'ipv6'
+        valid_ip?(data, :v6)
+      when 'uri'
+        data.ascii_only? && valid_iri?(data)
+      when 'uri-reference'
+        data.ascii_only? && (valid_iri?(data) || valid_iri_reference?(data))
+      when 'iri'
+        valid_iri?(data)
+      when 'iri-reference'
+        valid_iri?(data) || valid_iri_reference?(data)
+      when 'uri-template'
+        valid_uri_template?(data)
+      when 'json-pointer'
+        valid_json_pointer?(data)
+      when 'relative-json-pointer'
+        valid_relative_json_pointer?(data)
+      when 'regex'
+        EcmaReValidator.valid?(data)
+      end
+      yield error(data, schema, pointer, 'format') unless valid
+    end
+
     def validate_numeric(data, schema, pointer)
       multiple_of = schema['multipleOf']
       maximum = schema['maximum']
@@ -202,15 +250,12 @@ module JSONSchemer
       max_length = schema['maxLength']
       min_length = schema['minLength']
       pattern = schema['pattern']
-      format = schema['format']
       content_encoding = schema['contentEncoding']
       content_media_type = schema['contentMediaType']
 
       yield error(data, schema, pointer, 'maxLength') if max_length && data.size > max_length
       yield error(data, schema, pointer, 'minLength') if min_length && data.size < min_length
       yield error(data, schema, pointer, 'pattern') if pattern && Regexp.new(pattern) !~ data
-
-      validate_string_format(data, schema, pointer, format, &Proc.new) if format
 
       if content_encoding || content_media_type
         decoded_data = data
@@ -234,46 +279,6 @@ module JSONSchemer
           end
         end
       end
-    end
-
-    def validate_string_format(data, schema, pointer, format)
-      valid = case format
-      when 'date-time'
-        valid_date_time?(data)
-      when 'date'
-        valid_date_time?("#{data}T04:05:06.123456789+07:00")
-      when 'time'
-        valid_date_time?("2001-02-03T#{data}")
-      when 'email'
-        data.ascii_only? && valid_email?(data)
-      when 'idn-email'
-        valid_email?(data)
-      when 'hostname'
-        data.ascii_only? && valid_hostname?(data)
-      when 'idn-hostname'
-        valid_hostname?(data)
-      when 'ipv4'
-        valid_ip?(data, :v4)
-      when 'ipv6'
-        valid_ip?(data, :v6)
-      when 'uri'
-        data.ascii_only? && valid_iri?(data)
-      when 'uri-reference'
-        data.ascii_only? && (valid_iri?(data) || valid_iri_reference?(data))
-      when 'iri'
-        valid_iri?(data)
-      when 'iri-reference'
-        valid_iri?(data) || valid_iri_reference?(data)
-      when 'uri-template'
-        valid_uri_template?(data)
-      when 'json-pointer'
-        valid_json_pointer?(data)
-      when 'relative-json-pointer'
-        valid_relative_json_pointer?(data)
-      when 'regex'
-        EcmaReValidator.valid?(data)
-      end
-      yield error(data, schema, pointer, 'format') unless valid
     end
 
     def validate_array(data, schema, pointer, parent_uri, &block)
