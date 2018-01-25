@@ -19,18 +19,18 @@ module JSONSchemer
     class UnknownRef < StandardError; end
 
     META_SCHEMA = 'http://json-schema.org/draft-07/schema#'
-    BOOLEANS = Set[true, false].freeze
     DEFAULT_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }.freeze
     NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }.freeze
+    BOOLEANS = Set[true, false].freeze
 
     def initialize(schema, format: true, ref_resolver: DEFAULT_REF_RESOLVER)
+      if schema.is_a?(Hash) && schema.key?('$schema') && schema['$schema'] != META_SCHEMA
+        raise InvalidMetaSchema, "draft-07 is the only supported meta-schema (#{META_SCHEMA})"
+      end
+
       @root = schema
       @format = format
       @ref_resolver = ref_resolver == 'net/http' ? NET_HTTP_REF_RESOLVER : ref_resolver
-
-      if root.is_a?(Hash) && root.key?('$schema') && root['$schema'] != META_SCHEMA
-        raise InvalidMetaSchema, "draft-07 is the only supported meta-schema (#{META_SCHEMA})"
-      end
     end
 
     def valid?(data, schema = root, pointer = '', parent_uri = nil)
