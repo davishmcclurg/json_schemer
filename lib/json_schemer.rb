@@ -16,13 +16,17 @@ require "uri_template"
 module JSONSchemer
   class Schema
     class InvalidMetaSchema < StandardError; end
+    class UnknownRef < StandardError; end
 
     META_SCHEMA = 'http://json-schema.org/draft-07/schema#'
     BOOLEANS = Set[true, false].freeze
+    DEFAULT_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }.freeze
+    NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }.freeze
 
-    def initialize(schema, format: true)
+    def initialize(schema, format: true, ref_resolver: DEFAULT_REF_RESOLVER)
       @root = schema
       @format = format
+      @ref_resolver = ref_resolver == 'net/http' ? NET_HTTP_REF_RESOLVER : ref_resolver
 
       if root.is_a?(Hash) && root.key?('$schema') && root['$schema'] != META_SCHEMA
         raise InvalidMetaSchema, "draft-07 is the only supported meta-schema (#{META_SCHEMA})"
@@ -102,7 +106,7 @@ module JSONSchemer
 
   private
 
-    attr_reader :root
+    attr_reader :root, :ref_resolver
 
     def format?
       !!@format
@@ -159,14 +163,14 @@ module JSONSchemer
         if ref.start_with?('#')
           validate(data, ref_pointer.eval(root), pointer, pointer_uri(root, ref_pointer), &Proc.new)
         else
-          ref_root = JSON.parse(Net::HTTP.get(ref_uri))
+          ref_root = ref_resolver.call(ref_uri)
           ref_object = self.class.new(ref_root)
           ref_object.validate(data, ref_pointer.eval(ref_root), pointer, pointer_uri(ref_root, ref_pointer), &Proc.new)
         end
       elsif ids.key?(ref_uri.to_s)
         validate(data, ids.fetch(ref_uri.to_s), pointer, ref_uri, &Proc.new)
       else
-        ref_root = JSON.parse(Net::HTTP.get(ref_uri))
+        ref_root = ref_resolver.call(ref_uri)
         ref_object = self.class.new(ref_root)
         ref_object.validate(data, ref_object.ids.fetch(ref_uri.to_s, ref_root), pointer, ref_uri, &Proc.new)
       end

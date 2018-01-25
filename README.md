@@ -48,6 +48,25 @@ schemer.validate({ 'abc' => 10 }).to_a
 # => [{"data"=>10, "schema"=>{"type"=>"integer", "minimum"=>11}, "pointer"=>"#/abc", "type"=>"minimum"}]
 ```
 
+## Options
+
+```ruby
+JSONSchemer::Schema.new(
+  schema,
+
+  # validate `format` (https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-7)
+  # true/false
+  # default: true
+  format: true,
+
+  # resolve external references
+  # 'net/http'/proc/lambda/respond_to?(:call)
+  # 'net/http': proc { |uri| JSON.parse(Net::HTTP.get(uri)) }
+  # default: proc { |uri| raise UnknownRef, uri.to_s }
+  ref_resolver: 'net/http'
+)
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
