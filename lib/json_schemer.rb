@@ -15,11 +15,18 @@ require "uri_template"
 
 module JSONSchemer
   class Schema
+    class InvalidMetaSchema < StandardError; end
+
+    META_SCHEMA = 'http://json-schema.org/draft-07/schema#'
     BOOLEANS = Set[true, false].freeze
 
     def initialize(schema, format: true)
       @root = schema
       @format = format
+
+      if root.is_a?(Hash) && root.key?('$schema') && root['$schema'] != META_SCHEMA
+        raise InvalidMetaSchema, "draft-07 is the only supported meta-schema (#{META_SCHEMA})"
+      end
     end
 
     def valid?(data, schema = root, pointer = '', parent_uri = nil)
