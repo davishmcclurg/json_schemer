@@ -23,13 +23,19 @@ module JSONSchemer
     NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }.freeze
     BOOLEANS = Set[true, false].freeze
 
-    def initialize(schema, format: true, ref_resolver: DEFAULT_REF_RESOLVER)
+    def initialize(
+      schema,
+      format: true,
+      formats: nil,
+      ref_resolver: DEFAULT_REF_RESOLVER
+    )
       if schema.is_a?(Hash) && schema.key?('$schema') && schema['$schema'] != META_SCHEMA
         raise InvalidMetaSchema, "draft-07 is the only supported meta-schema (#{META_SCHEMA})"
       end
 
       @root = schema
       @format = format
+      @formats = formats
       @ref_resolver = ref_resolver == 'net/http' ? NET_HTTP_REF_RESOLVER : ref_resolver
     end
 
@@ -106,10 +112,19 @@ module JSONSchemer
 
   private
 
-    attr_reader :root, :ref_resolver
+    attr_reader :root, :formats, :ref_resolver
 
     def format?
       !!@format
+    end
+
+    def child(schema)
+      self.class.new(
+        schema,
+        format: format?,
+        formats: formats,
+        ref_resolver: ref_resolver
+      )
     end
 
     def error(data, schema, pointer, type)
@@ -164,54 +179,59 @@ module JSONSchemer
           validate(data, ref_pointer.eval(root), pointer, pointer_uri(root, ref_pointer), &Proc.new)
         else
           ref_root = ref_resolver.call(ref_uri)
-          ref_object = self.class.new(ref_root)
+          ref_object = child(ref_root)
           ref_object.validate(data, ref_pointer.eval(ref_root), pointer, pointer_uri(ref_root, ref_pointer), &Proc.new)
         end
       elsif ids.key?(ref_uri.to_s)
         validate(data, ids.fetch(ref_uri.to_s), pointer, ref_uri, &Proc.new)
       else
         ref_root = ref_resolver.call(ref_uri)
-        ref_object = self.class.new(ref_root)
+        ref_object = child(ref_root)
         ref_object.validate(data, ref_object.ids.fetch(ref_uri.to_s, ref_root), pointer, ref_uri, &Proc.new)
       end
     end
 
     def validate_format(data, schema, pointer, format)
-      valid = case format
-      when 'date-time'
-        valid_date_time?(data)
-      when 'date'
-        valid_date_time?("#{data}T04:05:06.123456789+07:00")
-      when 'time'
-        valid_date_time?("2001-02-03T#{data}")
-      when 'email'
-        data.ascii_only? && valid_email?(data)
-      when 'idn-email'
-        valid_email?(data)
-      when 'hostname'
-        data.ascii_only? && valid_hostname?(data)
-      when 'idn-hostname'
-        valid_hostname?(data)
-      when 'ipv4'
-        valid_ip?(data, :v4)
-      when 'ipv6'
-        valid_ip?(data, :v6)
-      when 'uri'
-        data.ascii_only? && valid_iri?(data)
-      when 'uri-reference'
-        data.ascii_only? && (valid_iri?(data) || valid_iri_reference?(data))
-      when 'iri'
-        valid_iri?(data)
-      when 'iri-reference'
-        valid_iri?(data) || valid_iri_reference?(data)
-      when 'uri-template'
-        valid_uri_template?(data)
-      when 'json-pointer'
-        valid_json_pointer?(data)
-      when 'relative-json-pointer'
-        valid_relative_json_pointer?(data)
-      when 'regex'
-        EcmaReValidator.valid?(data)
+      valid = if formats && formats.key?(format)
+        format_option = formats[format]
+        format_option == false || format_option.call(data, schema)
+      else
+        case format
+        when 'date-time'
+          valid_date_time?(data)
+        when 'date'
+          valid_date_time?("#{data}T04:05:06.123456789+07:00")
+        when 'time'
+          valid_date_time?("2001-02-03T#{data}")
+        when 'email'
+          data.ascii_only? && valid_email?(data)
+        when 'idn-email'
+          valid_email?(data)
+        when 'hostname'
+          data.ascii_only? && valid_hostname?(data)
+        when 'idn-hostname'
+          valid_hostname?(data)
+        when 'ipv4'
+          valid_ip?(data, :v4)
+        when 'ipv6'
+          valid_ip?(data, :v6)
+        when 'uri'
+          data.ascii_only? && valid_iri?(data)
+        when 'uri-reference'
+          data.ascii_only? && (valid_iri?(data) || valid_iri_reference?(data))
+        when 'iri'
+          valid_iri?(data)
+        when 'iri-reference'
+          valid_iri?(data) || valid_iri_reference?(data)
+        when 'uri-template'
+          valid_uri_template?(data)
+        when 'json-pointer'
+          valid_json_pointer?(data)
+        when 'relative-json-pointer'
+          valid_relative_json_pointer?(data)
+        when 'regex'
+          EcmaReValidator.valid?(data)
+        end
       end
       yield error(data, schema, pointer, 'format') unless valid
     end
