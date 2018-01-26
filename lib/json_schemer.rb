@@ -27,6 +27,7 @@ module JSONSchemer
       schema,
       format: true,
       formats: nil,
+      keywords: nil,
       ref_resolver: DEFAULT_REF_RESOLVER
     )
       if schema.is_a?(Hash) && schema.key?('$schema') && schema['$schema'] != META_SCHEMA
@@ -36,6 +37,7 @@ module JSONSchemer
       @root = schema
       @format = format
       @formats = formats
+      @keywords = keywords
       @ref_resolver = ref_resolver == 'net/http' ? NET_HTTP_REF_RESOLVER : ref_resolver
     end
 
@@ -76,6 +78,19 @@ module JSONSchemer
 
       validate_format(data, schema, pointer, format, &Proc.new) if format && format?
 
+      if keywords
+        keywords.each do |keyword, callable|
+          if schema.key?(keyword)
+            result = callable.call(data, schema, pointer)
+            if result.is_a?(Array)
+              result.each { |error| yield error }
+            elsif !result
+              yield error(data, schema, pointer, keyword)
+            end
+          end
+        end
+      end
+
       yield error(data, schema, pointer, 'enum') if enum && !enum.include?(data)
       yield error(data, schema, pointer, 'const') if schema.key?('const') && schema['const'] != data
 
@@ -112,7 +127,7 @@ module JSONSchemer
 
   private
 
-    attr_reader :root, :formats, :ref_resolver
+    attr_reader :root, :formats, :keywords, :ref_resolver
 
     def format?
       !!@format
@@ -123,6 +138,7 @@ module JSONSchemer
         schema,
         format: format?,
         formats: formats,
+        keywords: keywords,
         ref_resolver: ref_resolver
       )
     end
