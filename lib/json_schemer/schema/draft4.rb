@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
 module JSONSchemer
-  VERSION = '0.1.3'
+  module Schema
+    class Draft4 < Base; end
+  end
 end

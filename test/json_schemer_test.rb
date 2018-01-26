@@ -1,5 +1,5 @@
-require "test_helper"
-require "json"
+require 'test_helper'
+require 'json'
 
 class JSONSchemerTest < Minitest::Test
   def test_that_it_has_a_version_number
@@ -59,28 +59,32 @@ class JSONSchemerTest < Minitest::Test
       'three' => [1, 2],
       '123' => 'x'
     }
-    schema = JSONSchemer::Schema.new(schema)
+    schema = JSONSchemer.schema(schema)
     assert schema.valid?(data)
     errors = schema.validate(data)
     assert errors.none?
   end
 
-  Dir['JSON-Schema-Test-Suite/tests/draft7/**/*.json'].each_with_index do |file, index|
-    define_method("test_json_schema_test_suite#{index}") do
-      JSON.parse(File.read(file)).each do |defn|
-        defn.fetch('tests').each do |test|
-          errors = begin
-            JSONSchemer::Schema.new(
-              defn.fetch('schema'),
-              :ref_resolver => 'net/http'
-            ).validate(test.fetch('data')).to_a
-          rescue StandardError, NotImplementedError => e
-            [e.class, e.message]
-          end
-          if test.fetch('valid')
-            assert_empty(errors, file)
-          else
-            assert(errors.any?, file)
+  {
+    'draft7' => JSONSchemer::Schema::Draft7
+  }.each do |version, draft_class|
+    Dir["JSON-Schema-Test-Suite/tests/#{version}/**/*.json"].each_with_index do |file, index|
+      define_method("test_json_schema_test_suite_#{version}_#{index}") do
+        JSON.parse(File.read(file)).each do |defn|
+          defn.fetch('tests').each do |test|
+            errors = begin
+              draft_class.new(
+                defn.fetch('schema'),
+                :ref_resolver => 'net/http'
+              ).validate(test.fetch('data')).to_a
+            rescue StandardError, NotImplementedError => e
+              [e.class, e.message]
+            end
+            if test.fetch('valid')
+              assert_empty(errors, file)
+            else
+              assert(errors.any?, file)
+            end
           end
         end
       end

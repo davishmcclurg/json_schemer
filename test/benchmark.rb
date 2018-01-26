@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
-require "benchmark/ips"
-require "jschema"
-require "json-schema"
-require "json_schema"
-require "json_schemer"
-require "json_validation"
-# require "jsonschema"
+require 'benchmark/ips'
+require 'jschema'
+require 'json-schema'
+require 'json_schema'
+require 'json_schemer'
+require 'json_validation'
+# require 'jsonschema'
 
 # json_validation
-require "digest"
+require 'digest'
 
 benchmarks = {
   'simple' => {
@@ -52,7 +52,7 @@ Benchmark.ips do |x|
 
     initialized_jschema = JSchema.build(schema)
     initialized_json_schema = JsonSchema.parse!(schema).tap(&:expand_references!)
-    initialized_json_schemer = JSONSchemer::Schema.new(schema)
+    initialized_json_schemer = JSONSchemer.schema(schema)
     initialized_json_validation = JsonValidation.build_validator(schema)
 
     # jschema
@@ -112,12 +112,12 @@ Benchmark.ips do |x|
     # json_schemer
 
     x.report("json_schemer, uninitialized, #{name}, valid") do
-      errors = JSONSchemer::Schema.new(schema).validate(valid).to_a
+      errors = JSONSchemer.schema(schema).validate(valid).to_a
       raise if errors.any?
     end
 
     x.report("json_schemer, uninitialized, #{name}, invalid") do
-      errors = JSONSchemer::Schema.new(schema).validate(invalid).to_a
+      errors = JSONSchemer.schema(schema).validate(invalid).to_a
       raise if errors.empty?
     end
 
