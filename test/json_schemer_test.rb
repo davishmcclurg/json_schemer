@@ -65,41 +65,25 @@ class JSONSchemerTest < Minitest::Test
     assert errors.none?
   end
 
-  def test_json_schema_test_suite
-    Dir['JSON-Schema-Test-Suite/tests/draft7/**/*.json'].each_with_object({}) do |file, out|
+  Dir['JSON-Schema-Test-Suite/tests/draft7/**/*.json'].each_with_index do |file, index|
+    define_method("test_json_schema_test_suite#{index}") do
       JSON.parse(File.read(file)).each do |defn|
-        schema = defn.fetch('schema')
-        tests = defn.fetch('tests')
         defn.fetch('tests').each do |test|
           errors = begin
             JSONSchemer::Schema.new(
-              schema,
+              defn.fetch('schema'),
               :ref_resolver => 'net/http'
             ).validate(test.fetch('data')).to_a
           rescue StandardError, NotImplementedError => e
             [e.class, e.message]
           end
-          passed = errors.size == 0
-          if passed != test.fetch('valid')
-            out[file] ||= []
-            out[file] << {
-              :schema => schema,
-              :test => test,
-              :errors => errors
-            }
+          if test.fetch('valid')
+            assert_empty(errors, file)
+          else
+            assert(errors.any?, file)
           end
         end
       end
-    end.each do |file, failures|
-      puts "file: #{file}"
-      puts
-      failures.each do |failure|
-        puts "schema: #{JSON.pretty_generate(failure.fetch(:schema))}"
-        puts "test: #{JSON.pretty_generate(failure.fetch(:test))}"
-        puts "errors: #{JSON.pretty_generate(failure.fetch(:errors))}"
-        puts
-      end
-      puts
     end
   end
 end
