@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
 require 'base64'
-require 'ecma-re-validator'
 require 'hana'
-require 'ipaddr'
 require 'json'
 require 'net/http'
 require 'time'
 require 'uri'
-require 'uri_template'
 
 module JSONSchemer
   module Schema
     class Base
+      include Format
+
       DEFAULT_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }.freeze
       NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }.freeze
       BOOLEANS = Set[true, false].freeze
@@ -416,59 +415,6 @@ module JSONSchemer
           raise e unless e.message == 'invalid base64'
           nil
         end
-      end
-
-      def valid_json?(data)
-        JSON.parse(data)
-        true
-      rescue JSON::ParserError
-        false
-      end
-
-      def valid_date_time?(data)
-        DateTime.rfc3339(data)
-        true
-      rescue ArgumentError => e
-        raise e unless e.message == 'invalid date'
-        false
-      end
-
-      def valid_email?(data)
-        !!(Format::EMAIL_REGEX =~ data)
-      end
-
-      def valid_hostname?(data)
-        !!(Format::HOSTNAME_REGEX =~ data && data.split('.').all? { |label| label.size <= 63 })
-      end
-
-      def valid_ip?(data, type)
-        ip_address = IPAddr.new(data)
-        type == :v4 ? ip_address.ipv4? : ip_address.ipv6?
-      rescue IPAddr::InvalidAddressError
-        false
-      end
-
-      def valid_iri?(data)
-        !!(Format::IRI =~ data)
-      end
-
-      def valid_iri_reference?(data)
-        !!(Format::IRELATIVE_REF =~ data)
-      end
-
-      def valid_uri_template?(data)
-        URITemplate.new(data)
-        true
-      rescue URITemplate::Invalid
-        false
-      end
-
-      def valid_json_pointer?(data)
-        !!(Format::JSON_POINTER_REGEX =~ data)
-      end
-
-      def valid_relative_json_pointer?(data)
-        !!(Format::RELATIVE_JSON_POINTER_REGEX =~ data)
       end
 
       def join_uri(a, b)

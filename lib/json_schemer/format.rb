@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+require 'ecma-re-validator'
+require 'ipaddr'
+require 'json'
+require 'time'
+require 'uri_template'
+
 module JSONSchemer
   module Format
     # this is no good
@@ -59,5 +65,58 @@ module JSONSchemer
 
     IHIER_PART = Regexp.compile("(?:(?://#{IAUTHORITY}#{IPATH_ABEMPTY})|(?:#{IPATH_ABSOLUTE})|(?:#{IPATH_ROOTLESS})|(?:#{IPATH_EMPTY}))").freeze
     IRI = Regexp.compile("^#{SCHEME}:(?:#{IHIER_PART})(?:\\?#{IQUERY})?(?:\\##{IFRAGMENT})?$").freeze
+
+    def valid_json?(data)
+      JSON.parse(data)
+      true
+    rescue JSON::ParserError
+      false
+    end
+
+    def valid_date_time?(data)
+      DateTime.rfc3339(data)
+      true
+    rescue ArgumentError => e
+      raise e unless e.message == 'invalid date'
+      false
+    end
+
+    def valid_email?(data)
+      !!(EMAIL_REGEX =~ data)
+    end
+
+    def valid_hostname?(data)
+      !!(HOSTNAME_REGEX =~ data && data.split('.').all? { |label| label.size <= 63 })
+    end
+
+    def valid_ip?(data, type)
+      ip_address = IPAddr.new(data)
+      type == :v4 ? ip_address.ipv4? : ip_address.ipv6?
+    rescue IPAddr::InvalidAddressError
+      false
+    end
+
+    def valid_iri?(data)
+      !!(IRI =~ data)
+    end
+
+    def valid_iri_reference?(data)
+      !!(IRELATIVE_REF =~ data)
+    end
+
+    def valid_uri_template?(data)
+      URITemplate.new(data)
+      true
+    rescue URITemplate::Invalid
+      false
+    end
+
+    def valid_json_pointer?(data)
+      !!(JSON_POINTER_REGEX =~ data)
+    end
+
+    def valid_relative_json_pointer?(data)
+      !!(RELATIVE_JSON_POINTER_REGEX =~ data)
+    end
   end
 end
