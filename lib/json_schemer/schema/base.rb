@@ -12,6 +12,7 @@ module JSONSchemer
     class Base
       include Format
 
+      ID_KEYWORD = '$id'
       DEFAULT_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }.freeze
       NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }.freeze
       BOOLEANS = Set[true, false].freeze
@@ -56,7 +57,7 @@ module JSONSchemer
         else_schema = schema['else']
         format = schema['format']
         ref = schema['$ref']
-        id = schema['$id']
+        id = schema[id_keyword]
 
         parent_uri = join_uri(parent_uri, id)
 
@@ -117,6 +118,10 @@ module JSONSchemer
     private
 
       attr_reader :root, :formats, :keywords, :ref_resolver
+
+      def id_keyword
+        ID_KEYWORD
+      end
 
       def format?
         !!@format
@@ -200,45 +205,18 @@ module JSONSchemer
         valid = if formats && formats.key?(format)
           format_option = formats[format]
           format_option == false || format_option.call(data, schema)
-        else
-          case format
-          when 'date-time'
-            valid_date_time?(data)
-          when 'date'
-            valid_date_time?("#{data}T04:05:06.123456789+07:00")
-          when 'time'
-            valid_date_time?("2001-02-03T#{data}")
-          when 'email'
-            data.ascii_only? && valid_email?(data)
-          when 'idn-email'
-            valid_email?(data)
-          when 'hostname'
-            data.ascii_only? && valid_hostname?(data)
-          when 'idn-hostname'
-            valid_hostname?(data)
-          when 'ipv4'
-            valid_ip?(data, :v4)
-          when 'ipv6'
-            valid_ip?(data, :v6)
-          when 'uri'
-            data.ascii_only? && valid_iri?(data)
-          when 'uri-reference'
-            data.ascii_only? && (valid_iri?(data) || valid_iri_reference?(data))
-          when 'iri'
-            valid_iri?(data)
-          when 'iri-reference'
-            valid_iri?(data) || valid_iri_reference?(data)
-          when 'uri-template'
-            valid_uri_template?(data)
-          when 'json-pointer'
-            valid_json_pointer?(data)
-          when 'relative-json-pointer'
-            valid_relative_json_pointer?(data)
-          when 'regex'
-            EcmaReValidator.valid?(data)
-          end
+        elsif supported_format?(format)
+          valid_format?(data, format)
         end
         yield error(data, schema, pointer, 'format') unless valid
+      end
+
+      def validate_exclusive_maximum(data, schema, pointer, exclusive_maximum, maximum)
+        yield error(data, schema, pointer, 'exclusiveMaximum') if data >= exclusive_maximum
+      end
+
+      def validate_exclusive_minimum(data, schema, pointer, exclusive_minimum, minimum)
+        yield error(data, schema, pointer, 'exclusiveMinimum') if data <= exclusive_minimum
       end
 
       def validate_numeric(data, schema, pointer)
@@ -249,9 +227,10 @@ module JSONSchemer
         exclusive_minimum = schema['exclusiveMinimum']
 
         yield error(data, schema, pointer, 'maximum') if maximum && data > maximum
-        yield error(data, schema, pointer, 'exclusiveMaximum') if exclusive_maximum && data >= exclusive_maximum
         yield error(data, schema, pointer, 'minimum') if minimum && data < minimum
-        yield error(data, schema, pointer, 'exclusiveMinimum') if exclusive_minimum && data <= exclusive_minimum
+
+        validate_exclusive_maximum(data, schema, pointer, exclusive_maximum, maximum, &Proc.new) if exclusive_maximum
+        validate_exclusive_minimum(data, schema, pointer, exclusive_minimum, minimum, &Proc.new) if exclusive_minimum
 
         if multiple_of
           quotient = data / multiple_of.to_f
@@ -431,7 +410,7 @@ module JSONSchemer
         uri_parts = nil
         pointer.reduce(schema) do |obj, token|
           next obj.fetch(token.to_i) if obj.is_a?(Array)
-          if obj_id = obj['$id']
+          if obj_id = obj[id_keyword]
             uri_parts ||= []
             uri_parts << obj_id
           end
@@ -444,7 +423,7 @@ module JSONSchemer
         if schema.is_a?(Array)
           schema.each { |subschema| resolve_ids(subschema, ids, parent_uri) }
         elsif schema.is_a?(Hash)
-          id = schema['$id']
+          id = schema[id_keyword]
           uri = join_uri(parent_uri, id)
           ids[uri.to_s] = schema unless uri == parent_uri
           if definitions = schema['definitions']

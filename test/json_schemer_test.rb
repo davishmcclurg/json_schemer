@@ -66,12 +66,14 @@ class JSONSchemerTest < Minitest::Test
   end
 
   {
+    'draft4' => JSONSchemer::Schema::Draft4,
+    'draft6' => JSONSchemer::Schema::Draft6,
     'draft7' => JSONSchemer::Schema::Draft7
   }.each do |version, draft_class|
-    Dir["JSON-Schema-Test-Suite/tests/#{version}/**/*.json"].each_with_index do |file, index|
-      define_method("test_json_schema_test_suite_#{version}_#{index}") do
-        JSON.parse(File.read(file)).each do |defn|
-          defn.fetch('tests').each do |test|
+    Dir["JSON-Schema-Test-Suite/tests/#{version}/**/*.json"].each_with_index do |file, file_index|
+      JSON.parse(File.read(file)).each_with_index do |defn, defn_index|
+        defn.fetch('tests').each_with_index do |test, test_index|
+          define_method("test_json_schema_test_suite_#{version}_#{file_index}_#{defn_index}_#{test_index}") do
             errors = begin
               draft_class.new(
                 defn.fetch('schema'),

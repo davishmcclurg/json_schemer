@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["David Harsha"]
   spec.email         = ["davishmcclurg@gmail.com"]
 
-  spec.summary       = "JSON Schema draft-07 validator"
+  spec.summary       = "JSON Schema validator. Supports drafts 4, 6, and 7."
   spec.homepage      = "https://github.com/davishmcclurg/json_schemer"
   spec.license       = "MIT"
 

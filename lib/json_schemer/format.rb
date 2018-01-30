@@ -66,6 +66,45 @@ module JSONSchemer
     IHIER_PART = Regexp.compile("(?:(?://#{IAUTHORITY}#{IPATH_ABEMPTY})|(?:#{IPATH_ABSOLUTE})|(?:#{IPATH_ROOTLESS})|(?:#{IPATH_EMPTY}))").freeze
     IRI = Regexp.compile("^#{SCHEME}:(?:#{IHIER_PART})(?:\\?#{IQUERY})?(?:\\##{IFRAGMENT})?$").freeze
 
+    def valid_format?(data, format)
+      case format
+      when 'date-time'
+        valid_date_time?(data)
+      when 'date'
+        valid_date_time?("#{data}T04:05:06.123456789+07:00")
+      when 'time'
+        valid_date_time?("2001-02-03T#{data}")
+      when 'email'
+        data.ascii_only? && valid_email?(data)
+      when 'idn-email'
+        valid_email?(data)
+      when 'hostname'
+        data.ascii_only? && valid_hostname?(data)
+      when 'idn-hostname'
+        valid_hostname?(data)
+      when 'ipv4'
+        valid_ip?(data, :v4)
+      when 'ipv6'
+        valid_ip?(data, :v6)
+      when 'uri'
+        data.ascii_only? && valid_iri?(data)
+      when 'uri-reference'
+        data.ascii_only? && (valid_iri?(data) || valid_iri_reference?(data))
+      when 'iri'
+        valid_iri?(data)
+      when 'iri-reference'
+        valid_iri?(data) || valid_iri_reference?(data)
+      when 'uri-template'
+        valid_uri_template?(data)
+      when 'json-pointer'
+        valid_json_pointer?(data)
+      when 'relative-json-pointer'
+        valid_relative_json_pointer?(data)
+      when 'regex'
+        EcmaReValidator.valid?(data)
+      end
+    end
+
     def valid_json?(data)
       JSON.parse(data)
       true

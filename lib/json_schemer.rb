@@ -3,7 +3,6 @@
 require 'json_schemer/version'
 require 'json_schemer/format'
 require 'json_schemer/schema/base'
-require 'json_schemer/schema/draft3'
 require 'json_schemer/schema/draft4'
 require 'json_schemer/schema/draft6'
 require 'json_schemer/schema/draft7'
@@ -13,7 +12,6 @@ module JSONSchemer
   class UnknownRef < StandardError; end
 
   DRAFT_CLASS_BY_META_SCHEMA = {
-    'http://json-schema.org/draft-03/schema#' => Schema::Draft3,
     'http://json-schema.org/draft-04/schema#' => Schema::Draft4,
     'http://json-schema.org/draft-06/schema#' => Schema::Draft6,
     'http://json-schema.org/draft-07/schema#' => Schema::Draft7

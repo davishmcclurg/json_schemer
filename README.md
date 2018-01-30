@@ -1,6 +1,6 @@
 # JSONSchemer
 
-JSON Schema draft-07 validator
+JSON Schema validator. Supports drafts 4, 6, and 7.
 
 ## Installation
 
@@ -32,7 +32,7 @@ schema = {
     }
   }
 }
-schemer = JSONSchemer::Schema.new(schema)
+schemer = JSONSchemer.schema(schema)
 
 # true/false validation
 
@@ -51,7 +51,7 @@ schemer.validate({ 'abc' => 10 }).to_a
 ## Options
 
 ```ruby
-JSONSchemer::Schema.new(
+JSONSchemer.schema(
   schema,
 
   # validate `format` (https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-7)
