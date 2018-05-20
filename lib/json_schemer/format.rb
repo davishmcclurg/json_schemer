@@ -67,6 +67,7 @@ module JSONSchemer
     IRI = Regexp.compile("^#{SCHEME}:(?:#{IHIER_PART})(?:\\?#{IQUERY})?(?:\\##{IFRAGMENT})?$").freeze
 
     def valid_format?(data, format)
+      return false unless data.is_a?(String)
       case format
       when 'date-time'
         valid_date_time?(data)
