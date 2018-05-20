@@ -1,4 +1,4 @@
 [submodule "JSON-Schema-Test-Suite"]
 	path = JSON-Schema-Test-Suite
-	url = https://github.com/davishmcclurg/JSON-Schema-Test-Suite
-	branch = ipv6-iri-format
+	url = https://github.com/json-schema-org/JSON-Schema-Test-Suite
+	branch = master
