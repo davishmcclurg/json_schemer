@@ -12,7 +12,8 @@ module JSONSchemer
         'uri',
         'uri-reference',
         'uri-template',
-        'json-pointer'
+        'json-pointer',
+        'regex'
       ].freeze
 
     private

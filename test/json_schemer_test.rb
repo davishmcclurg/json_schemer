@@ -65,6 +65,60 @@ class JSONSchemerTest < Minitest::Test
     assert errors.none?
   end
 
+  def test_it_allows_disabling_format
+    schema = JSONSchemer.schema(
+      { 'format' => 'email' },
+      format: false
+    )
+    assert schema.valid?('not-an-email')
+  end
+
+  def test_it_ignores_format_for_invalid_type
+    schema = JSONSchemer.schema({
+      'format' => 'email'
+    })
+    refute schema.valid?('not-an-email')
+    assert schema.valid?({})
+  end
+
+  def test_it_allows_false_custom_format
+    schema = JSONSchemer.schema(
+      {
+        'type' => 'object',
+        'properties' => {
+          'one' => {
+            'format' => 'email'
+          },
+          'two' => {
+            'format' => 'time'
+          }
+        }
+      },
+      formats: {
+        'email' => false
+      }
+    )
+    data = {
+      'one' => 'not-an-email',
+      'two' => 'not-a-time'
+    }
+    errors = schema.validate(data).to_a
+    assert errors.size == 1
+    assert errors.first.fetch('data') == 'not-a-time'
+    assert errors.first.fetch('type') == 'format'
+  end
+
+  def test_it_allows_callable_custom_format
+    schema = JSONSchemer.schema(
+      { 'format' => 'custom' },
+      formats: {
+        'custom' => proc { |x| x == 'valid' }
+      }
+    )
+    assert schema.valid?('valid')
+    refute schema.valid?('invalid')
+  end
+
   {
     'draft4' => JSONSchemer::Schema::Draft4,
     'draft6' => JSONSchemer::Schema::Draft6,

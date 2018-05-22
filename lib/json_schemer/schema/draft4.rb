@@ -10,7 +10,8 @@ module JSONSchemer
         'hostname',
         'ipv4',
         'ipv6',
-        'uri'
+        'uri',
+        'regex'
       ].freeze
 
     private
