@@ -66,7 +66,9 @@ module JSONSchemer
           return
         end
 
-        validate_format(data, schema, pointer, format, &Proc.new) if format && format?
+        if format? && custom_format?(format)
+          validate_custom_format(data, schema, pointer, formats.fetch(format), &Proc.new)
+        end
 
         if keywords
           keywords.each do |keyword, callable|
@@ -125,6 +127,14 @@ module JSONSchemer
 
       def format?
         !!@format
+      end
+
+      def custom_format?(format)
+        !!(formats && formats.key?(format))
+      end
+
+      def spec_format?(format)
+        !custom_format?(format) && supported_format?(format)
       end
 
       def child(schema)
@@ -201,14 +211,8 @@ module JSONSchemer
         end
       end
 
-      def validate_format(data, schema, pointer, format)
-        valid = if formats && formats.key?(format)
-          format_option = formats[format]
-          format_option == false || format_option.call(data, schema)
-        elsif supported_format?(format)
-          valid_format?(data, format)
-        end
-        yield error(data, schema, pointer, 'format') unless valid
+      def validate_custom_format(data, schema, pointer, custom_format)
+        yield error(data, schema, pointer, 'format') if custom_format != false && !custom_format.call(data, schema)
       end
 
       def validate_exclusive_maximum(data, schema, pointer, exclusive_maximum, maximum)
@@ -265,12 +269,14 @@ module JSONSchemer
         max_length = schema['maxLength']
         min_length = schema['minLength']
         pattern = schema['pattern']
+        format = schema['format']
         content_encoding = schema['contentEncoding']
         content_media_type = schema['contentMediaType']
 
         yield error(data, schema, pointer, 'maxLength') if max_length && data.size > max_length
         yield error(data, schema, pointer, 'minLength') if min_length && data.size < min_length
         yield error(data, schema, pointer, 'pattern') if pattern && Regexp.new(pattern) !~ data
+        yield error(data, schema, pointer, 'format') if format? && spec_format?(format) && !valid_spec_format?(data, format)
 
         if content_encoding || content_media_type
           decoded_data = data
