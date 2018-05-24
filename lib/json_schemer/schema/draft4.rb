@@ -24,21 +24,21 @@ module JSONSchemer
         SUPPORTED_FORMATS.include?(format)
       end
 
-      def validate_exclusive_maximum(data, schema, pointer, exclusive_maximum, maximum)
-        yield error(data, schema, pointer, 'exclusiveMaximum') if exclusive_maximum && data >= maximum
+      def validate_exclusive_maximum(instance, exclusive_maximum, maximum)
+        yield error(instance, 'exclusiveMaximum') if exclusive_maximum && instance.data >= maximum
       end
 
-      def validate_exclusive_minimum(data, schema, pointer, exclusive_minimum, minimum)
-        yield error(data, schema, pointer, 'exclusiveMinimum') if exclusive_minimum && data <= minimum
+      def validate_exclusive_minimum(instance, exclusive_minimum, minimum)
+        yield error(instance, 'exclusiveMinimum') if exclusive_minimum && instance.data <= minimum
       end
 
-      def validate_integer(data, schema, pointer)
-        if !data.is_a?(Integer)
-          yield error(data, schema, pointer, 'integer')
+      def validate_integer(instance)
+        if !instance.data.is_a?(Integer)
+          yield error(instance, 'integer')
           return
         end
 
-        validate_numeric(data, schema, pointer, &Proc.new)
+        validate_numeric(instance, &Proc.new)
       end
     end
   end
