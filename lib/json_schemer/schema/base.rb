@@ -12,6 +12,12 @@ module JSONSchemer
     class Base
       include Format
 
+      Instance = Struct.new(:data, :schema, :pointer, :parent_uri) do
+        def merge(data: self.data, schema: self.schema, pointer: self.pointer, parent_uri: self.parent_uri)
+          self.class.new(data, schema, pointer, parent_uri)
+        end
+      end
+
       ID_KEYWORD = '$id'
       DEFAULT_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }.freeze
       NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }.freeze
@@ -31,16 +37,28 @@ module JSONSchemer
         @ref_resolver = ref_resolver == 'net/http' ? NET_HTTP_REF_RESOLVER : ref_resolver
       end
 
-      def valid?(data, schema = root, pointer = '', parent_uri = nil)
-        validate(data, schema, pointer, parent_uri).none?
+      def valid?(data)
+        valid_instance?(Instance.new(data, root, '', nil))
       end
 
-      def validate(data, schema = root, pointer = '', parent_uri = nil)
-        return enum_for(:validate, data, schema, pointer, parent_uri) unless block_given?
+      def validate(data)
+        validate_instance(Instance.new(data, root, '', nil))
+      end
+
+    protected
+
+      def valid_instance?(instance)
+        validate_instance(instance).none?
+      end
+
+      def validate_instance(instance)
+        return enum_for(:validate_instance, instance) unless block_given?
+
+        schema = instance.schema
 
         return if schema == true
         if schema == false
-          yield error(data, schema, pointer, 'schema')
+          yield error(instance, 'schema')
           return
         end
 
@@ -59,59 +77,59 @@ module JSONSchemer
         ref = schema['$ref']
         id = schema[id_keyword]
 
-        parent_uri = join_uri(parent_uri, id)
+        instance.parent_uri = join_uri(instance.parent_uri, id)
 
         if ref
-          validate_ref(data, schema, pointer, parent_uri, ref, &Proc.new)
+          validate_ref(instance, ref, &Proc.new)
           return
         end
 
         if format? && custom_format?(format)
-          validate_custom_format(data, schema, pointer, formats.fetch(format), &Proc.new)
+          validate_custom_format(instance, formats.fetch(format), &Proc.new)
         end
 
         if keywords
           keywords.each do |keyword, callable|
             if schema.key?(keyword)
-              result = callable.call(data, schema, pointer)
+              result = callable.call(data, schema, instance.pointer)
               if result.is_a?(Array)
                 result.each { |error| yield error }
               elsif !result
-                yield error(data, schema, pointer, keyword)
+                yield error(instance, keyword)
               end
             end
           end
         end
 
-        yield error(data, schema, pointer, 'enum') if enum && !enum.include?(data)
-        yield error(data, schema, pointer, 'const') if schema.key?('const') && schema['const'] != data
+        data = instance.data
 
-        yield error(data, schema, pointer, 'allOf') if all_of && !all_of.all? { |subschema| valid?(data, subschema, pointer, parent_uri) }
-        yield error(data, schema, pointer, 'anyOf') if any_of && !any_of.any? { |subschema| valid?(data, subschema, pointer, parent_uri) }
-        yield error(data, schema, pointer, 'oneOf') if one_of && !one_of.one? { |subschema| valid?(data, subschema, pointer, parent_uri) }
-        yield error(data, schema, pointer, 'not') if !not_schema.nil? && valid?(data, not_schema, pointer, parent_uri)
+        yield error(instance, 'enum') if enum && !enum.include?(data)
+        yield error(instance, 'const') if schema.key?('const') && schema['const'] != data
 
-        if if_schema && valid?(data, if_schema, pointer, parent_uri)
-          yield error(data, schema, pointer, 'then') if !then_schema.nil? && !valid?(data, then_schema, pointer, parent_uri)
+        yield error(instance, 'allOf') if all_of && !all_of.all? { |subschema| valid_instance?(instance.merge(schema: subschema)) }
+        yield error(instance, 'anyOf') if any_of && !any_of.any? { |subschema| valid_instance?(instance.merge(schema: subschema)) }
+        yield error(instance, 'oneOf') if one_of && !one_of.one? { |subschema| valid_instance?(instance.merge(schema: subschema)) }
+        yield error(instance, 'not') if !not_schema.nil? && valid_instance?(instance.merge(schema: not_schema))
+
+        if if_schema && valid_instance?(instance.merge(schema: if_schema))
+          yield error(instance, 'then') if !then_schema.nil? && !valid_instance?(instance.merge(schema: then_schema))
         elsif if_schema
-          yield error(data, schema, pointer, 'else') if !else_schema.nil? && !valid?(data, else_schema, pointer, parent_uri)
+          yield error(instance, 'else') if !else_schema.nil? && !valid_instance?(instance.merge(schema: else_schema))
         end
 
         case type
         when nil
-          validate_class(data, schema, pointer, parent_uri, &Proc.new)
+          validate_class(instance, &Proc.new)
         when String
-          validate_type(data, schema, pointer, parent_uri, type, &Proc.new)
+          validate_type(instance, type, &Proc.new)
         when Array
-          if valid_type = type.find { |subtype| valid?(data, { 'type' => subtype }, pointer, parent_uri) }
-            validate_type(data, schema, pointer, parent_uri, valid_type, &Proc.new)
+          if valid_type = type.find { |subtype| valid_instance?(instance.merge(schema: { 'type' => subtype })) }
+            validate_type(instance, valid_type, &Proc.new)
           else
-            yield error(data, schema, pointer, 'type')
+            yield error(instance, 'type')
           end
         end
       end
-
-    protected
 
       def ids
         @ids ||= resolve_ids(root)
@@ -147,124 +165,133 @@ module JSONSchemer
         )
       end
 
-      def error(data, schema, pointer, type)
+      def error(instance, type)
         {
-          'data' => data,
-          'schema' => schema,
-          'pointer' => pointer,
+          'data' => instance.data,
+          'schema' => instance.schema,
+          'pointer' => instance.pointer,
           'type' => type,
         }
       end
 
-      def validate_class(data, schema, pointer, parent_uri)
-        case data
+      def validate_class(instance)
+        case instance.data
         when Integer
-          validate_integer(data, schema, pointer, &Proc.new)
+          validate_integer(instance, &Proc.new)
         when Numeric
-          validate_number(data, schema, pointer, &Proc.new)
+          validate_number(instance, &Proc.new)
         when String
-          validate_string(data, schema, pointer, &Proc.new)
+          validate_string(instance, &Proc.new)
         when Array
-          validate_array(data, schema, pointer, parent_uri, &Proc.new)
+          validate_array(instance, &Proc.new)
         when Hash
-          validate_object(data, schema, pointer, parent_uri, &Proc.new)
+          validate_object(instance, &Proc.new)
         end
       end
 
-      def validate_type(data, schema, pointer, parent_uri, type)
+      def validate_type(instance, type)
         case type
         when 'null'
-          yield error(data, schema, pointer, 'null') unless data.nil?
+          yield error(instance, 'null') unless instance.data.nil?
         when 'boolean'
-          yield error(data, schema, pointer, 'boolean') unless BOOLEANS.include?(data)
+          yield error(instance, 'boolean') unless BOOLEANS.include?(instance.data)
         when 'number'
-          validate_number(data, schema, pointer, &Proc.new)
+          validate_number(instance, &Proc.new)
         when 'integer'
-          validate_integer(data, schema, pointer, &Proc.new)
+          validate_integer(instance, &Proc.new)
         when 'string'
-          validate_string(data, schema, pointer, &Proc.new)
+          validate_string(instance, &Proc.new)
         when 'array'
-          validate_array(data, schema, pointer, parent_uri, &Proc.new)
+          validate_array(instance, &Proc.new)
         when 'object'
-          validate_object(data, schema, pointer, parent_uri, &Proc.new)
+          validate_object(instance, &Proc.new)
         end
       end
 
-      def validate_ref(data, schema, pointer, parent_uri, ref)
-        ref_uri = join_uri(parent_uri, ref)
+      def validate_ref(instance, ref)
+        ref_uri = join_uri(instance.parent_uri, ref)
 
         if valid_json_pointer?(ref_uri.fragment)
           ref_pointer = Hana::Pointer.new(URI.unescape(ref_uri.fragment || ''))
           if ref.start_with?('#')
-            validate(data, ref_pointer.eval(root), pointer, pointer_uri(root, ref_pointer), &Proc.new)
+            validate_instance(instance.merge(schema: ref_pointer.eval(root), parent_uri: pointer_uri(root, ref_pointer)), &Proc.new)
           else
             ref_root = ref_resolver.call(ref_uri)
             ref_object = child(ref_root)
-            ref_object.validate(data, ref_pointer.eval(ref_root), pointer, pointer_uri(ref_root, ref_pointer), &Proc.new)
+            ref_object.validate_instance(instance.merge(schema: ref_pointer.eval(ref_root), parent_uri: pointer_uri(ref_root, ref_pointer)), &Proc.new)
           end
         elsif ids.key?(ref_uri.to_s)
-          validate(data, ids.fetch(ref_uri.to_s), pointer, ref_uri, &Proc.new)
+          validate_instance(instance.merge(schema: ids.fetch(ref_uri.to_s), parent_uri: ref_uri), &Proc.new)
         else
           ref_root = ref_resolver.call(ref_uri)
           ref_object = child(ref_root)
-          ref_object.validate(data, ref_object.ids.fetch(ref_uri.to_s, ref_root), pointer, ref_uri, &Proc.new)
+          ref_object.validate_instance(instance.merge(schema: ref_object.ids.fetch(ref_uri.to_s, ref_root), parent_uri: ref_uri), &Proc.new)
         end
       end
 
-      def validate_custom_format(data, schema, pointer, custom_format)
-        yield error(data, schema, pointer, 'format') if custom_format != false && !custom_format.call(data, schema)
+      def validate_custom_format(instance, custom_format)
+        yield error(instance, 'format') if custom_format != false && !custom_format.call(instance.data, instance.schema)
       end
 
-      def validate_exclusive_maximum(data, schema, pointer, exclusive_maximum, maximum)
-        yield error(data, schema, pointer, 'exclusiveMaximum') if data >= exclusive_maximum
+      def validate_exclusive_maximum(instance, exclusive_maximum, maximum)
+        yield error(instance, 'exclusiveMaximum') if instance.data >= exclusive_maximum
       end
 
-      def validate_exclusive_minimum(data, schema, pointer, exclusive_minimum, minimum)
-        yield error(data, schema, pointer, 'exclusiveMinimum') if data <= exclusive_minimum
+      def validate_exclusive_minimum(instance, exclusive_minimum, minimum)
+        yield error(instance, 'exclusiveMinimum') if instance.data <= exclusive_minimum
       end
 
-      def validate_numeric(data, schema, pointer)
+      def validate_numeric(instance)
+        schema = instance.schema
+        data = instance.data
+
         multiple_of = schema['multipleOf']
         maximum = schema['maximum']
         exclusive_maximum = schema['exclusiveMaximum']
         minimum = schema['minimum']
         exclusive_minimum = schema['exclusiveMinimum']
 
-        yield error(data, schema, pointer, 'maximum') if maximum && data > maximum
-        yield error(data, schema, pointer, 'minimum') if minimum && data < minimum
+        yield error(instance, 'maximum') if maximum && data > maximum
+        yield error(instance, 'minimum') if minimum && data < minimum
 
-        validate_exclusive_maximum(data, schema, pointer, exclusive_maximum, maximum, &Proc.new) if exclusive_maximum
-        validate_exclusive_minimum(data, schema, pointer, exclusive_minimum, minimum, &Proc.new) if exclusive_minimum
+        validate_exclusive_maximum(instance, exclusive_maximum, maximum, &Proc.new) if exclusive_maximum
+        validate_exclusive_minimum(instance, exclusive_minimum, minimum, &Proc.new) if exclusive_minimum
 
         if multiple_of
           quotient = data / multiple_of.to_f
-          yield error(data, schema, pointer, 'multipleOf') unless quotient.floor == quotient
+          yield error(instance, 'multipleOf') unless quotient.floor == quotient
         end
       end
 
-      def validate_number(data, schema, pointer)
-        unless data.is_a?(Numeric)
-          yield error(data, schema, pointer, 'number')
+      def validate_number(instance)
+        unless instance.data.is_a?(Numeric)
+          yield error(instance, 'number')
           return
         end
 
-        validate_numeric(data, schema, pointer, &Proc.new)
+        validate_numeric(instance, &Proc.new)
       end
 
-      def validate_integer(data, schema, pointer)
+      def validate_integer(instance)
+        data = instance.data
+
         if !data.is_a?(Numeric) || (!data.is_a?(Integer) && data.floor != data)
-          yield error(data, schema, pointer, 'integer')
+          yield error(instance, 'integer')
           return
         end
 
-        validate_numeric(data, schema, pointer, &Proc.new)
+        validate_numeric(instance, &Proc.new)
       end
 
-      def validate_string(data, schema, pointer)
+      def validate_string(instance)
+        data = instance.data
+
         unless data.is_a?(String)
-          yield error(data, schema, pointer, 'string')
+          yield error(instance, 'string')
           return
         end
+
+        schema = instance.schema
 
         max_length = schema['maxLength']
         min_length = schema['minLength']
@@ -273,10 +300,10 @@ module JSONSchemer
         content_encoding = schema['contentEncoding']
         content_media_type = schema['contentMediaType']
 
-        yield error(data, schema, pointer, 'maxLength') if max_length && data.size > max_length
-        yield error(data, schema, pointer, 'minLength') if min_length && data.size < min_length
-        yield error(data, schema, pointer, 'pattern') if pattern && Regexp.new(pattern) !~ data
-        yield error(data, schema, pointer, 'format') if format? && spec_format?(format) && !valid_spec_format?(data, format)
+        yield error(instance, 'maxLength') if max_length && data.size > max_length
+        yield error(instance, 'minLength') if min_length && data.size < min_length
+        yield error(instance, 'pattern') if pattern && Regexp.new(pattern) !~ data
+        yield error(instance, 'format') if format? && spec_format?(format) && !valid_spec_format?(data, format)
 
         if content_encoding || content_media_type
           decoded_data = data
@@ -288,13 +315,13 @@ module JSONSchemer
             else # '7bit', '8bit', 'binary', 'quoted-printable'
               raise NotImplementedError
             end
-            yield error(data, schema, pointer, 'contentEncoding') unless decoded_data
+            yield error(instance, 'contentEncoding') unless decoded_data
           end
 
           if content_media_type && decoded_data
             case content_media_type.downcase
             when 'application/json'
-              yield error(data, schema, pointer, 'contentMediaType') unless valid_json?(decoded_data)
+              yield error(instance, 'contentMediaType') unless valid_json?(decoded_data)
             else
               raise NotImplementedError
             end
@@ -302,11 +329,15 @@ module JSONSchemer
         end
       end
 
-      def validate_array(data, schema, pointer, parent_uri, &block)
+      def validate_array(instance, &block)
+        data = instance.data
+
         unless data.is_a?(Array)
-          yield error(data, schema, pointer, 'array')
+          yield error(instance, 'array')
           return
         end
+
+        schema = instance.schema
 
         items = schema['items']
         additional_items = schema['additionalItems']
@@ -315,33 +346,37 @@ module JSONSchemer
         unique_items = schema['uniqueItems']
         contains = schema['contains']
 
-        yield error(data, schema, pointer, 'maxItems') if max_items && data.size > max_items
-        yield error(data, schema, pointer, 'minItems') if min_items && data.size < min_items
-        yield error(data, schema, pointer, 'uniqueItems') if unique_items && data.size != data.uniq.size
-        yield error(data, schema, pointer, 'contains') if !contains.nil? && data.all? { |item| !valid?(item, contains, pointer, parent_uri) }
+        yield error(instance, 'maxItems') if max_items && data.size > max_items
+        yield error(instance, 'minItems') if min_items && data.size < min_items
+        yield error(instance, 'uniqueItems') if unique_items && data.size != data.uniq.size
+        yield error(instance, 'contains') if !contains.nil? && data.all? { |item| !valid_instance?(instance.merge(data: item, schema: contains)) }
 
         if items.is_a?(Array)
           data.each_with_index do |item, index|
             if index < items.size
-              validate(item, items[index], "#{pointer}/#{index}", parent_uri, &block)
+              validate_instance(instance.merge(data: item, schema: items[index], pointer: "#{instance.pointer}/#{index}"), &block)
             elsif !additional_items.nil?
-              validate(item, additional_items, "#{pointer}/#{index}", parent_uri, &block)
+              validate_instance(instance.merge(data: item, schema: additional_items, pointer: "#{instance.pointer}/#{index}"), &block)
             else
               break
             end
           end
         elsif !items.nil?
           data.each_with_index do |item, index|
-            validate(item, items, "#{pointer}/#{index}", parent_uri, &block)
+            validate_instance(instance.merge(data: item, schema: items, pointer: "#{instance.pointer}/#{index}"), &block)
           end
         end
       end
 
-      def validate_object(data, schema, pointer, parent_uri, &block)
+      def validate_object(instance, &block)
+        data = instance.data
+
         unless data.is_a?(Hash)
-          yield error(data, schema, pointer, 'object')
+          yield error(instance, 'object')
           return
         end
+
+        schema = instance.schema
 
         max_properties = schema['maxProperties']
         min_properties = schema['minProperties']
@@ -356,22 +391,22 @@ module JSONSchemer
           dependencies.each do |key, value|
             next unless data.key?(key)
             subschema = value.is_a?(Array) ? { 'required' => value } : value
-            validate(data, subschema, pointer, parent_uri, &block)
+            validate_instance(instance.merge(schema: subschema), &block)
           end
         end
 
-        yield error(data, schema, pointer, 'maxProperties') if max_properties && data.size > max_properties
-        yield error(data, schema, pointer, 'minProperties') if min_properties && data.size < min_properties
-        yield error(data, schema, pointer, 'required') if required && required.any? { |key| !data.key?(key) }
+        yield error(instance, 'maxProperties') if max_properties && data.size > max_properties
+        yield error(instance, 'minProperties') if min_properties && data.size < min_properties
+        yield error(instance, 'required') if required && required.any? { |key| !data.key?(key) }
 
         regex_pattern_properties = nil
         data.each do |key, value|
-          validate(key, property_names, pointer, parent_uri, &block) unless property_names.nil?
+          validate_instance(instance.merge(data: key, schema: property_names), &block) unless property_names.nil?
 
           matched_key = false
 
           if properties && properties.key?(key)
-            validate(value, properties[key], "#{pointer}/#{key}", parent_uri, &block)
+            validate_instance(instance.merge(data: value, schema: properties[key], pointer: "#{instance.pointer}/#{key}"), &block)
             matched_key = true
           end
 
@@ -381,7 +416,7 @@ module JSONSchemer
             end
             regex_pattern_properties.each do |regex, property_schema|
               if regex =~ key
-                validate(value, property_schema, "#{pointer}/#{key}", parent_uri, &block)
+                validate_instance(instance.merge(data: value, schema: property_schema, pointer: "#{instance.pointer}/#{key}"), &block)
                 matched_key = true
               end
             end
@@ -389,7 +424,7 @@ module JSONSchemer
 
           next if matched_key
 
-          validate(value, additional_properties, "#{pointer}/#{key}", parent_uri, &block) unless additional_properties.nil?
+          validate_instance(instance.merge(data: value, schema: additional_properties, pointer: "#{instance.pointer}/#{key}"), &block) unless additional_properties.nil?
         end
       end
 
