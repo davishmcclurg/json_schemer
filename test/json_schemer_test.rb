@@ -253,8 +253,8 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
-    assert errors.first.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/x/0', 'schema_pointer' => '/properties/x/items/0' }
-    assert errors.last.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/x/1', 'schema_pointer' => '/properties/x/items/1' }
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/0', '/properties/x/items/0']
+    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/x/1', '/properties/x/items/1']
   end
 
   def test_it_returns_correct_pointers_for_additional_items
@@ -271,8 +271,8 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
-    assert errors.first.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/x/0', 'schema_pointer' => '/properties/x/items/0' }
-    assert errors.last.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/x/1', 'schema_pointer' => '/properties/x/additionalItems' }
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/0', '/properties/x/items/0']
+    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/x/1', '/properties/x/additionalItems']
   end
 
   def test_it_returns_correct_pointers_for_items
@@ -286,8 +286,8 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
-    assert errors.first.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/x/0', 'schema_pointer' => '/properties/x/items' }
-    assert errors.last.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/x/1', 'schema_pointer' => '/properties/x/items' }
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/0', '/properties/x/items']
+    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/x/1', '/properties/x/items']
   end
 
   def test_it_returns_correct_pointers_for_dependencies
@@ -309,8 +309,8 @@ class JSONSchemerTest < Minitest::Test
         'z' => 2
       }
     }).to_a
-    assert errors.first.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/a', 'schema_pointer' => '/properties/a/dependencies/x' }
-    assert errors.last.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/a', 'schema_pointer' => '/properties/a/dependencies/z' }
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/a', '/properties/a/dependencies/x']
+    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/a', '/properties/a/dependencies/z']
   end
 
   def test_it_returns_correct_pointers_for_property_names
@@ -324,7 +324,7 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => { 'abc' => 1 } }).to_a
-    assert errors.first.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/x', 'schema_pointer' => '/properties/x/propertyNames' }
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x', '/properties/x/propertyNames']
   end
 
   def test_it_returns_correct_pointers_for_pattern_properties
@@ -340,7 +340,7 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => { 'abc' => 1 } }).to_a
-    assert errors.first.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/x/abc', 'schema_pointer' => '/properties/x/patternProperties/^a' }
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/abc', '/properties/x/patternProperties/^a']
   end
 
   def test_it_returns_correct_pointers_for_additional_properties
@@ -354,7 +354,7 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => { 'abc' => 1 } }).to_a
-    assert errors.first.slice('data_pointer', 'schema_pointer') == { 'data_pointer' => '/x/abc', 'schema_pointer' => '/properties/x/additionalProperties' }
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/abc', '/properties/x/additionalProperties']
   end
 
   {
