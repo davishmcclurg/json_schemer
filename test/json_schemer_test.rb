@@ -119,6 +119,244 @@ class JSONSchemerTest < Minitest::Test
     refute schema.valid?('invalid')
   end
 
+  def test_it_returns_correct_pointers_for_ref_pointer
+    ref_schema = { 'type' => 'string' }
+    root = {
+      'definitions' => {
+        'y' => ref_schema
+      },
+      'properties' => {
+        'a' => {
+          'properties' => {
+            'x' => { '$ref' => '#/definitions/y' }
+          }
+        }
+      }
+    }
+    schema = JSONSchemer.schema(root)
+    errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
+    assert errors.first == {
+      'data' => 1,
+      'data_pointer' => '/a/x',
+      'schema' => ref_schema,
+      'schema_pointer' => '/definitions/y',
+      'root_schema' => root,
+      'type' => 'string'
+    }
+  end
+
+  def test_it_returns_correct_pointers_for_remote_ref_pointer
+    ref_schema = { 'type' => 'string' }
+    ref = {
+      'definitions' => {
+        'y' => ref_schema
+      }
+    }
+    root = {
+      'properties' => {
+        'a' => {
+          'properties' => {
+            'x' => { '$ref' => 'http://example.com/#/definitions/y' }
+          }
+        }
+      }
+    }
+    schema = JSONSchemer.schema(
+      root,
+      ref_resolver: proc { ref }
+    )
+    errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
+    assert errors.first == {
+      'data' => 1,
+      'data_pointer' => '/a/x',
+      'schema' => ref_schema,
+      'schema_pointer' => '/definitions/y',
+      'root_schema' => ref,
+      'type' => 'string'
+    }
+  end
+
+  def test_it_returns_correct_pointers_for_ref_id
+    ref_schema = {
+      '$id' => 'http://example.com/foo',
+      'type' => 'string'
+    }
+    root = {
+      'definitions' => {
+        'y' => ref_schema
+      },
+      'properties' => {
+        'a' => {
+          'properties' => {
+            'x' => { '$ref' => 'http://example.com/foo' }
+          }
+        }
+      }
+    }
+    schema = JSONSchemer.schema(root)
+    errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
+    assert errors.first == {
+      'data' => 1,
+      'data_pointer' => '/a/x',
+      'schema' => ref_schema,
+      'schema_pointer' => '/definitions/y',
+      'root_schema' => root,
+      'type' => 'string'
+    }
+  end
+
+  def test_it_returns_correct_pointers_for_remote_ref_id
+    ref_schema = {
+      '$id' => 'http://example.com/remote-id',
+      'type' => 'string'
+    }
+    ref = {
+      'definitions' => {
+        'y' => ref_schema
+      }
+    }
+    root = {
+      'properties' => {
+        'a' => {
+          'properties' => {
+            'x' => { '$ref' => 'http://example.com/remote-id' }
+          }
+        }
+      }
+    }
+    schema = JSONSchemer.schema(
+      root,
+      ref_resolver: proc { ref }
+    )
+    errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
+    assert errors.first == {
+      'data' => 1,
+      'data_pointer' => '/a/x',
+      'schema' => ref_schema,
+      'schema_pointer' => '/definitions/y',
+      'root_schema' => ref,
+      'type' => 'string'
+    }
+  end
+
+  def test_it_returns_correct_pointers_for_items_array
+    schema = JSONSchemer.schema(
+      {
+        'properties' => {
+          'x' => {
+            'items' => [
+              { 'type' => 'integer' },
+              { 'type' => 'string' }
+            ]
+          }
+        }
+      }
+    )
+    errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/0', '/properties/x/items/0']
+    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/x/1', '/properties/x/items/1']
+  end
+
+  def test_it_returns_correct_pointers_for_additional_items
+    schema = JSONSchemer.schema(
+      {
+        'properties' => {
+          'x' => {
+            'items' => [
+              { 'type' => 'integer' }
+            ],
+            'additionalItems' => { 'type' => 'string' }
+          }
+        }
+      }
+    )
+    errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/0', '/properties/x/items/0']
+    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/x/1', '/properties/x/additionalItems']
+  end
+
+  def test_it_returns_correct_pointers_for_items
+    schema = JSONSchemer.schema(
+      {
+        'properties' => {
+          'x' => {
+            'items' => { 'type' => 'boolean' }
+          }
+        }
+      }
+    )
+    errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/0', '/properties/x/items']
+    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/x/1', '/properties/x/items']
+  end
+
+  def test_it_returns_correct_pointers_for_dependencies
+    schema = JSONSchemer.schema(
+      {
+        'properties' => {
+          'a' => {
+            'dependencies' => {
+              'x' => ['y'],
+              'z' => { 'minProperties' => 10 }
+            }
+          }
+        }
+      }
+    )
+    errors = schema.validate({
+      'a' => {
+        'x' => 1,
+        'z' => 2
+      }
+    }).to_a
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/a', '/properties/a/dependencies/x']
+    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/a', '/properties/a/dependencies/z']
+  end
+
+  def test_it_returns_correct_pointers_for_property_names
+    schema = JSONSchemer.schema(
+      {
+        'properties' => {
+          'x' => {
+            'propertyNames' => { 'minLength' => 10 }
+          }
+        }
+      }
+    )
+    errors = schema.validate({ 'x' => { 'abc' => 1 } }).to_a
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x', '/properties/x/propertyNames']
+  end
+
+  def test_it_returns_correct_pointers_for_pattern_properties
+    schema = JSONSchemer.schema(
+      {
+        'properties' => {
+          'x' => {
+            'patternProperties' => {
+              '^a' => { 'type' => 'string' }
+            }
+          }
+        }
+      }
+    )
+    errors = schema.validate({ 'x' => { 'abc' => 1 } }).to_a
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/abc', '/properties/x/patternProperties/^a']
+  end
+
+  def test_it_returns_correct_pointers_for_additional_properties
+    schema = JSONSchemer.schema(
+      {
+        'properties' => {
+          'x' => {
+            'additionalProperties' => { 'type' => 'string' }
+          }
+        }
+      }
+    )
+    errors = schema.validate({ 'x' => { 'abc' => 1 } }).to_a
+    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/abc', '/properties/x/additionalProperties']
+  end
+
   {
     'draft4' => JSONSchemer::Schema::Draft4,
     'draft6' => JSONSchemer::Schema::Draft6,
@@ -131,7 +369,7 @@ class JSONSchemerTest < Minitest::Test
             errors = begin
               draft_class.new(
                 defn.fetch('schema'),
-                :ref_resolver => 'net/http'
+                ref_resolver: 'net/http'
               ).validate(test.fetch('data')).to_a
             rescue StandardError, NotImplementedError => e
               [e.class, e.message]

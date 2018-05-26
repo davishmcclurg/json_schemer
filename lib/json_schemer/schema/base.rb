@@ -12,9 +12,15 @@ module JSONSchemer
     class Base
       include Format
 
-      Instance = Struct.new(:data, :schema, :pointer, :parent_uri) do
-        def merge(data: self.data, schema: self.schema, pointer: self.pointer, parent_uri: self.parent_uri)
-          self.class.new(data, schema, pointer, parent_uri)
+      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :parent_uri) do
+        def merge(
+          data: self.data,
+          data_pointer: self.data_pointer,
+          schema: self.schema,
+          schema_pointer: self.schema_pointer,
+          parent_uri: self.parent_uri
+        )
+          self.class.new(data, data_pointer, schema, schema_pointer, parent_uri)
         end
       end
 
@@ -38,11 +44,11 @@ module JSONSchemer
       end
 
       def valid?(data)
-        valid_instance?(Instance.new(data, root, '', nil))
+        valid_instance?(Instance.new(data, '', root, '', nil))
       end
 
       def validate(data)
-        validate_instance(Instance.new(data, root, '', nil))
+        validate_instance(Instance.new(data, '', root, '', nil))
       end
 
     protected
@@ -168,8 +174,10 @@ module JSONSchemer
       def error(instance, type)
         {
           'data' => instance.data,
+          'data_pointer' => instance.data_pointer,
           'schema' => instance.schema,
-          'pointer' => instance.pointer,
+          'schema_pointer' => instance.schema_pointer,
+          'root_schema' => root,
           'type' => type,
         }
       end
@@ -212,20 +220,41 @@ module JSONSchemer
         ref_uri = join_uri(instance.parent_uri, ref)
 
         if valid_json_pointer?(ref_uri.fragment)
-          ref_pointer = Hana::Pointer.new(URI.unescape(ref_uri.fragment || ''))
+          ref_pointer = Hana::Pointer.new(URI.unescape(ref_uri.fragment))
           if ref.start_with?('#')
-            validate_instance(instance.merge(schema: ref_pointer.eval(root), parent_uri: pointer_uri(root, ref_pointer)), &Proc.new)
+            subinstance = instance.merge(
+              schema: ref_pointer.eval(root),
+              schema_pointer: ref_uri.fragment,
+              parent_uri: pointer_uri(root, ref_pointer)
+            )
+            validate_instance(subinstance, &Proc.new)
           else
             ref_root = ref_resolver.call(ref_uri)
             ref_object = child(ref_root)
-            ref_object.validate_instance(instance.merge(schema: ref_pointer.eval(ref_root), parent_uri: pointer_uri(ref_root, ref_pointer)), &Proc.new)
+            subinstance = instance.merge(
+              schema: ref_pointer.eval(ref_root),
+              schema_pointer: ref_uri.fragment,
+              parent_uri: pointer_uri(ref_root, ref_pointer)
+            )
+            ref_object.validate_instance(subinstance, &Proc.new)
           end
-        elsif ids.key?(ref_uri.to_s)
-          validate_instance(instance.merge(schema: ids.fetch(ref_uri.to_s), parent_uri: ref_uri), &Proc.new)
+        elsif id = ids[ref_uri.to_s]
+          subinstance = instance.merge(
+            schema: id.fetch(:schema),
+            schema_pointer: id.fetch(:pointer),
+            parent_uri: ref_uri
+          )
+          validate_instance(subinstance, &Proc.new)
         else
           ref_root = ref_resolver.call(ref_uri)
           ref_object = child(ref_root)
-          ref_object.validate_instance(instance.merge(schema: ref_object.ids.fetch(ref_uri.to_s, ref_root), parent_uri: ref_uri), &Proc.new)
+          id = ref_object.ids[ref_uri.to_s] || { schema: ref_root, pointer: '' }
+          subinstance = instance.merge(
+            schema: id.fetch(:schema),
+            schema_pointer: id.fetch(:pointer),
+            parent_uri: ref_uri
+          )
+          ref_object.validate_instance(subinstance, &Proc.new)
         end
       end
 
@@ -354,16 +383,34 @@ module JSONSchemer
         if items.is_a?(Array)
           data.each_with_index do |item, index|
             if index < items.size
-              validate_instance(instance.merge(data: item, schema: items[index], pointer: "#{instance.pointer}/#{index}"), &block)
+              subinstance = instance.merge(
+                data: item,
+                data_pointer: "#{instance.data_pointer}/#{index}",
+                schema: items[index],
+                schema_pointer: "#{instance.schema_pointer}/items/#{index}"
+              )
+              validate_instance(subinstance, &block)
             elsif !additional_items.nil?
-              validate_instance(instance.merge(data: item, schema: additional_items, pointer: "#{instance.pointer}/#{index}"), &block)
+              subinstance = instance.merge(
+                data: item,
+                data_pointer: "#{instance.data_pointer}/#{index}",
+                schema: additional_items,
+                schema_pointer: "#{instance.schema_pointer}/additionalItems"
+              )
+              validate_instance(subinstance, &block)
             else
               break
             end
           end
         elsif !items.nil?
           data.each_with_index do |item, index|
-            validate_instance(instance.merge(data: item, schema: items, pointer: "#{instance.pointer}/#{index}"), &block)
+            subinstance = instance.merge(
+              data: item,
+              data_pointer: "#{instance.data_pointer}/#{index}",
+              schema: items,
+              schema_pointer: "#{instance.schema_pointer}/items"
+            )
+            validate_instance(subinstance, &block)
           end
         end
       end
@@ -391,7 +438,8 @@ module JSONSchemer
           dependencies.each do |key, value|
             next unless data.key?(key)
             subschema = value.is_a?(Array) ? { 'required' => value } : value
-            validate_instance(instance.merge(schema: subschema), &block)
+            subinstance = instance.merge(schema: subschema, schema_pointer: "#{instance.schema_pointer}/dependencies/#{key}")
+            validate_instance(subinstance, &block)
           end
         end
 
@@ -401,22 +449,41 @@ module JSONSchemer
 
         regex_pattern_properties = nil
         data.each do |key, value|
-          validate_instance(instance.merge(data: key, schema: property_names), &block) unless property_names.nil?
+          unless property_names.nil?
+            subinstance = instance.merge(
+              data: key,
+              schema: property_names,
+              schema_pointer: "#{instance.schema_pointer}/propertyNames"
+            )
+            validate_instance(subinstance, &block)
+          end
 
           matched_key = false
 
           if properties && properties.key?(key)
-            validate_instance(instance.merge(data: value, schema: properties[key], pointer: "#{instance.pointer}/#{key}"), &block)
+            subinstance = instance.merge(
+              data: value,
+              data_pointer: "#{instance.data_pointer}/#{key}",
+              schema: properties[key],
+              schema_pointer: "#{instance.schema_pointer}/properties/#{key}"
+            )
+            validate_instance(subinstance, &block)
             matched_key = true
           end
 
           if pattern_properties
             regex_pattern_properties ||= pattern_properties.map do |pattern, property_schema|
-              [Regexp.new(pattern), property_schema]
+              [pattern, Regexp.new(pattern), property_schema]
             end
-            regex_pattern_properties.each do |regex, property_schema|
+            regex_pattern_properties.each do |pattern, regex, property_schema|
               if regex =~ key
-                validate_instance(instance.merge(data: value, schema: property_schema, pointer: "#{instance.pointer}/#{key}"), &block)
+                subinstance = instance.merge(
+                  data: value,
+                  data_pointer: "#{instance.data_pointer}/#{key}",
+                  schema: property_schema,
+                  schema_pointer: "#{instance.schema_pointer}/patternProperties/#{pattern}"
+                )
+                validate_instance(subinstance, &block)
                 matched_key = true
               end
             end
@@ -424,7 +491,15 @@ module JSONSchemer
 
           next if matched_key
 
-          validate_instance(instance.merge(data: value, schema: additional_properties, pointer: "#{instance.pointer}/#{key}"), &block) unless additional_properties.nil?
+          unless additional_properties.nil?
+            subinstance = instance.merge(
+              data: value,
+              data_pointer: "#{instance.data_pointer}/#{key}",
+              schema: additional_properties,
+              schema_pointer: "#{instance.schema_pointer}/additionalProperties"
+            )
+            validate_instance(subinstance, &block)
+          end
         end
       end
 
@@ -460,15 +535,20 @@ module JSONSchemer
         uri_parts ? URI.join(*uri_parts) : nil
       end
 
-      def resolve_ids(schema, ids = {}, parent_uri = nil)
+      def resolve_ids(schema, ids = {}, parent_uri = nil, pointer = '')
         if schema.is_a?(Array)
-          schema.each { |subschema| resolve_ids(subschema, ids, parent_uri) }
+          schema.each_with_index { |subschema, index| resolve_ids(subschema, ids, parent_uri, "#{pointer}/#{index}") }
         elsif schema.is_a?(Hash)
           id = schema[id_keyword]
           uri = join_uri(parent_uri, id)
-          ids[uri.to_s] = schema unless uri == parent_uri
+          unless uri == parent_uri
+            ids[uri.to_s] = {
+              schema: schema,
+              pointer: pointer
+            }
+          end
           if definitions = schema['definitions']
-            definitions.each_value { |subschema| resolve_ids(subschema, ids, uri) }
+            definitions.each { |key, subschema| resolve_ids(subschema, ids, uri, "#{pointer}/definitions/#{key}") }
           end
         end
         ids
