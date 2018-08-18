@@ -40,7 +40,7 @@ module JSONSchemer
         @format = format
         @formats = formats
         @keywords = keywords
-        @ref_resolver = ref_resolver == 'net/http' ? NET_HTTP_REF_RESOLVER : ref_resolver
+        @ref_resolver = ref_resolver == 'net/http' ? CachedRefResolver.new(&NET_HTTP_REF_RESOLVER) : ref_resolver
       end
 
       def valid?(data)
