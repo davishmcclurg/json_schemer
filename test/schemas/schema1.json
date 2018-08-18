@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "allOf": [{ "$ref": "subschemas/schema2.json" }],
+  "properties": {
+    "a": { "$ref": "./subschemas/schema3.json" }
+  },
+  "required": ["a"]
+}

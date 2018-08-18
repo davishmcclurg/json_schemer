@@ -10,6 +10,7 @@ require 'json_schemer/schema/draft7'
 module JSONSchemer
   class UnsupportedMetaSchema < StandardError; end
   class UnknownRef < StandardError; end
+  class InvalidFileURI < StandardError; end
 
   DRAFT_CLASS_BY_META_SCHEMA = {
     'http://json-schema.org/draft-04/schema#' => Schema::Draft4,
@@ -19,9 +20,28 @@ module JSONSchemer
 
   DEFAULT_META_SCHEMA = 'http://json-schema.org/draft-07/schema#'
 
-  def self.schema(schema, **options)
-    meta_schema = schema.is_a?(Hash) && schema.key?('$schema') ? schema['$schema'] : DEFAULT_META_SCHEMA
-    draft_class = DRAFT_CLASS_BY_META_SCHEMA[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
-    draft_class.new(schema, **options)
+  FILE_REF_RESOLVER = proc do |uri|
+    raise InvalidFileURI, 'must use `file` scheme' unless uri.scheme == 'file'
+    raise InvalidFileURI, 'cannot have a host (use `file:///`)' if uri.host
+    JSON.parse(File.read(uri.to_s.slice(7..-1)))
+  end
+
+  class << self
+    def schema(schema, **options)
+      if schema.is_a?(String) && !options.key?(:ref_resolver)
+        uri = URI.parse(schema)
+        schema = FILE_REF_RESOLVER.call(uri)
+        schema[draft_class(schema)::ID_KEYWORD] ||= uri.to_s
+        options[:ref_resolver] = FILE_REF_RESOLVER
+      end
+      draft_class(schema).new(schema, **options)
+    end
+
+  private
+  
+    def draft_class(schema)
+      meta_schema = schema.is_a?(Hash) && schema.key?('$schema') ? schema['$schema'] : DEFAULT_META_SCHEMA
+      DRAFT_CLASS_BY_META_SCHEMA[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
+    end
   end
 end

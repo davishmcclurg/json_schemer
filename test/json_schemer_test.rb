@@ -357,6 +357,19 @@ class JSONSchemerTest < Minitest::Test
     assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/abc', '/properties/x/additionalProperties']
   end
 
+  def test_it_raises_for_invalid_file_uris
+    assert_raises(JSONSchemer::InvalidFileURI) { JSONSchemer.schema('/path') }
+    assert_raises(JSONSchemer::InvalidFileURI) { JSONSchemer.schema('file://host/path') }
+  end
+
+  def test_it_handles_file_uris
+    schema = JSONSchemer.schema("file://#{File.join(__dir__, 'schemas', 'schema1.json')}")
+    assert schema.validate({ 'id' => 1 }).first.fetch('type') == 'required'
+    assert schema.validate({ 'a' => 'abc' }).first.fetch('type') == 'allOf'
+    assert schema.validate({ 'id' => 1, 'a' => 1 }).first.fetch('type') == 'string'
+    assert schema.valid?({ 'id' => 1, 'a' => 'abc' })
+  end
+
   {
     'draft4' => JSONSchemer::Schema::Draft4,
     'draft6' => JSONSchemer::Schema::Draft6,
