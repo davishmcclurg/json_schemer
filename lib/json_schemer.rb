@@ -23,7 +23,7 @@ module JSONSchemer
   FILE_REF_RESOLVER = proc do |uri|
     raise InvalidFileURI, 'must use `file` scheme' unless uri.scheme == 'file'
     raise InvalidFileURI, 'cannot have a host (use `file:///`)' if uri.host
-    JSON.parse(File.read(uri.to_s.slice(7..-1)))
+    JSON.parse(File.read(uri.path))
   end
 
   class << self
