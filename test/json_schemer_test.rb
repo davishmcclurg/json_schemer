@@ -357,6 +357,29 @@ class JSONSchemerTest < Minitest::Test
     assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/abc', '/properties/x/additionalProperties']
   end
 
+  def test_cached_ref_resolver
+    schema = {
+      'properties' => {
+        'x' => { '$ref' => 'http://example.com/1' },
+        'y' => { '$ref' => 'http://example.com/1' },
+        'z' => { '$ref' => 'http://example.com/2' }
+      }
+    }
+    data = { 'x' => '', 'y' => '', 'z' => '' }
+    counts = Hash.new(0)
+    ref_resolver = proc do |uri|
+      counts[uri.to_s] += 1
+      { 'type' => 'string' }
+    end
+    assert JSONSchemer.schema(schema, :ref_resolver => ref_resolver).valid?(data)
+    assert counts['http://example.com/1'] == 2
+    assert counts['http://example.com/2'] == 1
+    counts.clear
+    assert JSONSchemer.schema(schema, :ref_resolver => JSONSchemer::CachedRefResolver.new(&ref_resolver)).valid?(data)
+    assert counts['http://example.com/1'] == 1
+    assert counts['http://example.com/2'] == 1
+  end
+
   {
     'draft4' => JSONSchemer::Schema::Draft4,
     'draft6' => JSONSchemer::Schema::Draft6,
@@ -366,14 +389,10 @@ class JSONSchemerTest < Minitest::Test
       JSON.parse(File.read(file)).each_with_index do |defn, defn_index|
         defn.fetch('tests').each_with_index do |test, test_index|
           define_method("test_json_schema_test_suite_#{version}_#{file_index}_#{defn_index}_#{test_index}") do
-            errors = begin
-              draft_class.new(
-                defn.fetch('schema'),
-                ref_resolver: 'net/http'
-              ).validate(test.fetch('data')).to_a
-            rescue StandardError, NotImplementedError => e
-              [e.class, e.message]
-            end
+            errors = draft_class.new(
+              defn.fetch('schema'),
+              ref_resolver: 'net/http'
+            ).validate(test.fetch('data')).to_a
             if test.fetch('valid')
               assert_empty(errors, file)
             else
