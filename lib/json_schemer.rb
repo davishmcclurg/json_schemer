@@ -31,15 +31,16 @@ module JSONSchemer
     def schema(schema, **options)
       if schema.is_a?(String) && !options.key?(:ref_resolver)
         uri = URI.parse(schema)
-        schema = FILE_REF_RESOLVER.call(uri)
+        ref_resolver = CachedRefResolver.new(&FILE_REF_RESOLVER)
+        schema = ref_resolver.call(uri)
         schema[draft_class(schema)::ID_KEYWORD] ||= uri.to_s
-        options[:ref_resolver] = FILE_REF_RESOLVER
+        options[:ref_resolver] = ref_resolver
       end
       draft_class(schema).new(schema, **options)
     end
 
   private
-  
+
     def draft_class(schema)
       meta_schema = schema.is_a?(Hash) && schema.key?('$schema') ? schema['$schema'] : DEFAULT_META_SCHEMA
       DRAFT_CLASS_BY_META_SCHEMA[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
