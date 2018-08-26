@@ -21,7 +21,7 @@ module JSONSchemer
 
   DEFAULT_META_SCHEMA = 'http://json-schema.org/draft-07/schema#'
 
-  FILE_REF_RESOLVER = proc do |uri|
+  FILE_URI_REF_RESOLVER = proc do |uri|
     raise InvalidFileURI, 'must use `file` scheme' unless uri.scheme == 'file'
     raise InvalidFileURI, 'cannot have a host (use `file:///`)' if uri.host
     JSON.parse(File.read(uri.path))
@@ -29,12 +29,16 @@ module JSONSchemer
 
   class << self
     def schema(schema, **options)
-      if schema.is_a?(String) && !options.key?(:ref_resolver)
-        uri = URI.parse(schema)
-        ref_resolver = CachedRefResolver.new(&FILE_REF_RESOLVER)
-        schema = ref_resolver.call(uri)
+      if schema.is_a?(Pathname)
+        uri = URI.parse("file://#{schema.realpath}")
+        if options.key?(:ref_resolver)
+          schema = FILE_URI_REF_RESOLVER.call(uri)
+        else
+          ref_resolver = CachedRefResolver.new(&FILE_URI_REF_RESOLVER)
+          schema = ref_resolver.call(uri)
+          options[:ref_resolver] = ref_resolver
+        end
         schema[draft_class(schema)::ID_KEYWORD] ||= uri.to_s
-        options[:ref_resolver] = ref_resolver
       end
       draft_class(schema).new(schema, **options)
     end

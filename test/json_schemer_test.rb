@@ -358,16 +358,30 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_it_raises_for_invalid_file_uris
-    assert_raises(JSONSchemer::InvalidFileURI) { JSONSchemer.schema('/path') }
-    assert_raises(JSONSchemer::InvalidFileURI) { JSONSchemer.schema('file://host/path') }
+    schemas = Pathname.new(__dir__).join('schemas')
+    assert_raises(JSONSchemer::InvalidFileURI) { JSONSchemer.schema(schemas.join('file_uri_ref_invalid_host.json')).valid?({}) }
+    assert_raises(JSONSchemer::InvalidFileURI) { JSONSchemer.schema(schemas.join('file_uri_ref_invalid_scheme.json')).valid?({}) }
   end
 
-  def test_it_handles_file_uris
-    schema = JSONSchemer.schema("file://#{File.join(__dir__, 'schemas', 'schema1.json')}")
+  def test_it_handles_pathnames
+    schema = JSONSchemer.schema(Pathname.new(__dir__).join('schemas', 'schema1.json'))
     assert schema.validate({ 'id' => 1 }).first.fetch('type') == 'required'
     assert schema.validate({ 'a' => 'abc' }).first.fetch('type') == 'allOf'
     assert schema.validate({ 'id' => 1, 'a' => 1 }).first.fetch('type') == 'string'
     assert schema.valid?({ 'id' => 1, 'a' => 'abc' })
+  end
+
+  def test_it_allows_custom_ref_resolver_with_pathnames
+    count = 0
+    schema = JSONSchemer.schema(
+      Pathname.new(__dir__).join('schemas', 'schema1.json'),
+      :ref_resolver => proc do |uri|
+        count += 1
+        true
+      end
+    )
+    assert schema.valid?({ 'id' => 1, 'a' => 'abc' })
+    assert count == 2
   end
 
   def test_cached_ref_resolver
