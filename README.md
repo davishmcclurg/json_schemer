@@ -46,6 +46,12 @@ schemer.valid?({ 'abc' => 10 })
 
 schemer.validate({ 'abc' => 10 }).to_a
 # => [{"data"=>10, "schema"=>{"type"=>"integer", "minimum"=>11}, "pointer"=>"#/abc", "type"=>"minimum"}]
+
+# schema files
+
+schema = Pathname.new('/path/to/schema.json')
+schemer = JSONSchemer.schema(schema)
+
 ```
 
 ## Options
