@@ -384,6 +384,12 @@ class JSONSchemerTest < Minitest::Test
     assert count == 2
   end
 
+  def test_it_handles_json_strings
+    schema = JSONSchemer.schema('{ "type": "integer" }')
+    assert schema.valid?(1)
+    assert !schema.valid?('1')
+  end
+
   def test_cached_ref_resolver
     schema = {
       'properties' => {

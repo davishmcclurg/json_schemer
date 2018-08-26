@@ -29,7 +29,10 @@ module JSONSchemer
 
   class << self
     def schema(schema, **options)
-      if schema.is_a?(Pathname)
+      case schema
+      when String
+        schema = JSON.parse(schema)
+      when Pathname
         uri = URI.parse("file://#{schema.realpath}")
         if options.key?(:ref_resolver)
           schema = FILE_URI_REF_RESOLVER.call(uri)
