@@ -390,6 +390,17 @@ class JSONSchemerTest < Minitest::Test
     assert !schema.valid?('1')
   end
 
+  def test_it_checks_for_symbol_keys
+    assert_raises(JSONSchemer::InvalidSymbolKey) { JSONSchemer.schema({ :type => 'integer' }) }
+    schema = JSONSchemer.schema(
+      { '$ref' => 'http://example.com' },
+      :ref_resolver => proc do |uri|
+        { :type => 'integer' }
+      end
+    )
+    assert_raises(JSONSchemer::InvalidSymbolKey) { schema.valid?(1) }
+  end
+
   def test_cached_ref_resolver
     schema = {
       'properties' => {

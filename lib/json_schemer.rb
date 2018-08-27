@@ -12,6 +12,7 @@ module JSONSchemer
   class UnsupportedMetaSchema < StandardError; end
   class UnknownRef < StandardError; end
   class InvalidFileURI < StandardError; end
+  class InvalidSymbolKey < StandardError; end
 
   DRAFT_CLASS_BY_META_SCHEMA = {
     'http://json-schema.org/draft-04/schema#' => Schema::Draft4,
