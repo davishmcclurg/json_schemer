@@ -424,6 +424,20 @@ class JSONSchemerTest < Minitest::Test
     assert counts['http://example.com/2'] == 1
   end
 
+  def test_it_handles_regex_anchors
+    schema = JSONSchemer.schema({ 'pattern' => '^foo$' })
+    assert schema.valid?('foo')
+    assert !schema.valid?(' foo')
+    assert !schema.valid?('foo ')
+    assert !schema.valid?("foo\nfoo\nfoo")
+
+    schema = JSONSchemer.schema({ 'pattern' => '\Afoo\z' })
+    assert schema.valid?('Afooz')
+    assert !schema.valid?('foo')
+    assert !schema.valid?('Afoo')
+    assert !schema.valid?('fooz')
+  end
+
   {
     'draft4' => JSONSchemer::Schema::Draft4,
     'draft6' => JSONSchemer::Schema::Draft6,

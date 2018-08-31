@@ -29,6 +29,13 @@ module JSONSchemer
       NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }.freeze
       BOOLEANS = Set[true, false].freeze
 
+      RUBY_REGEX_ANCHORS_TO_ECMA_262 = {
+        :bos => 'A',
+        :eos => 'z',
+        :bol => '\A',
+        :eol => '\z'
+      }.freeze
+
       def initialize(
         schema,
         format: true,
@@ -332,7 +339,7 @@ module JSONSchemer
 
         yield error(instance, 'maxLength') if max_length && data.size > max_length
         yield error(instance, 'minLength') if min_length && data.size < min_length
-        yield error(instance, 'pattern') if pattern && Regexp.new(pattern) !~ data
+        yield error(instance, 'pattern') if pattern && ecma_262_regex(pattern) !~ data
         yield error(instance, 'format') if format? && spec_format?(format) && !valid_spec_format?(data, format)
 
         if content_encoding || content_media_type
@@ -474,7 +481,7 @@ module JSONSchemer
 
           if pattern_properties
             regex_pattern_properties ||= pattern_properties.map do |pattern, property_schema|
-              [pattern, Regexp.new(pattern), property_schema]
+              [pattern, ecma_262_regex(pattern), property_schema]
             end
             regex_pattern_properties.each do |pattern, regex, property_schema|
               if regex =~ key
@@ -511,6 +518,15 @@ module JSONSchemer
           raise e unless e.message == 'invalid base64'
           nil
         end
+      end
+
+      def ecma_262_regex(pattern)
+        @ecma_262_regex ||= {}
+        @ecma_262_regex[pattern] ||= Regexp.new(
+          Regexp::Scanner.scan(pattern).map do |type, token, text|
+            type == :anchor ? RUBY_REGEX_ANCHORS_TO_ECMA_262.fetch(token, text) : text
+          end.join
+        )
       end
 
       def join_uri(a, b)
