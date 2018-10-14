@@ -49,6 +49,8 @@ schemer.validate({ 'abc' => 10 }).to_a
 
 # schema files
 
+require 'pathname'
+
 schema = Pathname.new('/path/to/schema.json')
 schemer = JSONSchemer.schema(schema)
 
