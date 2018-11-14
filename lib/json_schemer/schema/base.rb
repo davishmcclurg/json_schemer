@@ -228,7 +228,7 @@ module JSONSchemer
         ref_uri = join_uri(instance.parent_uri, ref)
 
         if valid_json_pointer?(ref_uri.fragment)
-          ref_pointer = Hana::Pointer.new(URI.unescape(ref_uri.fragment))
+          ref_pointer = Hana::Pointer.new(URI.decode_www_form_component(ref_uri.fragment))
           if ref.start_with?('#')
             subinstance = instance.merge(
               schema: ref_pointer.eval(root),

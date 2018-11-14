@@ -1,5 +1,6 @@
 require 'test_helper'
 require 'json'
+require 'pathname'
 
 class JSONSchemerTest < Minitest::Test
   def test_that_it_has_a_version_number
