@@ -7,6 +7,7 @@ require 'json_schemer/schema/base'
 require 'json_schemer/schema/draft4'
 require 'json_schemer/schema/draft6'
 require 'json_schemer/schema/draft7'
+require 'pathname'
 
 module JSONSchemer
   class UnsupportedMetaSchema < StandardError; end
