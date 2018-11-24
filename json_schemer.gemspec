@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   # spec.add_development_dependency "json_schema", "~> 0.17.0"
   # spec.add_development_dependency "json_validation", "~> 0.1.0"
   # spec.add_development_dependency "jsonschema", "~> 2.0.2"
+  # spec.add_development_dependency "rj_schema", "~> 0.2.0"
 
   spec.add_runtime_dependency "ecma-re-validator", "~> 0.2.0"
   spec.add_runtime_dependency "hana", "~> 1.3.3"
