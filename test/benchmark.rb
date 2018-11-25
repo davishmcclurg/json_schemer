@@ -8,6 +8,7 @@ require 'json-schema'
 require 'json_schema'
 require 'json_schemer'
 require 'json_validation'
+require 'rj_schema'
 # require 'jsonschema'
 
 # json_validation
@@ -54,6 +55,7 @@ Benchmark.ips do |x|
     initialized_json_schema = JsonSchema.parse!(schema).tap(&:expand_references!)
     initialized_json_schemer = JSONSchemer.schema(schema)
     initialized_json_validation = JsonValidation.build_validator(schema)
+    initialized_rj_schema = RjSchema::Validator.new('schema' => schema)
 
     # jschema
 
@@ -94,7 +96,7 @@ Benchmark.ips do |x|
       raise if !success || errors.any?
     end
 
-    x.report("json_schem, uninitialized, #{name}, invalid") do
+    x.report("json_schema, uninitialized, #{name}, invalid") do
       success, errors = JsonSchema.parse!(schema).tap(&:expand_references!).validate(invalid)
       raise if success || errors.empty?
     end
@@ -104,7 +106,7 @@ Benchmark.ips do |x|
       raise if !success || errors.any?
     end
 
-    x.report("json_schem, initialized, #{name}, invalid") do
+    x.report("json_schema, initialized, #{name}, invalid") do
       success, errors = initialized_json_schema.validate(invalid)
       raise if success || errors.empty?
     end
@@ -147,6 +149,28 @@ Benchmark.ips do |x|
 
     x.report("json_validation, initialized, #{name}, invalid") do
       raise if initialized_json_validation.validate(invalid)
+    end
+
+    # rj_schema
+
+    x.report("rj_schema, uninitialized, #{name}, valid") do
+      errors = RjSchema::Validator.new.validate(schema, valid)
+      raise if errors.any?
+    end
+
+    x.report("rj_schema, uninitialized, #{name}, invalid") do
+      errors = RjSchema::Validator.new.validate(schema, invalid)
+      raise if errors.empty?
+    end
+
+    x.report("rj_schema, initialized, #{name}, valid") do
+      errors = initialized_rj_schema.validate(:"schema", valid)
+      raise if errors.any?
+    end
+
+    x.report("rj_schema, initialized, #{name}, invalid") do
+      errors = initialized_rj_schema.validate(:"schema", invalid)
+      raise if errors.empty?
     end
 
     # jsonschema
