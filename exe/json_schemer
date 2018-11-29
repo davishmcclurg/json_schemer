@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+require "json_schemer"
+require "json"
+
+def usage!
+  puts "Usage: jsonschemer SCHEMA FILE..."
+  exit 1
+end
+
+def load(filename)
+  File.open(filename) do |f|
+    if filename =~ /\.ya?ml$/i
+      require "yaml"
+      YAML.load(f, filename)
+    else
+      JSON.load(f)
+    end
+  end
+end
+
+def symbolize_hash(h)
+  h.map { |k, v| [k.to_sym, v] }.to_h
+end
+
+schema = load(ARGV[0] || usage!)
+schemer = JSONSchemer.schema(schema)
+
+ARGV[1..-1].each do |fname|
+  data_o = load(fname)
+  errors = schemer.validate(data_o)
+  errors.each do |e|
+    fmt = <<~EOS
+      Validation error:
+        file:             %{file}
+        type:             %{type}
+        data:             %{data}
+          data pointer:   %{data_pointer}
+        schema:           %{schema}
+          schema pointer: %{schema_pointer}
+      EOS
+    print format(fmt, symbolize_hash(e.merge("file" => fname)))
+  end
+end
