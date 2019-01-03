@@ -25,7 +25,7 @@ module JSONSchemer
 
   FILE_URI_REF_RESOLVER = proc do |uri|
     raise InvalidFileURI, 'must use `file` scheme' unless uri.scheme == 'file'
-    raise InvalidFileURI, 'cannot have a host (use `file:///`)' if uri.host
+    raise InvalidFileURI, 'cannot have a host (use `file:///`)' if uri.host && !uri.host.empty?
     JSON.parse(File.read(uri.path))
   end
 
