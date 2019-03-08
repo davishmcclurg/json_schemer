@@ -372,6 +372,13 @@ class JSONSchemerTest < Minitest::Test
     assert schema.valid?({ 'id' => 1, 'a' => 'abc' })
   end
 
+  def test_required_validation_adds_missing_keys
+    schema = JSONSchemer.schema(Pathname.new(__dir__).join('schemas', 'schema1.json'))
+    error = schema.validate({ 'id' => 1 }).first
+    assert error.fetch('type') == 'required'
+    assert error.fetch('details') == { 'missing_keys' => ['a'] }
+  end
+
   def test_it_allows_custom_ref_resolver_with_pathnames
     count = 0
     schema = JSONSchemer.schema(
