@@ -12,6 +12,7 @@ require 'pathname'
 module JSONSchemer
   class UnsupportedMetaSchema < StandardError; end
   class UnknownRef < StandardError; end
+  class InvalidRefResolution < StandardError; end
   class InvalidFileURI < StandardError; end
   class InvalidSymbolKey < StandardError; end
 

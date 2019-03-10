@@ -237,7 +237,7 @@ module JSONSchemer
             )
             validate_instance(subinstance, &Proc.new)
           else
-            ref_root = ref_resolver.call(ref_uri)
+            ref_root = resolve_ref(ref_uri)
             ref_object = child(ref_root)
             subinstance = instance.merge(
               schema: ref_pointer.eval(ref_root),
@@ -254,7 +254,7 @@ module JSONSchemer
           )
           validate_instance(subinstance, &Proc.new)
         else
-          ref_root = ref_resolver.call(ref_uri)
+          ref_root = resolve_ref(ref_uri)
           ref_object = child(ref_root)
           id = ref_object.ids[ref_uri.to_s] || { schema: ref_root, pointer: '' }
           subinstance = instance.merge(
@@ -569,6 +569,12 @@ module JSONSchemer
           end
         end
         ids
+      end
+
+      def resolve_ref(uri)
+        ref_resolver.call(uri).tap do |schema|
+          raise InvalidRefResolution, uri.to_s if schema.nil?
+        end
       end
     end
   end

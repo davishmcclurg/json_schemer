@@ -385,6 +385,14 @@ class JSONSchemerTest < Minitest::Test
     assert count == 2
   end
 
+  def test_it_raises_for_invalid_ref_resolution
+    schema = JSONSchemer.schema(
+      { '$ref' => 'http://example.com' },
+      :ref_resolver => proc { |uri| nil }
+    )
+    assert_raises(JSONSchemer::InvalidRefResolution) { schema.valid?('value') }
+  end
+
   def test_it_handles_json_strings
     schema = JSONSchemer.schema('{ "type": "integer" }')
     assert schema.valid?(1)
