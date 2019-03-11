@@ -32,13 +32,13 @@ module JSONSchemer
         yield error(instance, 'exclusiveMinimum') if exclusive_minimum && instance.data <= minimum
       end
 
-      def validate_integer(instance)
+      def validate_integer(instance, &block)
         if !instance.data.is_a?(Integer)
           yield error(instance, 'integer')
           return
         end
 
-        validate_numeric(instance, &Proc.new)
+        validate_numeric(instance, &block)
       end
     end
   end

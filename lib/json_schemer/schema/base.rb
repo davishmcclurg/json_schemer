@@ -58,7 +58,7 @@ module JSONSchemer
         validate_instance(instance).none?
       end
 
-      def validate_instance(instance)
+      def validate_instance(instance, &block)
         return enum_for(:validate_instance, instance) unless block_given?
 
         schema = instance.schema
@@ -87,12 +87,12 @@ module JSONSchemer
         instance.parent_uri = join_uri(instance.parent_uri, id)
 
         if ref
-          validate_ref(instance, ref, &Proc.new)
+          validate_ref(instance, ref, &block)
           return
         end
 
         if format? && custom_format?(format)
-          validate_custom_format(instance, formats.fetch(format), &Proc.new)
+          validate_custom_format(instance, formats.fetch(format), &block)
         end
 
         if keywords
@@ -126,12 +126,12 @@ module JSONSchemer
 
         case type
         when nil
-          validate_class(instance, &Proc.new)
+          validate_class(instance, &block)
         when String
-          validate_type(instance, type, &Proc.new)
+          validate_type(instance, type, &block)
         when Array
           if valid_type = type.find { |subtype| valid_instance?(instance.merge(schema: { 'type' => subtype })) }
-            validate_type(instance, valid_type, &Proc.new)
+            validate_type(instance, valid_type, &block)
           else
             yield error(instance, 'type')
           end
@@ -185,41 +185,41 @@ module JSONSchemer
         error
       end
 
-      def validate_class(instance)
+      def validate_class(instance, &block)
         case instance.data
         when Integer
-          validate_integer(instance, &Proc.new)
+          validate_integer(instance, &block)
         when Numeric
-          validate_number(instance, &Proc.new)
+          validate_number(instance, &block)
         when String
-          validate_string(instance, &Proc.new)
+          validate_string(instance, &block)
         when Array
-          validate_array(instance, &Proc.new)
+          validate_array(instance, &block)
         when Hash
-          validate_object(instance, &Proc.new)
+          validate_object(instance, &block)
         end
       end
 
-      def validate_type(instance, type)
+      def validate_type(instance, type, &block)
         case type
         when 'null'
           yield error(instance, 'null') unless instance.data.nil?
         when 'boolean'
           yield error(instance, 'boolean') unless BOOLEANS.include?(instance.data)
         when 'number'
-          validate_number(instance, &Proc.new)
+          validate_number(instance, &block)
         when 'integer'
-          validate_integer(instance, &Proc.new)
+          validate_integer(instance, &block)
         when 'string'
-          validate_string(instance, &Proc.new)
+          validate_string(instance, &block)
         when 'array'
-          validate_array(instance, &Proc.new)
+          validate_array(instance, &block)
         when 'object'
-          validate_object(instance, &Proc.new)
+          validate_object(instance, &block)
         end
       end
 
-      def validate_ref(instance, ref)
+      def validate_ref(instance, ref, &block)
         ref_uri = join_uri(instance.parent_uri, ref)
 
         if valid_json_pointer?(ref_uri.fragment)
@@ -230,7 +230,7 @@ module JSONSchemer
               schema_pointer: ref_uri.fragment,
               parent_uri: pointer_uri(root, ref_pointer)
             )
-            validate_instance(subinstance, &Proc.new)
+            validate_instance(subinstance, &block)
           else
             ref_root = resolve_ref(ref_uri)
             ref_object = child(ref_root)
@@ -239,7 +239,7 @@ module JSONSchemer
               schema_pointer: ref_uri.fragment,
               parent_uri: pointer_uri(ref_root, ref_pointer)
             )
-            ref_object.validate_instance(subinstance, &Proc.new)
+            ref_object.validate_instance(subinstance, &block)
           end
         elsif id = ids[ref_uri.to_s]
           subinstance = instance.merge(
@@ -247,7 +247,7 @@ module JSONSchemer
             schema_pointer: id.fetch(:pointer),
             parent_uri: ref_uri
           )
-          validate_instance(subinstance, &Proc.new)
+          validate_instance(subinstance, &block)
         else
           ref_root = resolve_ref(ref_uri)
           ref_object = child(ref_root)
@@ -257,7 +257,7 @@ module JSONSchemer
             schema_pointer: id.fetch(:pointer),
             parent_uri: ref_uri
           )
-          ref_object.validate_instance(subinstance, &Proc.new)
+          ref_object.validate_instance(subinstance, &block)
         end
       end
 
@@ -273,7 +273,7 @@ module JSONSchemer
         yield error(instance, 'exclusiveMinimum') if instance.data <= exclusive_minimum
       end
 
-      def validate_numeric(instance)
+      def validate_numeric(instance, &block)
         schema = instance.schema
         data = instance.data
 
@@ -286,8 +286,8 @@ module JSONSchemer
         yield error(instance, 'maximum') if maximum && data > maximum
         yield error(instance, 'minimum') if minimum && data < minimum
 
-        validate_exclusive_maximum(instance, exclusive_maximum, maximum, &Proc.new) if exclusive_maximum
-        validate_exclusive_minimum(instance, exclusive_minimum, minimum, &Proc.new) if exclusive_minimum
+        validate_exclusive_maximum(instance, exclusive_maximum, maximum, &block) if exclusive_maximum
+        validate_exclusive_minimum(instance, exclusive_minimum, minimum, &block) if exclusive_minimum
 
         if multiple_of
           quotient = data / multiple_of.to_f
@@ -295,16 +295,16 @@ module JSONSchemer
         end
       end
 
-      def validate_number(instance)
+      def validate_number(instance, &block)
         unless instance.data.is_a?(Numeric)
           yield error(instance, 'number')
           return
         end
 
-        validate_numeric(instance, &Proc.new)
+        validate_numeric(instance, &block)
       end
 
-      def validate_integer(instance)
+      def validate_integer(instance, &block)
         data = instance.data
 
         if !data.is_a?(Numeric) || (!data.is_a?(Integer) && data.floor != data)
@@ -312,10 +312,10 @@ module JSONSchemer
           return
         end
 
-        validate_numeric(instance, &Proc.new)
+        validate_numeric(instance, &block)
       end
 
-      def validate_string(instance)
+      def validate_string(instance, &block)
         data = instance.data
 
         unless data.is_a?(String)
