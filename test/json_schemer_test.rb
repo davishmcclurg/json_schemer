@@ -403,7 +403,7 @@ class JSONSchemerTest < Minitest::Test
   def test_it_handles_json_strings
     schema = JSONSchemer.schema('{ "type": "integer" }')
     assert schema.valid?(1)
-    assert !schema.valid?('1')
+    refute schema.valid?('1')
   end
 
   def test_it_checks_for_symbol_keys
@@ -443,15 +443,15 @@ class JSONSchemerTest < Minitest::Test
   def test_it_handles_regex_anchors
     schema = JSONSchemer.schema({ 'pattern' => '^foo$' })
     assert schema.valid?('foo')
-    assert !schema.valid?(' foo')
-    assert !schema.valid?('foo ')
-    assert !schema.valid?("foo\nfoo\nfoo")
+    refute schema.valid?(' foo')
+    refute schema.valid?('foo ')
+    refute schema.valid?("foo\nfoo\nfoo")
 
     schema = JSONSchemer.schema({ 'pattern' => '\Afoo\z' })
     assert schema.valid?('Afooz')
-    assert !schema.valid?('foo')
-    assert !schema.valid?('Afoo')
-    assert !schema.valid?('fooz')
+    refute schema.valid?('foo')
+    refute schema.valid?('Afoo')
+    refute schema.valid?('fooz')
   end
 
   {
