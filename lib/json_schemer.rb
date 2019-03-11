@@ -1,5 +1,17 @@
 # frozen_string_literal: true
 
+require 'base64'
+require 'json'
+require 'net/http'
+require 'pathname'
+require 'time'
+require 'uri'
+
+require 'ecma-re-validator'
+require 'hana'
+require 'ipaddr'
+require 'uri_template'
+
 require 'json_schemer/version'
 require 'json_schemer/format'
 require 'json_schemer/cached_ref_resolver'
@@ -7,7 +19,6 @@ require 'json_schemer/schema/base'
 require 'json_schemer/schema/draft4'
 require 'json_schemer/schema/draft6'
 require 'json_schemer/schema/draft7'
-require 'pathname'
 
 module JSONSchemer
   class UnsupportedMetaSchema < StandardError; end

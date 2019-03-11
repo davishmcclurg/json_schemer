@@ -1,12 +1,5 @@
 # frozen_string_literal: true
 
-require 'base64'
-require 'hana'
-require 'json'
-require 'net/http'
-require 'time'
-require 'uri'
-
 module JSONSchemer
   module Schema
     class Base

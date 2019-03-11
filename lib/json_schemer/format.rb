@@ -1,11 +1,5 @@
 # frozen_string_literal: true
 
-require 'ecma-re-validator'
-require 'ipaddr'
-require 'json'
-require 'time'
-require 'uri_template'
-
 module JSONSchemer
   module Format
     # this is no good
