@@ -570,9 +570,7 @@ module JSONSchemer
       end
 
       def resolve_ref(uri)
-        ref_resolver.call(uri).tap do |schema|
-          raise InvalidRefResolution, uri.to_s if schema.nil?
-        end
+        ref_resolver.call(uri) || raise(InvalidRefResolution, uri.to_s)
       end
     end
   end
