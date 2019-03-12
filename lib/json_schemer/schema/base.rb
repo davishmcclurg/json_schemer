@@ -112,15 +112,40 @@ module JSONSchemer
         yield error(instance, 'enum') if enum && !enum.include?(data)
         yield error(instance, 'const') if schema.key?('const') && schema['const'] != data
 
-        yield error(instance, 'allOf') if all_of && !all_of.all? { |subschema| valid_instance?(instance.merge(schema: subschema)) }
-        yield error(instance, 'anyOf') if any_of && !any_of.any? { |subschema| valid_instance?(instance.merge(schema: subschema)) }
-        yield error(instance, 'oneOf') if one_of && !one_of.one? { |subschema| valid_instance?(instance.merge(schema: subschema)) }
-        yield error(instance, 'not') if !not_schema.nil? && valid_instance?(instance.merge(schema: not_schema))
+        if all_of
+          all_of.each_with_index do |subschema, index|
+            validate_instance(instance.merge(schema: subschema, schema_pointer: "#{instance.schema_pointer}/allOf/#{index}"), &block)
+          end
+        end
+
+        if any_of
+          subschemas = any_of.lazy.with_index.map do |subschema, index|
+            validate_instance(instance.merge(schema: subschema, schema_pointer: "#{instance.schema_pointer}/anyOf/#{index}"))
+          end
+          subschemas.each { |subschema| subschema.each(&block) } unless subschemas.any?(&:none?)
+        end
+
+        if one_of
+          subschemas = one_of.map.with_index do |subschema, index|
+            validate_instance(instance.merge(schema: subschema, schema_pointer: "#{instance.schema_pointer}/oneOf/#{index}"))
+          end
+          valid_subschema_count = subschemas.count(&:none?)
+          if valid_subschema_count > 1
+            yield error(instance, 'oneOf')
+          elsif valid_subschema_count == 0
+            subschemas.each { |subschema| subschema.each(&block) }
+          end
+        end
+
+        unless not_schema.nil?
+          subinstance = instance.merge(schema: not_schema, schema_pointer: "#{instance.schema_pointer}/not")
+          yield error(subinstance, 'not') if valid_instance?(subinstance)
+        end
 
         if if_schema && valid_instance?(instance.merge(schema: if_schema))
-          yield error(instance, 'then') if !then_schema.nil? && !valid_instance?(instance.merge(schema: then_schema))
+          validate_instance(instance.merge(schema: then_schema, schema_pointer: "#{instance.schema_pointer}/then"), &block) unless then_schema.nil?
         elsif if_schema
-          yield error(instance, 'else') if !else_schema.nil? && !valid_instance?(instance.merge(schema: else_schema))
+          validate_instance(instance.merge(schema: else_schema, schema_pointer: "#{instance.schema_pointer}/else"), &block) unless else_schema.nil?
         end
 
         case type

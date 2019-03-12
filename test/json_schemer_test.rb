@@ -367,7 +367,7 @@ class JSONSchemerTest < Minitest::Test
   def test_it_handles_pathnames
     schema = JSONSchemer.schema(Pathname.new(__dir__).join('schemas', 'schema1.json'))
     assert schema.validate({ 'id' => 1 }).first.fetch('type') == 'required'
-    assert schema.validate({ 'a' => 'abc' }).first.fetch('type') == 'allOf'
+    assert schema.validate({ 'a' => 'abc' }).first.fetch('type') == 'required'
     assert schema.validate({ 'id' => 1, 'a' => 1 }).first.fetch('type') == 'string'
     assert schema.valid?({ 'id' => 1, 'a' => 'abc' })
   end
@@ -452,6 +452,81 @@ class JSONSchemerTest < Minitest::Test
     refute schema.valid?('foo')
     refute schema.valid?('Afoo')
     refute schema.valid?('fooz')
+  end
+
+  def test_it_returns_nested_errors
+    root = {
+      'type' => 'object',
+      'required' => [
+        'numberOfModules'
+      ],
+      'properties' => {
+        'numberOfModules' => {
+          'allOf' => [
+            {
+              'not' => {
+                'type' => 'integer',
+                'minimum' => 38
+              }
+            },
+            {
+              'not' => {
+                'type' => 'integer',
+                'maximum' => 37,
+                'minimum' => 25
+              }
+            },
+            {
+              'not' => {
+                'type' => 'integer',
+                'maximum' => 24,
+                'minimum' => 12
+              }
+            }
+          ],
+          'anyOf' => [
+            { 'type' => 'integer' },
+            { 'type' => 'string' }
+          ],
+          'oneOf' => [
+            { 'type' => 'integer' },
+            { 'type' => 'integer' },
+            { 'type' => 'boolean' }
+          ]
+        }
+      }
+    }
+    schema = JSONSchemer.schema(root)
+    assert schema.validate({ 'numberOfModules' => 32 }).first == {
+      'data' => 32,
+      'data_pointer' => '/numberOfModules',
+      'schema' => {
+        'type' => 'integer',
+        'maximum' => 37,
+        'minimum' => 25
+      },
+      'schema_pointer' => '/properties/numberOfModules/allOf/1/not',
+      'root_schema' => root,
+      'type' => 'not'
+    }
+    assert schema.validate({ 'numberOfModules' => true }).first == {
+      'data' => true,
+      'data_pointer' => '/numberOfModules',
+      'schema' => {
+        'type' => 'integer'
+      },
+      'schema_pointer' => '/properties/numberOfModules/anyOf/0',
+      'root_schema' => root,
+      'type' => 'integer'
+    }
+    assert schema.validate({ 'numberOfModules' => 8 }).first == {
+      'data' => 8,
+      'data_pointer' => '/numberOfModules',
+      'schema' => root.fetch('properties').fetch('numberOfModules'),
+      'schema_pointer' => '/properties/numberOfModules',
+      'root_schema' => root,
+      'type' => 'oneOf'
+    }
   end
 
   {
