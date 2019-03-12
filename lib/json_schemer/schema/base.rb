@@ -172,8 +172,8 @@ module JSONSchemer
         )
       end
 
-      def error(instance, type)
-        {
+      def error(instance, type, details = nil)
+        error = {
           'data' => instance.data,
           'data_pointer' => instance.data_pointer,
           'schema' => instance.schema,
@@ -181,6 +181,8 @@ module JSONSchemer
           'root_schema' => root,
           'type' => type,
         }
+        error['details'] = details if details
+        error
       end
 
       def validate_class(instance)
@@ -446,7 +448,10 @@ module JSONSchemer
 
         yield error(instance, 'maxProperties') if max_properties && data.size > max_properties
         yield error(instance, 'minProperties') if min_properties && data.size < min_properties
-        yield error(instance, 'required') if required && required.any? { |key| !data.key?(key) }
+        if required
+          missing_keys = required - data.keys
+          yield error(instance, 'required', 'missing_keys' => missing_keys) if missing_keys.any?
+        end
 
         regex_pattern_properties = nil
         data.each do |key, value|
