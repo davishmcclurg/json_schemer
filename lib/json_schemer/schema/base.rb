@@ -63,13 +63,12 @@ module JSONSchemer
 
         schema = instance.schema
 
-        return if schema == true
         if schema == false
           yield error(instance, 'schema')
           return
         end
 
-        return if schema.empty?
+        return if schema == true || schema.empty?
 
         type = schema['type']
         enum = schema['enum']
@@ -100,7 +99,7 @@ module JSONSchemer
             if schema.key?(keyword)
               result = callable.call(data, schema, instance.pointer)
               if result.is_a?(Array)
-                result.each { |error| yield error }
+                result.each(&block)
               elsif !result
                 yield error(instance, keyword)
               end
