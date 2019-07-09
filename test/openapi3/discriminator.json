@@ -1,0 +1,113 @@
+[
+    {
+        "description": "discriminator with oneOf",
+        "schema": {
+            "pets": {
+                "Cat": { "type": "integer" },
+                "Dog": { "type": "string" }
+            },
+            "properties": {
+                "foo": {
+                    "oneOf": [
+                        { "$ref": "#/pets/Cat" },
+                        { "$ref": "#/pets/Dog" }
+                    ],
+                    "discriminator": {
+                        "propertyName": "petType"
+                    }
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "valid for petType Cat and integer",
+                "data": { "petType": "Cat", "foo": 32 },
+                "valid": true
+            },
+            {
+                "description": "invalid for petType Cat and string",
+                "data": { "petType": "Cat", "foo": "abc" },
+                "valid": false
+            },
+            {
+                "description": "invalid for unknown petType",
+                "data": { "petType": "Porcupine", "foo": 3 },
+                "valid": false
+            }
+        ]
+    },
+    {
+        "description": "discriminator with mapping",
+        "schema": {
+            "pets": {
+                "Cat": { "type": "integer" },
+                "Dog": { "type": "string" },
+                "Lizard": { "type": "boolean" }
+            },
+            "properties": {
+                "foo": {
+                    "oneOf": [
+                        { "$ref": "#/pets/Cat" },
+                        { "$ref": "#/pets/Dog" }
+                    ],
+                    "discriminator": {
+                        "propertyName": "petType"
+                    },
+                    "mapping": {
+                        "dog": "#/pets/Lizard",
+                        "lizard": "#/pets/Lizard"
+                    }
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "valid for petType dog and float",
+                "data": { "petType": "dog", "foo": true },
+                "valid": true
+            },
+            {
+                "description": "invalid for petType dog and string",
+                "data": { "petType": "dog", "foo": "abc" },
+                "valid": false
+            }
+        ]
+    },
+    {
+        "description": "discriminator with anyOf",
+        "schema": {
+            "pets": {
+                "Cat": { "type": "integer" },
+                "Dog": { "type": "string" }
+            },
+            "properties": {
+                "foo": {
+                    "anyOf": [
+                        { "$ref": "#/pets/Cat" },
+                        { "$ref": "#/pets/Dog" }
+                    ],
+                    "discriminator": {
+                        "propertyName": "petType"
+                    }
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "valid for petType Cat and integer",
+                "data": { "petType": "Cat", "foo": 32 },
+                "valid": true
+            },
+            {
+                "description": "invalid for petType Cat and string",
+                "data": { "petType": "Cat", "foo": "abc" },
+                "valid": false
+            },
+            {
+                "description": "invalid for unknown petType",
+                "data": { "petType": "Porcupine", "foo": 3 },
+                "valid": false
+            }
+        ]
+    }
+]
