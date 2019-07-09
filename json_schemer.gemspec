@@ -35,5 +35,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "ecma-re-validator", "~> 0.2.0"
   spec.add_runtime_dependency "hana", "~> 1.3.3"
   spec.add_runtime_dependency "uri_template", "~> 0.7.0"
-  spec.add_runtime_dependency "regexp_parser", "~> 1.2.0"
+  spec.add_runtime_dependency "regexp_parser", "~> 1.5.0"
 end
