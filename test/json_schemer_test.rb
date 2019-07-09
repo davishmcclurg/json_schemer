@@ -532,9 +532,18 @@ class JSONSchemerTest < Minitest::Test
   {
     'draft4' => JSONSchemer::Schema::Draft4,
     'draft6' => JSONSchemer::Schema::Draft6,
-    'draft7' => JSONSchemer::Schema::Draft7
+    'draft7' => JSONSchemer::Schema::Draft7,
+    'openapi3' => JSONSchemer::Schema::OpenApi3
   }.each do |version, draft_class|
-    Dir["JSON-Schema-Test-Suite/tests/#{version}/**/*.json"].each_with_index do |file, file_index|
+
+    if version == 'openapi3'
+      version = 'draft4'
+      paths = Dir['test/openapi3/**/*.json']
+    end
+
+    paths = Dir['JSON-Schema-Test-Suite/tests/#{version}/**/*.json']
+
+    paths.each_with_index do |file, file_index|
       JSON.parse(File.read(file)).each_with_index do |defn, defn_index|
         defn.fetch('tests').each_with_index do |test, test_index|
           define_method("test_json_schema_test_suite_#{version}_#{file_index}_#{defn_index}_#{test_index}") do

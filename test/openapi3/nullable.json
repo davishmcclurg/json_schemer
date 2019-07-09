@@ -1,0 +1,25 @@
+[
+  {
+    "description": "nullable type",
+    "schema": {
+      "properties": {
+        "foo": {
+          "type": "integer",
+          "nullable": true
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "valid when property is specified",
+        "data": { "foo": 13 },
+        "valid": true
+      },
+      {
+        "description": "still valid when value is null",
+        "data": { "foo": null },
+        "valid": true
+      }
+    ]
+  }
+]
