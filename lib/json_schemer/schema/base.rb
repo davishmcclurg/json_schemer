@@ -77,10 +77,28 @@ module JSONSchemer
         type = schema['type']
         enum = schema['enum']
         discriminator = schema['discriminator']
+
         all_of = schema['allOf']
+        all_of = discriminate(all_of, discriminator, instance.data) if all_of && discriminator
+        if all_of&.empty? && discriminator
+          yield error(instance, 'discriminator')
+          return
+        end
+
         any_of = schema['anyOf']
+        any_of = discriminate(any_of, discriminator, instance.data) if any_of && discriminator
+        if any_of&.empty? && discriminator
+          yield error(instance, 'discriminator')
+          return
+        end
+
         one_of = schema['oneOf']
         one_of = discriminate(one_of, discriminator, instance.data) if one_of && discriminator
+        if one_of&.empty? && discriminator
+          yield error(instance, 'discriminator')
+          return
+        end
+
         not_schema = schema['not']
         if_schema = schema['if']
         then_schema = schema['then']
