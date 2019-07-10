@@ -54,6 +54,10 @@ module JSONSchemer
 
     protected
 
+      def discriminate(instance, field_name)
+        instance.schema[field_name]
+      end
+
       def valid_instance?(instance)
         validate_instance(instance).none?
       end
@@ -72,9 +76,11 @@ module JSONSchemer
 
         type = schema['type']
         enum = schema['enum']
+        discriminator = schema['discriminator']
         all_of = schema['allOf']
         any_of = schema['anyOf']
         one_of = schema['oneOf']
+        one_of = discriminate(one_of, discriminator, instance.data) if one_of && discriminator
         not_schema = schema['not']
         if_schema = schema['if']
         then_schema = schema['then']
