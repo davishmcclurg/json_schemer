@@ -62,6 +62,21 @@ module JSONSchemer
         validate_instance(instance).none?
       end
 
+      def many_of(instance, type, &block)
+        schema = instance.schema
+        discriminator = schema['discriminator']
+
+        many_of = schema[type]
+        many_of = discriminate(many_of, discriminator, instance.data) if many_of && discriminator
+
+        if many_of&.empty? && discriminator
+          yield error(instance, 'discriminator')
+          return
+        end
+
+        many_of
+      end
+
       def validate_instance(instance, &block)
         return enum_for(:validate_instance, instance) unless block_given?
 
@@ -76,29 +91,6 @@ module JSONSchemer
 
         type = schema['type']
         enum = schema['enum']
-        discriminator = schema['discriminator']
-
-        all_of = schema['allOf']
-        all_of = discriminate(all_of, discriminator, instance.data) if all_of && discriminator
-        if all_of&.empty? && discriminator
-          yield error(instance, 'discriminator')
-          return
-        end
-
-        any_of = schema['anyOf']
-        any_of = discriminate(any_of, discriminator, instance.data) if any_of && discriminator
-        if any_of&.empty? && discriminator
-          yield error(instance, 'discriminator')
-          return
-        end
-
-        one_of = schema['oneOf']
-        one_of = discriminate(one_of, discriminator, instance.data) if one_of && discriminator
-        if one_of&.empty? && discriminator
-          yield error(instance, 'discriminator')
-          return
-        end
-
         not_schema = schema['not']
         if_schema = schema['if']
         then_schema = schema['then']
@@ -106,6 +98,10 @@ module JSONSchemer
         format = schema['format']
         ref = schema['$ref']
         id = schema[id_keyword]
+
+        all_of = many_of(instance, 'allOf', &block)
+        any_of = many_of(instance, 'anyOf', &block)
+        one_of = many_of(instance, 'oneOf', &block)
 
         instance.parent_uri = join_uri(instance.parent_uri, id)
 
