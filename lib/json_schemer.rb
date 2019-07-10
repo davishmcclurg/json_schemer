@@ -44,6 +44,7 @@ module JSONSchemer
 
   class << self
     def schema(schema, **options)
+      custom_schema = options.delete(:schema)
       case schema
       when String
         schema = JSON.parse(schema)
@@ -56,9 +57,11 @@ module JSONSchemer
           schema = ref_resolver.call(uri)
           options[:ref_resolver] = ref_resolver
         end
-        schema[draft_class(schema)::ID_KEYWORD] ||= uri.to_s
+        schema_class = custom_schema || draft_class(schema)
+        schema[schema_class::ID_KEYWORD] ||= uri.to_s
       end
-      draft_class(schema).new(schema, **options)
+      schema_class = custom_schema || draft_class(schema)
+      schema_class.new(schema, **options)
     end
 
   private

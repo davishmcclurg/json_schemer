@@ -529,6 +529,25 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
+  def test_default_schema_class
+    schema = JSONSchemer.schema('type' => 'string')
+    assert_equal JSONSchemer::Schema::Draft7, schema.class
+  end
+
+  def test_custom_schema_class
+    schema = JSONSchemer.schema({ 'type' => 'string' }, schema: JSONSchemer::Schema::OpenApi3)
+    assert_equal JSONSchemer::Schema::OpenApi3, schema.class
+  end
+
+  def test_detect_schema_class
+    json = JSON.dump(
+        "$schema": 'http://json-schema.org/draft-04/schema#',
+        "type": 'string'
+    )
+    schema = JSONSchemer.schema(json)
+    assert_equal JSONSchemer::Schema::Draft4, schema.class
+  end
+
   {
     'draft4' => JSONSchemer::Schema::Draft4,
     'draft6' => JSONSchemer::Schema::Draft6,

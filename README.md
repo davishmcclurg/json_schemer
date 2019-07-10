@@ -1,6 +1,6 @@
 # JSONSchemer
 
-JSON Schema validator. Supports drafts 4, 6, and 7.
+JSON Schema validator. Supports drafts 4, 6, 7 and OpenApi 3.0.
 
 ## Installation
 
@@ -75,7 +75,11 @@ JSONSchemer.schema(
   # 'net/http'/proc/lambda/respond_to?(:call)
   # 'net/http': proc { |uri| JSON.parse(Net::HTTP.get(uri)) }
   # default: proc { |uri| raise UnknownRef, uri.to_s }
-  ref_resolver: 'net/http'
+  ref_resolver: 'net/http',
+
+  # Specify which schema to use. Auto-detected via $schema. Defaults to Draft7
+  # default: nil
+  schema: JSONSchemer::Schema::Draft7
 )
 ```
 
