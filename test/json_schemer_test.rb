@@ -553,10 +553,11 @@ class JSONSchemerTest < Minitest::Test
               defn.fetch('schema'),
               ref_resolver: 'net/http'
             ).validate(test.fetch('data')).to_a
+            error_location = "#{file}: '#{test['description']}''"
             if test.fetch('valid')
-              assert_empty(errors, file)
+              assert_empty(errors, error_location)
             else
-              assert(errors.any?, file)
+              assert(errors.any?, error_location)
             end
           end
         end
