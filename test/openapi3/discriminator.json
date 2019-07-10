@@ -65,6 +65,13 @@
                     "foo": 3
                 },
                 "valid": false
+            },
+            {
+                "description": "invalid for missing petType",
+                "data": {
+                    "foo": 3
+                },
+                "valid": false
             }
         ]
     },
@@ -134,6 +141,13 @@
                     "foo": 3
                 },
                 "valid": false
+            },
+            {
+                "description": "invalid for missing petType",
+                "data": {
+                    "foo": 3
+                },
+                "valid": false
             }
         ]
     },
@@ -200,6 +214,13 @@
                 "description": "invalid for unknown petType",
                 "data": {
                     "petType": "Porcupine",
+                    "foo": 3
+                },
+                "valid": false
+            },
+            {
+                "description": "invalid for missing petType",
+                "data": {
                     "foo": 3
                 },
                 "valid": false
