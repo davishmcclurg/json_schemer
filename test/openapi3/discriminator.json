@@ -179,10 +179,7 @@
                 }
             ],
             "discriminator": {
-                "propertyName": "petType",
-                "mapping": {
-                    "Lizard": "#/pets/Cat"
-                }
+                "propertyName": "petType"
             }
         },
         "tests": [
@@ -203,25 +200,10 @@
                 "valid": false
             },
             {
-                "description": "valid for mapped schema",
+                "description": "valid since no schema is given",
                 "data": {
                     "petType": "Lizard",
                     "foo": 32
-                },
-                "valid": true
-            },
-            {
-                "description": "invalid for unknown petType",
-                "data": {
-                    "petType": "Porcupine",
-                    "foo": 3
-                },
-                "valid": false
-            },
-            {
-                "description": "invalid for missing petType",
-                "data": {
-                    "foo": 3
                 },
                 "valid": false
             }
