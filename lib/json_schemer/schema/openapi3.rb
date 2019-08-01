@@ -28,7 +28,7 @@ module JSONSchemer
         many_of = schema[type]
         many_of = discriminate(many_of, discriminator, instance.data) if many_of && discriminator
 
-        if many_of&.empty? && discriminator
+        if many_of && many_of.empty? && discriminator
           yield error(instance, 'discriminator')
           return
         end
