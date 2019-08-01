@@ -555,14 +555,11 @@ class JSONSchemerTest < Minitest::Test
     'openapi3' => JSONSchemer::Schema::OpenApi3
   }.each do |version, draft_class|
 
-    paths = []
+    paths = Dir["JSON-Schema-Test-Suite/tests/#{version}/**/*.json"]
 
     if version == 'openapi3'
-      version = 'draft4'
-      paths += Dir['test/openapi3/**/*.json']
+      paths = Dir['JSON-Schema-Test-Suite/tests/draft7/**/*.json'] + Dir['test/openapi3/**/*.json']
     end
-
-    paths += Dir['JSON-Schema-Test-Suite/tests/#{version}/**/*.json']
 
     paths.each_with_index do |file, file_index|
       JSON.parse(File.read(file)).each_with_index do |defn, defn_index|
