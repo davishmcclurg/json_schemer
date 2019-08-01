@@ -54,27 +54,12 @@ module JSONSchemer
 
     protected
 
-      def discriminate(instance, field_name)
-        instance.schema[field_name]
-      end
-
       def valid_instance?(instance)
         validate_instance(instance).none?
       end
 
-      def many_of(instance, type, &block)
-        schema = instance.schema
-        discriminator = schema['discriminator']
-
-        many_of = schema[type]
-        many_of = discriminate(many_of, discriminator, instance.data) if many_of && discriminator
-
-        if many_of&.empty? && discriminator
-          yield error(instance, 'discriminator')
-          return
-        end
-
-        many_of
+      def many_of(instance, type, &_block)
+        instance.schema[type]
       end
 
       def validate_instance(instance, &block)
