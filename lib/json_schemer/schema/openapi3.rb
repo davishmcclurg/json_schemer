@@ -5,6 +5,7 @@ module JSONSchemer
     class OpenApi3 < Draft7
       def validate_type(instance, type, &block)
         return if instance.schema['nullable'] && instance.data.nil?
+
         super
       end
 
@@ -14,7 +15,9 @@ module JSONSchemer
         property_value = data[discriminator['propertyName']]
         return [] if property_value.nil?
 
-        schema_name = discriminator.dig('mapping', property_value) || property_value
+        schema_name = discriminator['mapping'] &&
+                      discriminator['mapping'][property_value] ||
+                      property_value
 
         many_of.select do |item|
           File.basename(item['$ref']) == File.basename(schema_name)
