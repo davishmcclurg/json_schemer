@@ -9,6 +9,7 @@ module JSONSchemer
     JSON_POINTER_REGEX_STRING = '(\/([^~\/]|~[01])*)*'
     JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
     RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
+    DATE_TIME_OFFSET_REGEX = /(Z|[\+\-]([01][0-9]|2[0-3]):[0-5][0-9])\z/i.freeze
 
     # https://github.com/ruby-rdf/rdf
 
@@ -108,7 +109,7 @@ module JSONSchemer
 
     def valid_date_time?(data)
       DateTime.rfc3339(data)
-      true
+      DATE_TIME_OFFSET_REGEX.match?(data)
     rescue ArgumentError => e
       raise e unless e.message == 'invalid date'
       false
