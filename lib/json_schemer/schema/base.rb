@@ -506,7 +506,7 @@ module JSONSchemer
               [pattern, ecma_262_regex(pattern), property_schema]
             end
             regex_pattern_properties.each do |pattern, regex, property_schema|
-              if regex =~ key
+              if regex.match?(key)
                 subinstance = instance.merge(
                   data: value,
                   data_pointer: "#{instance.data_pointer}/#{key}",

@@ -3,8 +3,7 @@ language: ruby
 rvm:
   - 2.6
   - 2.5
-  - 2.3
-  - 2.2
+  - 2.4
 before_install: gem install bundler -v 1.16.1
 before_script:
   - pip install --user Flask

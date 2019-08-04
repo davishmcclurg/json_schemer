@@ -115,11 +115,11 @@ module JSONSchemer
     end
 
     def valid_email?(data)
-      !!(EMAIL_REGEX =~ data)
+      EMAIL_REGEX.match?(data)
     end
 
     def valid_hostname?(data)
-      !!(HOSTNAME_REGEX =~ data && data.split('.').all? { |label| label.size <= 63 })
+      HOSTNAME_REGEX.match?(data) && data.split('.').all? { |label| label.size <= 63 }
     end
 
     def valid_ip?(data, type)
@@ -130,11 +130,11 @@ module JSONSchemer
     end
 
     def valid_iri?(data)
-      !!(IRI =~ data)
+      IRI.match?(data)
     end
 
     def valid_iri_reference?(data)
-      !!(IRELATIVE_REF =~ data)
+      IRELATIVE_REF.match?(data)
     end
 
     def valid_uri_template?(data)
@@ -145,11 +145,11 @@ module JSONSchemer
     end
 
     def valid_json_pointer?(data)
-      !!(JSON_POINTER_REGEX =~ data)
+      JSON_POINTER_REGEX.match?(data)
     end
 
     def valid_relative_json_pointer?(data)
-      !!(RELATIVE_JSON_POINTER_REGEX =~ data)
+      RELATIVE_JSON_POINTER_REGEX.match?(data)
     end
   end
 end
