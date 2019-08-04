@@ -552,10 +552,13 @@ module JSONSchemer
       end
 
       def join_uri(a, b)
-        if a && b
+        b = URI.parse(b) if b
+        if a && b && a.relative? && b.relative?
+          b
+        elsif a && b
           URI.join(a, b)
         elsif b
-          URI.parse(b)
+          b
         else
           a
         end
