@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 module JSONSchemer
   module Schema
     class Base
@@ -506,7 +505,7 @@ module JSONSchemer
               [pattern, ecma_262_regex(pattern), property_schema]
             end
             regex_pattern_properties.each do |pattern, regex, property_schema|
-              if regex =~ key
+              if regex.match?(key)
                 subinstance = instance.merge(
                   data: value,
                   data_pointer: "#{instance.data_pointer}/#{key}",
@@ -552,10 +551,13 @@ module JSONSchemer
       end
 
       def join_uri(a, b)
-        if a && b
+        b = URI.parse(b) if b
+        if a && b && a.relative? && b.relative?
+          b
+        elsif a && b
           URI.join(a, b)
         elsif b
-          URI.parse(b)
+          b
         else
           a
         end
