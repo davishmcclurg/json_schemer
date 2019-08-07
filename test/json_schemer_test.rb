@@ -529,15 +529,15 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
-  {
-    'draft4' => JSONSchemer::Schema::Draft4,
-    'draft6' => JSONSchemer::Schema::Draft6,
-    'draft7' => JSONSchemer::Schema::Draft7
-  }.each do |version, draft_class|
-    Dir["JSON-Schema-Test-Suite/tests/#{version}/**/*.json"].each_with_index do |file, file_index|
-      JSON.parse(File.read(file)).each_with_index do |defn, defn_index|
-        defn.fetch('tests').each_with_index do |test, test_index|
-          define_method("test_json_schema_test_suite_#{version}_#{file_index}_#{defn_index}_#{test_index}") do
+  def test_json_schema_test_suite
+    {
+      'draft4' => JSONSchemer::Schema::Draft4,
+      'draft6' => JSONSchemer::Schema::Draft6,
+      'draft7' => JSONSchemer::Schema::Draft7
+    }.each do |version, draft_class|
+      output = Dir["JSON-Schema-Test-Suite/tests/#{version}/**/*.json"].each_with_object({}) do |file, file_output|
+        file_output[file] = JSON.parse(File.read(file)).map do |defn|
+          defn.fetch('tests').map do |test|
             errors = draft_class.new(
               defn.fetch('schema'),
               ref_resolver: 'net/http'
@@ -547,8 +547,15 @@ class JSONSchemerTest < Minitest::Test
             else
               assert(errors.any?, file)
             end
+            errors
           end
         end
+      end
+      fixture = Pathname.new(__dir__).join('fixtures', "#{version}.json")
+      if ENV['WRITE_FIXTURES'] == 'true'
+        fixture.write("#{JSON.pretty_generate(output)}\n")
+      else
+        assert output == JSON.parse(fixture.read)
       end
     end
   end
