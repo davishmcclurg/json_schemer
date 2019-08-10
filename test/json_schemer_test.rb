@@ -66,6 +66,69 @@ class JSONSchemerTest < Minitest::Test
     assert errors.none?
   end
 
+  def test_it_inserts_defaults
+    schema = {
+      'required' => ['a', 'c', 'd'],
+      'properties' => {
+        'a' => { 'default' => 1 },
+        'b' => { 'default' => 2 },
+        'c' => {
+          'required' => ['x'],
+          'properties' => {
+            'x' => { 'default' => 3 },
+            'y' => { 'default' => 4 }
+          }
+        },
+        'd' => {
+          'required' => ['x'],
+          'default' => {
+            'x' => {
+              'y' => {
+                'z' => 1
+              }
+            }
+          },
+          'properties' => {
+            'x' => {
+              'required' => ['y'],
+              'properties' => {
+                'y' => {
+                  'required' => ['z'],
+                  'properties' => {
+                    'z' => { 'type' => 'integer' }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    data = {
+      'a' => 10,
+      'c' => {
+        'x' => 30
+      }
+    }
+    refute JSONSchemer.schema(schema).valid?(data)
+    assert JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data)
+    assert data == {
+      'a' => 10,
+      'b' => 2,
+      'c' => {
+        'x' => 30,
+        'y' => 4
+      },
+      'd' => {
+        'x' => {
+          'y' => {
+            'z' => 1
+          }
+        }
+      }
+    }
+  end
+
   def test_it_allows_disabling_format
     schema = JSONSchemer.schema(
       { 'format' => 'email' },

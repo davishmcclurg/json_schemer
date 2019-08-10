@@ -47,6 +47,22 @@ schemer.valid?({ 'abc' => 10 })
 schemer.validate({ 'abc' => 10 }).to_a
 # => [{"data"=>10, "schema"=>{"type"=>"integer", "minimum"=>11}, "pointer"=>"#/abc", "type"=>"minimum"}]
 
+# default property values
+
+data = {}
+JSONSchemer.schema(
+  {
+    'properties' => {
+      'foo' => {
+        'default' => 'bar'
+      }
+    }
+  },
+  insert_property_defaults: true
+).valid?(data)
+data
+# => {"foo"=>"bar"}
+
 # schema files
 
 require 'pathname'
@@ -70,6 +86,11 @@ JSONSchemer.schema(
   # true/false
   # default: true
   format: true,
+
+  # insert default property values during validation
+  # true/false
+  # default: false
+  insert_property_defaults: true,
 
   # resolve external references
   # 'net/http'/proc/lambda/respond_to?(:call)
