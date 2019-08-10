@@ -93,6 +93,8 @@ module JSONSchemer
           validate_custom_format(instance, formats.fetch(format), &block)
         end
 
+        data = instance.data
+
         if keywords
           keywords.each do |keyword, callable|
             if schema.key?(keyword)
@@ -105,8 +107,6 @@ module JSONSchemer
             end
           end
         end
-
-        data = instance.data
 
         yield error(instance, 'enum') if enum && !enum.include?(data)
         yield error(instance, 'const') if schema.key?('const') && schema['const'] != data
