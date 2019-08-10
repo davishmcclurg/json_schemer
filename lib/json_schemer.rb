@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'base64'
+require 'ipaddr'
 require 'json'
 require 'net/http'
 require 'pathname'
@@ -8,7 +9,7 @@ require 'uri'
 
 require 'ecma-re-validator'
 require 'hana'
-require 'ipaddr'
+require 'regexp_parser'
 require 'uri_template'
 
 require 'json_schemer/version'
