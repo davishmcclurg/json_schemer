@@ -108,18 +108,18 @@ module JSONSchemer
 
     def valid_date_time?(data)
       DateTime.rfc3339(data)
-      DATE_TIME_OFFSET_REGEX.match?(data)
+      !!(DATE_TIME_OFFSET_REGEX =~ data)
     rescue ArgumentError => e
       raise e unless e.message == 'invalid date'
       false
     end
 
     def valid_email?(data)
-      EMAIL_REGEX.match?(data)
+      !!(EMAIL_REGEX =~ data)
     end
 
     def valid_hostname?(data)
-      HOSTNAME_REGEX.match?(data) && data.split('.').all? { |label| label.size <= 63 }
+      !!(HOSTNAME_REGEX =~ data && data.split('.').all? { |label| label.size <= 63 })
     end
 
     def valid_ip?(data, type)
@@ -130,11 +130,11 @@ module JSONSchemer
     end
 
     def valid_iri?(data)
-      IRI.match?(data)
+      !!(IRI =~ data)
     end
 
     def valid_iri_reference?(data)
-      IRELATIVE_REF.match?(data)
+      !!(IRELATIVE_REF =~ data)
     end
 
     def valid_uri_template?(data)
@@ -145,11 +145,11 @@ module JSONSchemer
     end
 
     def valid_json_pointer?(data)
-      JSON_POINTER_REGEX.match?(data)
+      !!(JSON_POINTER_REGEX =~ data)
     end
 
     def valid_relative_json_pointer?(data)
-      RELATIVE_JSON_POINTER_REGEX.match?(data)
+      !!(RELATIVE_JSON_POINTER_REGEX =~ data)
     end
   end
 end

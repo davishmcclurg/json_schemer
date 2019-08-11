@@ -470,7 +470,13 @@ module JSONSchemer
         if insert_property_defaults?
           properties.each do |property, property_schema|
             if !data.key?(property) && property_schema.key?('default')
-              data[property] = property_schema.fetch('default').clone
+              default = property_schema.fetch('default')
+              data[property] = case default
+              when Numeric, Symbol, true, false, nil
+                default
+              else
+                default.clone
+              end
             end
           end
         end
@@ -520,7 +526,7 @@ module JSONSchemer
               [pattern, ecma_262_regex(pattern), property_schema]
             end
             regex_pattern_properties.each do |pattern, regex, property_schema|
-              if regex.match?(key)
+              if regex =~ key
                 subinstance = instance.merge(
                   data: value,
                   data_pointer: "#{instance.data_pointer}/#{key}",

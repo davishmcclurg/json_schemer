@@ -614,12 +614,6 @@ class JSONSchemerTest < Minitest::Test
           end
         end
       end
-      fixture = Pathname.new(__dir__).join('fixtures', "#{version}.json")
-      if ENV['WRITE_FIXTURES'] == 'true'
-        fixture.write("#{JSON.pretty_generate(output)}\n")
-      else
-        assert output == JSON.parse(fixture.read)
-      end
     end
   end
 end
