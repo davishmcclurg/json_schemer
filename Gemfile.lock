@@ -22,10 +22,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.16)
+  bundler (~> 2.0)
   json_schemer!
   minitest (~> 5.0)
   rake (~> 10.0)
 
 BUNDLED WITH
-   1.17.3
+   2.0.2
