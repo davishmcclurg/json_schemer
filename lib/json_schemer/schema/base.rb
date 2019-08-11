@@ -31,6 +31,7 @@ module JSONSchemer
       def initialize(
         schema,
         format: true,
+        insert_property_defaults: false,
         formats: nil,
         keywords: nil,
         ref_resolver: DEFAULT_REF_RESOLVER
@@ -38,6 +39,7 @@ module JSONSchemer
         raise InvalidSymbolKey, 'schemas must use string keys' if schema.is_a?(Hash) && !schema.first.first.is_a?(String)
         @root = schema
         @format = format
+        @insert_property_defaults = insert_property_defaults
         @formats = formats
         @keywords = keywords
         @ref_resolver = ref_resolver == 'net/http' ? CachedRefResolver.new(&NET_HTTP_REF_RESOLVER) : ref_resolver
@@ -177,6 +179,10 @@ module JSONSchemer
         !!@format
       end
 
+      def insert_property_defaults?
+        !!@insert_property_defaults
+      end
+
       def custom_format?(format)
         !!(formats && formats.key?(format))
       end
@@ -189,6 +195,7 @@ module JSONSchemer
         JSONSchemer.schema(
           schema,
           format: format?,
+          insert_property_defaults: insert_property_defaults?,
           formats: formats,
           keywords: keywords,
           ref_resolver: ref_resolver
@@ -459,6 +466,14 @@ module JSONSchemer
         additional_properties = schema['additionalProperties']
         dependencies = schema['dependencies']
         property_names = schema['propertyNames']
+
+        if insert_property_defaults?
+          properties.each do |property, property_schema|
+            if !data.key?(property) && property_schema.key?('default')
+              data[property] = property_schema.fetch('default').clone
+            end
+          end
+        end
 
         if dependencies
           dependencies.each do |key, value|
