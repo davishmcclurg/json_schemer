@@ -467,7 +467,7 @@ module JSONSchemer
         dependencies = schema['dependencies']
         property_names = schema['propertyNames']
 
-        if insert_property_defaults?
+        if insert_property_defaults? && properties
           properties.each do |property, property_schema|
             if !data.key?(property) && property_schema.key?('default')
               data[property] = property_schema.fetch('default').clone
