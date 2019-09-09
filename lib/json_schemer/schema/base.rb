@@ -36,7 +36,7 @@ module JSONSchemer
         keywords: nil,
         ref_resolver: DEFAULT_REF_RESOLVER
       )
-        raise InvalidSymbolKey, 'schemas must use string keys' if schema.is_a?(Hash) && !schema.first.first.is_a?(String)
+        raise InvalidSymbolKey, 'schemas must use string keys' if schema.is_a?(Hash) && !schema.empty? && !schema.first.first.is_a?(String)
         @root = schema
         @format = format
         @insert_property_defaults = insert_property_defaults
