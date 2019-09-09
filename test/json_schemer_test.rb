@@ -142,6 +142,17 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
+  def test_it_does_not_fail_when_the_schema_is_completely_empty
+    schema = {}
+    data = {
+      'a' => 1
+    }
+    assert JSONSchemer.schema(schema).valid?(data)
+    assert data == {
+      'a' => 1
+    }
+  end
+
   def test_it_allows_disabling_format
     schema = JSONSchemer.schema(
       { 'format' => 'email' },
