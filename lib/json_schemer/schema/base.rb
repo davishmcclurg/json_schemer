@@ -469,7 +469,7 @@ module JSONSchemer
 
         if insert_property_defaults? && properties
           properties.each do |property, property_schema|
-            if !data.key?(property) && property_schema.key?('default')
+            if !data.key?(property) && property_schema.is_a?(Hash) && property_schema.key?('default')
               data[property] = property_schema.fetch('default').clone
             end
           end
