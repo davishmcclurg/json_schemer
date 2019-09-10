@@ -672,7 +672,7 @@ class JSONSchemerTest < Minitest::Test
       if ENV['WRITE_FIXTURES'] == 'true'
         fixture.write("#{JSON.pretty_generate(output)}\n")
       else
-        assert output == JSON.parse(fixture.read)
+        assert_equal(output, JSON.parse(fixture.read))
       end
     end
   end
