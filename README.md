@@ -106,7 +106,7 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 ## Build Status
 
-[![Build Status](https://travis-ci.org/davishmcclurg/json_schemer.svg?branch=master)](https://travis-ci.org/davishmcclurg/json_schemer)
+[![Build Status](https://github.com/davishmcclurg/json_schemer/workflows/ci/badge.svg)
 
 ## Contributing
 
