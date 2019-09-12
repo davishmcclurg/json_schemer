@@ -106,7 +106,7 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 ## Build Status
 
-[![Build Status](https://github.com/davishmcclurg/json_schemer/workflows/ci/badge.svg)
+![Build Status](https://github.com/davishmcclurg/json_schemer/workflows/ci/badge.svg)
 
 ## Contributing
 
