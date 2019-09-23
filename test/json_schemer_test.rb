@@ -646,6 +646,12 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
+  def test_it_handles_nested_refs
+    schema = JSONSchemer.schema(Pathname.new(__dir__).join('schemas', 'nested_ref1.json'))
+    assert schema.valid?(1)
+    refute schema.valid?('1')
+  end
+
   def test_json_schema_test_suite
     {
       'draft4' => JSONSchemer::Schema::Draft4,

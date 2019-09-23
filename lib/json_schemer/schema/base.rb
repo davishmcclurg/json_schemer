@@ -258,7 +258,7 @@ module JSONSchemer
             subinstance = instance.merge(
               schema: ref_pointer.eval(root),
               schema_pointer: ref_uri.fragment,
-              parent_uri: pointer_uri(root, ref_pointer)
+              parent_uri: (pointer_uri(root, ref_pointer) || ref_uri)
             )
             validate_instance(subinstance, &block)
           else
@@ -267,7 +267,7 @@ module JSONSchemer
             subinstance = instance.merge(
               schema: ref_pointer.eval(ref_root),
               schema_pointer: ref_uri.fragment,
-              parent_uri: pointer_uri(ref_root, ref_pointer)
+              parent_uri: (pointer_uri(ref_root, ref_pointer) || ref_uri)
             )
             ref_object.validate_instance(subinstance, &block)
           end

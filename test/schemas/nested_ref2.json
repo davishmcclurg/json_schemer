@@ -1,0 +1,12 @@
+{
+  "definitions": {
+    "nested": {
+      "$ref": "nested_ref3.json"
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/nested"
+    }
+  ]
+}
