@@ -159,6 +159,255 @@
           "type": "uniqueItems"
         }
       ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+        {
+          "data": [
+            false,
+            false
+          ],
+          "data_pointer": "",
+          "schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true
+          },
+          "type": "uniqueItems"
+        }
+      ],
+      [
+        {
+          "data": [
+            true,
+            true
+          ],
+          "data_pointer": "",
+          "schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true
+          },
+          "type": "uniqueItems"
+        }
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+        {
+          "data": [
+            false,
+            true,
+            "foo",
+            "foo"
+          ],
+          "data_pointer": "",
+          "schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true
+          },
+          "type": "uniqueItems"
+        }
+      ],
+      [
+        {
+          "data": [
+            true,
+            false,
+            "foo",
+            "foo"
+          ],
+          "data_pointer": "",
+          "schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true
+          },
+          "type": "uniqueItems"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+        {
+          "data": [
+            false,
+            false
+          ],
+          "data_pointer": "",
+          "schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true,
+            "additionalItems": false
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true,
+            "additionalItems": false
+          },
+          "type": "uniqueItems"
+        }
+      ],
+      [
+        {
+          "data": [
+            true,
+            true
+          ],
+          "data_pointer": "",
+          "schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true,
+            "additionalItems": false
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true,
+            "additionalItems": false
+          },
+          "type": "uniqueItems"
+        }
+      ],
+      [
+        {
+          "data": null,
+          "data_pointer": "/2",
+          "schema": false,
+          "schema_pointer": "/additionalItems",
+          "root_schema": {
+            "items": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "uniqueItems": true,
+            "additionalItems": false
+          },
+          "type": "schema"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft6/minItems.json": [
@@ -3400,6 +3649,235 @@
           },
           "type": "format"
         }
+      ]
+    ],
+    [
+      [
+        {
+          "data": "abc\n",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^abc$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^abc$"
+          },
+          "type": "pattern"
+        }
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+        {
+          "data": "\\a",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^\\a$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^\\a$"
+          },
+          "type": "pattern"
+        }
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+        {
+          "data": "\\cC",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^\\cC$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^\\cC$"
+          },
+          "type": "pattern"
+        }
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+        {
+          "data": "\\cc",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^\\cc$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^\\cc$"
+          },
+          "type": "pattern"
+        }
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "߀",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^\\d$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^\\d$"
+          },
+          "type": "pattern"
+        }
+      ],
+      [
+        {
+          "data": "߀",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^\\d$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^\\d$"
+          },
+          "type": "pattern"
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "data": "0",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^\\D$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^\\D$"
+          },
+          "type": "pattern"
+        }
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "é",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^\\w$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^\\w$"
+          },
+          "type": "pattern"
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "data": "a",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^\\W$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^\\W$"
+          },
+          "type": "pattern"
+        }
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": " ",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^\\s$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^\\s$"
+          },
+          "type": "pattern"
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "data": " ",
+          "data_pointer": "",
+          "schema": {
+            "type": "string",
+            "pattern": "^\\S$"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "string",
+            "pattern": "^\\S$"
+          },
+          "type": "pattern"
+        }
+      ],
+      [
+
       ]
     ]
   ],
@@ -7513,6 +7991,188 @@
           },
           "type": "number"
         }
+      ]
+    ]
+  ],
+  "JSON-Schema-Test-Suite/tests/draft6/format.json": [
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
       ]
     ]
   ],
