@@ -175,7 +175,7 @@
     },
     {
         "description": "remote ref, containing refs itself",
-        "schema": {"$ref": "http://json-schema.org/draft/2019-06/schema#"},
+        "schema": {"$ref": "https://json-schema.org/draft/2019-09/schema"},
         "tests": [
             {
                 "description": "remote ref valid",
@@ -352,90 +352,6 @@
                 "data": {
                     "foo\"bar": "1"
                 },
-                "valid": false
-            }
-        ]
-    },
-    {
-        "description": "Location-independent identifier",
-        "schema": {
-            "allOf": [{
-                "$ref": "#foo"
-            }],
-            "$defs": {
-                "A": {
-                    "$id": "#foo",
-                    "type": "integer"
-                }
-            }
-        },
-        "tests": [
-            {
-                "data": 1,
-                "description": "match",
-                "valid": true
-            },
-            {
-                "data": "a",
-                "description": "mismatch",
-                "valid": false
-            }
-        ]
-    },
-    {
-        "description": "Location-independent identifier with absolute URI",
-        "schema": {
-            "allOf": [{
-                "$ref": "http://localhost:1234/bar#foo"
-            }],
-            "$defs": {
-                "A": {
-                    "$id": "http://localhost:1234/bar#foo",
-                    "type": "integer"
-                }
-            }
-        },
-        "tests": [
-            {
-                "data": 1,
-                "description": "match",
-                "valid": true
-            },
-            {
-                "data": "a",
-                "description": "mismatch",
-                "valid": false
-            }
-        ]
-    },
-    {
-        "description": "Location-independent identifier with base URI change in subschema",
-        "schema": {
-            "$id": "http://localhost:1234/root",
-            "allOf": [{
-                "$ref": "http://localhost:1234/nested.json#foo"
-            }],
-            "$defs": {
-                "A": {
-                    "$id": "nested.json",
-                    "$defs": {
-                        "B": {
-                            "$id": "#foo",
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "tests": [
-            {
-                "data": 1,
-                "description": "match",
-                "valid": true
-            },
-            {
-                "data": "a",
-                "description": "mismatch",
                 "valid": false
             }
         ]
