@@ -172,6 +172,37 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
+  def test_it_does_not_insert_defaults_in_conditional_subschemas
+    subschema = {
+      'properties' => {
+        'a' => {
+          'const' => 1
+        },
+        'b' => {
+          'const' => 2,
+          'default' => 2
+        }
+      }
+    }
+    schema = {
+      'allOf' => [subschema],
+      'anyOf' => [subschema],
+      'oneOf' => [subschema],
+      'if' => subschema
+    }
+    data = {
+      'a' => 1
+    }
+    assert JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data)
+    assert data == {
+      'a' => 1
+    }
+    refute JSONSchemer.schema(schema.merge('not' => subschema), insert_property_defaults: true).valid?(data)
+    assert data == {
+      'a' => 1
+    }
+  end
+
   def test_it_does_not_fail_when_the_schema_is_completely_empty
     schema = {}
     data = {
