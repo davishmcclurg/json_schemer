@@ -652,6 +652,16 @@ class JSONSchemerTest < Minitest::Test
     refute schema.valid?('1')
   end
 
+  def test_it_handles_json_pointer_refs_with_special_characters
+    schema = JSONSchemer.schema({
+      'type' => 'object',
+      'properties' => { 'foo' => { '$ref' => '#/definitions/~1some~1{id}'} },
+      'definitions' => { '/some/{id}' => { 'type' => 'string' } }
+    })
+    assert schema.valid?({ 'foo' => 'bar' })
+    refute schema.valid?({ 'foo' => 1 })
+  end
+
   def test_json_schema_test_suite
     {
       'draft4' => JSONSchemer::Schema::Draft4,
