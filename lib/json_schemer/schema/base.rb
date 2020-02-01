@@ -4,15 +4,16 @@ module JSONSchemer
     class Base
       include Format
 
-      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :parent_uri) do
+      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :parent_uri, :insert_property_defaults) do
         def merge(
           data: self.data,
           data_pointer: self.data_pointer,
           schema: self.schema,
           schema_pointer: self.schema_pointer,
-          parent_uri: self.parent_uri
+          parent_uri: self.parent_uri,
+          insert_property_defaults: self.insert_property_defaults
         )
-          self.class.new(data, data_pointer, schema, schema_pointer, parent_uri)
+          self.class.new(data, data_pointer, schema, schema_pointer, parent_uri, insert_property_defaults)
         end
       end
 
@@ -46,11 +47,11 @@ module JSONSchemer
       end
 
       def valid?(data)
-        valid_instance?(Instance.new(data, '', root, '', nil))
+        valid_instance?(Instance.new(data, '', root, '', nil, !!@insert_property_defaults))
       end
 
       def validate(data)
-        validate_instance(Instance.new(data, '', root, '', nil))
+        validate_instance(Instance.new(data, '', root, '', nil, !!@insert_property_defaults))
       end
 
     protected
@@ -115,20 +116,35 @@ module JSONSchemer
 
         if all_of
           all_of.each_with_index do |subschema, index|
-            validate_instance(instance.merge(schema: subschema, schema_pointer: "#{instance.schema_pointer}/allOf/#{index}"), &block)
+            subinstance = instance.merge(
+              schema: subschema,
+              schema_pointer: "#{instance.schema_pointer}/allOf/#{index}",
+              insert_property_defaults: false
+            )
+            validate_instance(subinstance, &block)
           end
         end
 
         if any_of
           subschemas = any_of.lazy.with_index.map do |subschema, index|
-            validate_instance(instance.merge(schema: subschema, schema_pointer: "#{instance.schema_pointer}/anyOf/#{index}"))
+            subinstance = instance.merge(
+              schema: subschema,
+              schema_pointer: "#{instance.schema_pointer}/anyOf/#{index}",
+              insert_property_defaults: false
+            )
+            validate_instance(subinstance)
           end
           subschemas.each { |subschema| subschema.each(&block) } unless subschemas.any?(&:none?)
         end
 
         if one_of
           subschemas = one_of.map.with_index do |subschema, index|
-            validate_instance(instance.merge(schema: subschema, schema_pointer: "#{instance.schema_pointer}/oneOf/#{index}"))
+            subinstance = instance.merge(
+              schema: subschema,
+              schema_pointer: "#{instance.schema_pointer}/oneOf/#{index}",
+              insert_property_defaults: false
+            )
+            validate_instance(subinstance)
           end
           valid_subschema_count = subschemas.count(&:none?)
           if valid_subschema_count > 1
@@ -139,11 +155,15 @@ module JSONSchemer
         end
 
         unless not_schema.nil?
-          subinstance = instance.merge(schema: not_schema, schema_pointer: "#{instance.schema_pointer}/not")
+          subinstance = instance.merge(
+            schema: not_schema,
+            schema_pointer: "#{instance.schema_pointer}/not",
+            insert_property_defaults: false
+          )
           yield error(subinstance, 'not') if valid_instance?(subinstance)
         end
 
-        if if_schema && valid_instance?(instance.merge(schema: if_schema))
+        if if_schema && valid_instance?(instance.merge(schema: if_schema, insert_property_defaults: false))
           validate_instance(instance.merge(schema: then_schema, schema_pointer: "#{instance.schema_pointer}/then"), &block) unless then_schema.nil?
         elsif if_schema
           validate_instance(instance.merge(schema: else_schema, schema_pointer: "#{instance.schema_pointer}/else"), &block) unless else_schema.nil?
@@ -179,10 +199,6 @@ module JSONSchemer
         !!@format
       end
 
-      def insert_property_defaults?
-        !!@insert_property_defaults
-      end
-
       def custom_format?(format)
         !!(formats && formats.key?(format))
       end
@@ -195,7 +211,6 @@ module JSONSchemer
         JSONSchemer.schema(
           schema,
           format: format?,
-          insert_property_defaults: insert_property_defaults?,
           formats: formats,
           keywords: keywords,
           ref_resolver: ref_resolver
@@ -472,7 +487,7 @@ module JSONSchemer
         dependencies = schema['dependencies']
         property_names = schema['propertyNames']
 
-        if insert_property_defaults? && properties
+        if instance.insert_property_defaults && properties
           properties.each do |property, property_schema|
             if !data.key?(property) && property_schema.is_a?(Hash) && property_schema.key?('default')
               data[property] = property_schema.fetch('default').clone
