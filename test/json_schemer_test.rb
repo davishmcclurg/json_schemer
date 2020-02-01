@@ -663,7 +663,13 @@ class JSONSchemerTest < Minitest::Test
           defn.fetch('tests').map do |test|
             errors = draft_class.new(
               defn.fetch('schema'),
-              ref_resolver: 'net/http'
+              ref_resolver: proc do |uri|
+                response = Net::HTTP.get_response(uri)
+                if response.is_a?(Net::HTTPRedirection)
+                  response = Net::HTTP.get_response(URI.parse(response.fetch('location')))
+                end
+                JSON.parse(response.body)
+              end
             ).validate(test.fetch('data')).to_a
             if test.fetch('valid')
               assert_empty(errors, file)
