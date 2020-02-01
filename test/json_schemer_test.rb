@@ -652,6 +652,16 @@ class JSONSchemerTest < Minitest::Test
     refute schema.valid?('1')
   end
 
+  def test_it_handles_json_pointer_refs_with_special_characters
+    schema = JSONSchemer.schema({
+      'type' => 'object',
+      'properties' => { 'foo' => { '$ref' => '#/definitions/~1some~1{id}'} },
+      'definitions' => { '/some/{id}' => { 'type' => 'string' } }
+    })
+    assert schema.valid?({ 'foo' => 'bar' })
+    refute schema.valid?({ 'foo' => 1 })
+  end
+
   def test_json_schema_test_suite
     {
       'draft4' => JSONSchemer::Schema::Draft4,
@@ -663,7 +673,13 @@ class JSONSchemerTest < Minitest::Test
           defn.fetch('tests').map do |test|
             errors = draft_class.new(
               defn.fetch('schema'),
-              ref_resolver: 'net/http'
+              ref_resolver: proc do |uri|
+                response = Net::HTTP.get_response(uri)
+                if response.is_a?(Net::HTTPRedirection)
+                  response = Net::HTTP.get_response(URI.parse(response.fetch('location')))
+                end
+                JSON.parse(response.body)
+              end
             ).validate(test.fetch('data')).to_a
             if test.fetch('valid')
               assert_empty(errors, file)

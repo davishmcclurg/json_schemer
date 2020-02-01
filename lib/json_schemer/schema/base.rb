@@ -250,27 +250,32 @@ module JSONSchemer
       end
 
       def validate_ref(instance, ref, &block)
+        if ref.start_with?('#')
+          schema_pointer = ref.slice(1..-1)
+          if valid_json_pointer?(schema_pointer)
+            ref_pointer = Hana::Pointer.new(URI.decode_www_form_component(schema_pointer))
+            subinstance = instance.merge(
+              schema: ref_pointer.eval(root),
+              schema_pointer: schema_pointer,
+              parent_uri: (pointer_uri(root, ref_pointer) || instance.parent_uri)
+            )
+            validate_instance(subinstance, &block)
+            return
+          end
+        end
+
         ref_uri = join_uri(instance.parent_uri, ref)
 
         if valid_json_pointer?(ref_uri.fragment)
           ref_pointer = Hana::Pointer.new(URI.decode_www_form_component(ref_uri.fragment))
-          if ref.start_with?('#')
-            subinstance = instance.merge(
-              schema: ref_pointer.eval(root),
-              schema_pointer: ref_uri.fragment,
-              parent_uri: (pointer_uri(root, ref_pointer) || ref_uri)
-            )
-            validate_instance(subinstance, &block)
-          else
-            ref_root = resolve_ref(ref_uri)
-            ref_object = child(ref_root)
-            subinstance = instance.merge(
-              schema: ref_pointer.eval(ref_root),
-              schema_pointer: ref_uri.fragment,
-              parent_uri: (pointer_uri(ref_root, ref_pointer) || ref_uri)
-            )
-            ref_object.validate_instance(subinstance, &block)
-          end
+          ref_root = resolve_ref(ref_uri)
+          ref_object = child(ref_root)
+          subinstance = instance.merge(
+            schema: ref_pointer.eval(ref_root),
+            schema_pointer: ref_uri.fragment,
+            parent_uri: (pointer_uri(ref_root, ref_pointer) || ref_uri)
+          )
+          ref_object.validate_instance(subinstance, &block)
         elsif id = ids[ref_uri.to_s]
           subinstance = instance.merge(
             schema: id.fetch(:schema),
