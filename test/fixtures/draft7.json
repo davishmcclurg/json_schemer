@@ -5882,6 +5882,10 @@
                 "type": "boolean",
                 "default": false
               },
+              "writeOnly": {
+                "type": "boolean",
+                "default": false
+              },
               "examples": {
                 "type": "array",
                 "items": true
@@ -6139,6 +6143,10 @@
               },
               "default": true,
               "readOnly": {
+                "type": "boolean",
+                "default": false
+              },
+              "writeOnly": {
                 "type": "boolean",
                 "default": false
               },
@@ -9278,6 +9286,10 @@
               },
               "default": true,
               "readOnly": {
+                "type": "boolean",
+                "default": false
+              },
+              "writeOnly": {
                 "type": "boolean",
                 "default": false
               },
