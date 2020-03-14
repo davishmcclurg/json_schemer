@@ -28,6 +28,7 @@ module JSONSchemer
   class InvalidSymbolKey < StandardError; end
 
   DRAFT_CLASS_BY_META_SCHEMA = {
+    'http://json-schema.org/schema#' => Schema::Draft4, # Version-less $schema deprecated in Draft 4
     'http://json-schema.org/draft-04/schema#' => Schema::Draft4,
     'http://json-schema.org/draft-06/schema#' => Schema::Draft6,
     'http://json-schema.org/draft-07/schema#' => Schema::Draft7
