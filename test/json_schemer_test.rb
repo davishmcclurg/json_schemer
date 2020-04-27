@@ -705,11 +705,18 @@ class JSONSchemerTest < Minitest::Test
             errors = draft_class.new(
               defn.fetch('schema'),
               ref_resolver: proc do |uri|
-                response = Net::HTTP.get_response(uri)
-                if response.is_a?(Net::HTTPRedirection)
-                  response = Net::HTTP.get_response(URI.parse(response.fetch('location')))
+                # Resolve localhost test schemas
+                if uri.host == 'localhost'
+                  path = Pathname.new(__FILE__) + ('../../JSON-Schema-Test-Suite/remotes' + uri.path)
+                  body = path.open.read
+                  JSON.parse body
+                else
+                  response = Net::HTTP.get_response(uri)
+                  if response.is_a?(Net::HTTPRedirection)
+                    response = Net::HTTP.get_response(URI.parse(response.fetch('location')))
+                  end
+                  JSON.parse(response.body)
                 end
-                JSON.parse(response.body)
               end
             ).validate(test.fetch('data')).to_a
             if test.fetch('valid')
