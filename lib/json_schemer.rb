@@ -14,6 +14,7 @@ require 'uri_template'
 
 require 'json_schemer/version'
 require 'json_schemer/format'
+require 'json_schemer/errors'
 require 'json_schemer/cached_ref_resolver'
 require 'json_schemer/schema/base'
 require 'json_schemer/schema/draft4'
