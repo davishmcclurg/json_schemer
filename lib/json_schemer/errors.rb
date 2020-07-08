@@ -26,6 +26,9 @@ module JSONSchemer
       when 'format'
         format = error['schema']['format']
         "property '#{data_path}' does not match format: #{format}"
+      when 'const'
+        value = error['schema']['const'].dump
+        "property '#{data_path}' is not: #{value}"
       when 'enum'
         options = error['schema']['enum']
         "property '#{data_path}' is not one of enum: #{options}"

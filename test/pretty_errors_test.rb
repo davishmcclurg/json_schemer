@@ -90,4 +90,20 @@ class PrettyErrorsTest < Minitest::Test
     assert JSONSchemer::Errors.pretty(error) ==
            "property 'one' is not one of enum: [\"one\", \"two\"]"
   end
+
+  def test_const_message
+    schema = JSONSchemer.schema(
+      {
+        'properties' => {
+          'one' => {
+            'type' => 'string',
+            'const' => 'one'
+          }
+        }
+      }
+    )
+    error = schema.validate({ 'one' => 'abc' }).to_a.first
+    assert JSONSchemer::Errors.pretty(error) ==
+           "property 'one' is not: \"one\""
+  end
 end
