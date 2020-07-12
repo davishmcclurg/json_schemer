@@ -11,8 +11,7 @@ class PrettyErrorsTest < Minitest::Test
       }
     )
     error = schema.validate({ 'two' => 'optional' }).to_a.first
-    assert JSONSchemer::Errors.pretty(error) ==
-           'root is missing required keys: one'
+    assert JSONSchemer::Errors.pretty(error) == "root is missing required keys: one"
   end
 
   def test_basic_type_message
@@ -25,8 +24,7 @@ class PrettyErrorsTest < Minitest::Test
         }
       )
       error = schema.validate({ 'one' => ['wrong'] }).to_a.first
-      assert JSONSchemer::Errors.pretty(error) ==
-             "property 'one' should be of type: #{type}"
+      assert JSONSchemer::Errors.pretty(error) == "property '/one' is not of type: #{type}"
     end
   end
 
@@ -39,8 +37,7 @@ class PrettyErrorsTest < Minitest::Test
       }
     )
     error = schema.validate({ 'one' => 'wrong' }).to_a.first
-    assert JSONSchemer::Errors.pretty(error) ==
-           "property 'one' should be of type: array"
+    assert JSONSchemer::Errors.pretty(error) == "property '/one' is not of type: array"
   end
 
   def test_format_message
@@ -55,8 +52,7 @@ class PrettyErrorsTest < Minitest::Test
       }
     )
     error = schema.validate({ 'one' => 'abc' }).to_a.first
-    assert JSONSchemer::Errors.pretty(error) ==
-           "property 'one' does not match format: date-time"
+    assert JSONSchemer::Errors.pretty(error) == "property '/one' does not match format: date-time"
   end
 
   def test_pattern_message
@@ -71,8 +67,7 @@ class PrettyErrorsTest < Minitest::Test
       }
     )
     error = schema.validate({ 'one' => 'abc' }).to_a.first
-    assert JSONSchemer::Errors.pretty(error) ==
-           "property 'one' does not match pattern: \\d+"
+    assert JSONSchemer::Errors.pretty(error) == "property '/one' does not match pattern: \\d+"
   end
 
   def test_enum_message
@@ -87,8 +82,7 @@ class PrettyErrorsTest < Minitest::Test
       }
     )
     error = schema.validate({ 'one' => 'abc' }).to_a.first
-    assert JSONSchemer::Errors.pretty(error) ==
-           "property 'one' is not one of enum: [\"one\", \"two\"]"
+    assert JSONSchemer::Errors.pretty(error) == "property '/one' is not one of: [\"one\", \"two\"]"
   end
 
   def test_const_message
@@ -103,7 +97,6 @@ class PrettyErrorsTest < Minitest::Test
       }
     )
     error = schema.validate({ 'one' => 'abc' }).to_a.first
-    assert JSONSchemer::Errors.pretty(error) ==
-           "property 'one' is not: \"one\""
+    assert JSONSchemer::Errors.pretty(error) == "property '/one' is not: \"one\""
   end
 end

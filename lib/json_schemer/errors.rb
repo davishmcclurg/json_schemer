@@ -3,46 +3,29 @@
 #
 module JSONSchemer
   module Errors
-    module_function
+    class << self
+      def pretty(error)
+        data_pointer, type, schema = error.values_at('data_pointer', 'type', 'schema')
+        location = data_pointer.empty? ? 'root' : "property '#{data_pointer}'"
 
-    def pretty(error)
-      data_path = format_data_pointer error['data_pointer']
-
-      case error['type']
-      when 'required'
-        keys = error['details']['missing_keys'].join(', ')
-        "#{data_path} is missing required keys: #{keys}"
-      when 'null',
-           'string',
-           'boolean',
-           'integer',
-           'number',
-           'array',
-           'object'
-        "property '#{data_path}' should be of type: #{error['type']}"
-      when 'pattern'
-        pattern = error['schema']['pattern']
-        "property '#{data_path}' does not match pattern: #{pattern}"
-      when 'format'
-        format = error['schema']['format']
-        "property '#{data_path}' does not match format: #{format}"
-      when 'const'
-        value = error['schema']['const'].dump
-        "property '#{data_path}' is not: #{value}"
-      when 'enum'
-        options = error['schema']['enum']
-        "property '#{data_path}' is not one of enum: #{options}"
-      else
-        "does not validate: error_type=#{error['type']}"
+        case type
+        when 'required'
+          keys = error.fetch('details').fetch('missing_keys').join(', ')
+          "#{location} is missing required keys: #{keys}"
+        when 'null', 'string', 'boolean', 'integer', 'number', 'array', 'object'
+          "#{location} is not of type: #{type}"
+        when 'pattern'
+          "#{location} does not match pattern: #{schema.fetch('pattern')}"
+        when 'format'
+          "#{location} does not match format: #{schema.fetch('format')}"
+        when 'const'
+          "#{location} is not: #{schema.fetch('const').inspect}"
+        when 'enum'
+          "#{location} is not one of: #{schema.fetch('enum')}"
+        else
+          "#{location} is invalid: error_type=#{type}"
+        end
       end
-    end
-
-    def format_data_pointer(data_pointer)
-      return 'root' if data_pointer.nil? || data_pointer.empty?
-
-      data_pointer
-        .sub(%r{^/}, '')   # remove leading /
-        .sub('/', '.')     # convert / into .
     end
   end
 end
