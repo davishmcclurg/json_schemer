@@ -11,12 +11,7 @@ jobs:
     - uses: actions/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-    - uses: actions/setup-python@v1
-      with:
-        python-version: 3.x
     - run: |
-        pip install --user Flask
-        ./JSON-Schema-Test-Suite/bin/jsonschema_suite serve &
         gem install bundler
         bundle install
         bundle exec rake test

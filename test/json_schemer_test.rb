@@ -707,9 +707,8 @@ class JSONSchemerTest < Minitest::Test
               ref_resolver: proc do |uri|
                 # Resolve localhost test schemas
                 if uri.host == 'localhost'
-                  path = Pathname.new(__FILE__) + ('../../JSON-Schema-Test-Suite/remotes' + uri.path)
-                  body = path.open.read
-                  JSON.parse body
+                  path = Pathname.new(__dir__).join('..', 'JSON-Schema-Test-Suite', 'remotes', uri.path.delete_prefix('/'))
+                  JSON.parse(path.read)
                 else
                   response = Net::HTTP.get_response(uri)
                   if response.is_a?(Net::HTTPRedirection)
