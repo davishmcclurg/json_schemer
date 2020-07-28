@@ -356,7 +356,7 @@ class JSONSchemerTest < Minitest::Test
 
   def test_it_returns_correct_pointers_for_a_nested_ref_id
     ref_schema = {
-      '$id' => 'http://example.com',
+      '$id' => 'http://example.com/ref_schema.json',
       'foo' => {
         'bar' => {
           '$id' => '#bar',
@@ -390,7 +390,7 @@ class JSONSchemerTest < Minitest::Test
 
   def test_it_returns_correct_pointers_for_a_nested_ref_id_with_other_pointers_to_root
     ref_schema = {
-      '$id' => 'http://example.com',
+      '$id' => 'http://example.com/ref_schema.json',
       'types' => {
         'uuid' => {
            '$id' => "#uuid",

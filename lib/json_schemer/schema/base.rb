@@ -298,17 +298,6 @@ module JSONSchemer
             parent_uri: ref_uri
           )
           validate_instance(subinstance, &block)
-        elsif ref_uri.to_s.include?("##{ref_uri.fragment}")
-          id_pointer = "##{ref_uri.fragment}"
-          ref_root = resolve_ref(ref_uri)
-          ref_object = child(ref_root)
-          id = ref_object.ids[id_pointer]
-          subinstance = instance.merge(
-            schema: id.fetch(:schema),
-            schema_pointer: id.fetch(:pointer),
-            parent_uri: ref_uri
-          )
-          ref_object.validate_instance(subinstance, &block)
         else
           ref_root = resolve_ref(ref_uri)
           ref_object = child(ref_root)
@@ -627,7 +616,7 @@ module JSONSchemer
           schema.each_with_index { |subschema, index| resolve_ids(subschema, ids, parent_uri, "#{pointer}/#{index}") }
         elsif schema.is_a?(Hash)
           uri = join_uri(parent_uri, schema[id_keyword])
-          schema.each_pair do |key, value| 
+          schema.each do |key, value| 
             if key == id_keyword
               unless uri == parent_uri
                 ids[uri.to_s] = {
@@ -636,12 +625,7 @@ module JSONSchemer
                 }
               end
             end
-            if value.is_a?(Hash) 
-              resolve_ids(value, ids, parent_uri, "#{pointer}/#{key}") 
-            end
-          end
-          if definitions = schema['definitions']
-            definitions.each { |key, subschema| resolve_ids(subschema, ids, uri, "#{pointer}/definitions/#{key}") }
+            resolve_ids(value, ids, uri, "#{pointer}/#{key}") 
           end
         end
         ids
