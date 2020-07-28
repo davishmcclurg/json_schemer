@@ -354,6 +354,81 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
+  def test_it_returns_correct_pointers_for_a_nested_ref_id
+    ref_schema = {
+      '$id' => 'http://example.com',
+      'foo' => {
+        'bar' => {
+          '$id' => '#bar',
+          'type' => 'string'
+        }
+      }
+    }
+    root = {
+      'properties' => {
+        'a' => {
+          'properties' => {
+            'x' => { '$ref' => 'http://example.com/ref_schema.json#bar' }
+          }
+        }
+      }
+    }
+    schema = JSONSchemer.schema(
+      root,
+      ref_resolver: proc { ref_schema }
+    )
+    errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
+    assert errors.first == {
+      'data' => 1,
+      'data_pointer' => '/a/x',
+      'schema' => ref_schema['foo']['bar'],
+      'schema_pointer' => '/foo/bar',
+      'root_schema' => ref_schema,
+      'type' => 'string'
+    }
+  end
+
+  def test_it_returns_correct_pointers_for_a_nested_ref_id_with_other_pointers_to_root
+    ref_schema = {
+      '$id' => 'http://example.com',
+      'types' => {
+        'uuid' => {
+           '$id' => "#uuid",
+           'type' => 'string',
+           'pattern' => "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        }
+      },
+      'foo' => {
+        'bar' => {
+          '$id' => '#bar',
+          'allOf' => [{ "$ref" => "#uuid"}]
+        }
+      }
+    }
+    root = {
+      'properties' => {
+        'a' => {
+          'properties' => {
+            'x' => { '$ref' => 'http://example.com/ref_schema.json#bar' }
+          }
+        }
+      }
+    }
+    schema = JSONSchemer.schema(
+      root,
+      ref_resolver: proc { ref_schema }
+    )
+    errors = schema.validate({ 'a' => { 'x' => "1122-112" } }).to_a
+    assert errors.first == {
+      'data' => "1122-112",
+      'data_pointer' => '/a/x',
+      'schema' => ref_schema['types']['uuid'],
+      'schema_pointer' => '/types/uuid',
+      'root_schema' => ref_schema,
+      'type' => 'pattern'
+    }
+  end
+
   def test_it_returns_correct_pointers_for_remote_ref_id
     ref_schema = {
       '$id' => 'http://example.com/remote-id',
