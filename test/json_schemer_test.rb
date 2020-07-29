@@ -368,7 +368,7 @@ class JSONSchemerTest < Minitest::Test
     schema = JSONSchemer.schema(
       root
     )
-    errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
+    errors = schema.validate(42).to_a
     assert errors.first == {
       'data' => 1,
       'data_pointer' => '/a/x',
