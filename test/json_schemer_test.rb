@@ -362,12 +362,7 @@ class JSONSchemerTest < Minitest::Test
           'type' => 'string'
         }
       },
-      'properties' => {
-        'a' => {
-          'properties' => {
-            'x' => { '$ref' => '#bar' }
-          }
-        }
+      '$ref' => '#bar'
       }
     }
     schema = JSONSchemer.schema(
