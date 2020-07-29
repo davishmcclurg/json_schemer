@@ -354,7 +354,7 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
-  def test_it_returns_correct_pointers_for_a_nested_ref_id
+  def test_can_refer_to_subschemas_inside_hashes
     root = {
      'foo' => {
         'bar' => {
@@ -363,15 +363,14 @@ class JSONSchemerTest < Minitest::Test
         }
       },
       '$ref' => '#bar'
-      }
     }
     schema = JSONSchemer.schema(
       root
     )
     errors = schema.validate(42).to_a
     assert errors.first == {
-      'data' => 1,
-      'data_pointer' => '/a/x',
+      'data' => 42,
+      'data_pointer' => '',
       'schema' => root['foo']['bar'],
       'schema_pointer' => '/foo/bar',
       'root_schema' => root,
@@ -395,9 +394,7 @@ class JSONSchemerTest < Minitest::Test
         }
       }
     }
-    schema = JSONSchemer.schema(
-      root
-    )
+    schema = JSONSchemer.schema(root)
     errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
     assert errors.first == {
       'data' => 1,
@@ -409,7 +406,7 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
-  def test_it_returns_correct_pointers_for_a_nested_ref_id_with_resolver
+  def test_can_refer_to_subschemas_in_hash_with_remote_pointer
     ref_schema = {
       '$id' => 'http://example.com/ref_schema.json',
       'foo' => {
@@ -443,7 +440,7 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
-  def test_it_returns_correct_pointers_for_a_nested_ref_id_with_other_pointers_to_root
+  def test_can_refer_to_multiple_subschemas_in_hash
     ref_schema = {
       '$id' => 'http://example.com/ref_schema.json',
       'types' => {
