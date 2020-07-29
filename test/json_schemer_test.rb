@@ -379,7 +379,7 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
-  def test_it_returns_correct_pointers_for_a_nested_ref_id_in_array
+  def test_can_refer_to_subschemas_inside_arrays
     root = {
      'foo' => [{
         'bar' => {
