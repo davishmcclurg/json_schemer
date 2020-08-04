@@ -618,10 +618,10 @@ module JSONSchemer
           uri = join_uri(parent_uri, schema[id_keyword])
           schema.each do |key, value| 
             if key == id_keyword &&  uri != parent_uri
-                ids[uri.to_s] = {
-                  schema: schema,
-                  pointer: pointer
-                }
+              ids[uri.to_s] = {
+                schema: schema,
+                pointer: pointer
+              }
             end
             resolve_ids(value, ids, uri, "#{pointer}/#{key}") 
           end
