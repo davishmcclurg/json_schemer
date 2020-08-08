@@ -616,14 +616,14 @@ module JSONSchemer
           schema.each_with_index { |subschema, index| resolve_ids(subschema, ids, parent_uri, "#{pointer}/#{index}") }
         elsif schema.is_a?(Hash)
           uri = join_uri(parent_uri, schema[id_keyword])
-          schema.each do |key, value| 
-            if key == id_keyword &&  uri != parent_uri
+          schema.each do |key, value|
+            if key == id_keyword && uri != parent_uri
               ids[uri.to_s] = {
                 schema: schema,
                 pointer: pointer
               }
             end
-            resolve_ids(value, ids, uri, "#{pointer}/#{key}") 
+            resolve_ids(value, ids, uri, "#{pointer}/#{key}")
           end
         end
         ids
