@@ -4,7 +4,7 @@ jobs:
   ruby:
     strategy:
       matrix:
-        ruby: [2.5.x, 2.6.x, 2.7.x, truffleruby-head]
+        ruby: [2.5, 2.6, 2.7, truffleruby-head]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
