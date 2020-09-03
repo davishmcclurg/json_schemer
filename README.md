@@ -99,6 +99,13 @@ JSONSchemer.schema(
     data[property] ||= 42
   },
 
+  # modify properties after validation. You can pass one Proc or a list of Procs to modify data.
+  # Proc/[Proc]
+  # default: nil
+  after_validation: ->(data, property, property_schema) {
+    data[property] ||= Date.iso8601(data[property]) if property_schema['format'] == 'date'
+  },
+
   # resolve external references
   # 'net/http'/proc/lambda/respond_to?(:call)
   # 'net/http': proc { |uri| JSON.parse(Net::HTTP.get(uri)) }
