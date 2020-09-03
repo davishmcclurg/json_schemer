@@ -203,6 +203,78 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
+  def test_it_calls_before_validation_hooks_to_modify_data
+    parse_array = ->(data, property, property_schema) {
+      if data.key?(property) && property_schema.is_a?(Hash) && property_schema['type'] == 'array'
+        parsed = data[property].split(',')
+        parsed = parsed.map!(&:to_i) if property_schema['items']['type'] == 'integer'
+        data[property] = parsed
+      end
+    }
+    data = { 'list' => '1,2,3' }
+    schema = {
+      'properties' => {
+        'list' => {
+          'type' => 'array',
+          'items' => { 'type' => 'integer' }
+        }
+      }
+    }
+    assert JSONSchemer.schema(
+      schema,
+      before_validation: [parse_array]
+    ).valid?(data)
+    assert_equal({'list' => [1, 2, 3]}, data)
+  end
+
+  def test_it_accepts_a_single_before_validation_hook_to_modify_data
+    parse_array = ->(data, property, property_schema) {
+      if data.key?(property) && property_schema.is_a?(Hash) && property_schema['type'] == 'array'
+        parsed = data[property].split(',')
+        parsed = parsed.map!(&:to_i) if property_schema['items']['type'] == 'integer'
+        data[property] = parsed
+      end
+    }
+    data = { 'list' => '1,2,3' }
+    schema = {
+      'properties' => {
+        'list' => {
+          'type' => 'array',
+          'items' => { 'type' => 'integer' }
+        }
+      }
+    }
+    assert JSONSchemer.schema(
+      schema,
+      before_validation: parse_array
+    ).valid?(data)
+    assert_equal({'list' => [1, 2, 3]}, data)
+  end
+
+  def test_it_calls_before_validation_hooks_and_still_inserts_defaults
+    replace_fake_with_peter = ->(data, property, property_schema) {
+      data[property] = 'Peter' if property == 'name' && data[property] == 'fake'
+    }
+    data = [{ }, { 'name' => 'Bob' }]
+    assert JSONSchemer.schema(
+      {
+        'type' => 'array',
+        'items' => {
+          'type' => 'object',
+          'properties' => {
+            'name' => {
+              'type' => 'string',
+              'default' => 'fake'
+            }
+          }
+        }
+      },
+      insert_property_defaults: true,
+      before_validation: [replace_fake_with_peter]
+    ).valid?(data)
+    assert_equal([{ 'name' => 'Peter' }, { 'name' => 'Bob' }], data)
+  end
+
   def test_it_does_not_fail_when_the_schema_is_completely_empty
     schema = {}
     data = {

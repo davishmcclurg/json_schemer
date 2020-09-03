@@ -92,6 +92,13 @@ JSONSchemer.schema(
   # default: false
   insert_property_defaults: true,
 
+  # modify properties during validation. You can pass one Proc or a list of Procs to modify data.
+  # Proc/[Proc]
+  # default: nil
+  before_validation: ->(data, property, property_schema) {
+    data[property] ||= 42
+  },
+
   # resolve external references
   # 'net/http'/proc/lambda/respond_to?(:call)
   # 'net/http': proc { |uri| JSON.parse(Net::HTTP.get(uri)) }

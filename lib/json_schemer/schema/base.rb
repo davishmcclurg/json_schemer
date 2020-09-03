@@ -4,16 +4,16 @@ module JSONSchemer
     class Base
       include Format
 
-      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :parent_uri, :before_validation_hooks) do
+      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :parent_uri, :before_validation) do
         def merge(
           data: self.data,
           data_pointer: self.data_pointer,
           schema: self.schema,
           schema_pointer: self.schema_pointer,
           parent_uri: self.parent_uri,
-          before_validation_hooks: self.before_validation_hooks
+          before_validation: self.before_validation
         )
-          self.class.new(data, data_pointer, schema, schema_pointer, parent_uri, before_validation_hooks)
+          self.class.new(data, data_pointer, schema, schema_pointer, parent_uri, before_validation)
         end
       end
 
@@ -39,6 +39,7 @@ module JSONSchemer
         schema,
         format: true,
         insert_property_defaults: false,
+        before_validation: nil,
         formats: nil,
         keywords: nil,
         ref_resolver: DEFAULT_REF_RESOLVER
@@ -46,18 +47,20 @@ module JSONSchemer
         raise InvalidSymbolKey, 'schemas must use string keys' if schema.is_a?(Hash) && !schema.empty? && !schema.first.first.is_a?(String)
         @root = schema
         @format = format
-        @before_validation_hooks = insert_property_defaults && [INSERT_DEFAULT_PROPERTY]
+        @before_validation = []
+        @before_validation << INSERT_DEFAULT_PROPERTY if insert_property_defaults
+        @before_validation += Array(before_validation) if before_validation
         @formats = formats
         @keywords = keywords
         @ref_resolver = ref_resolver == 'net/http' ? CachedRefResolver.new(&NET_HTTP_REF_RESOLVER) : ref_resolver
       end
 
       def valid?(data)
-        valid_instance?(Instance.new(data, '', root, '', nil, @before_validation_hooks))
+        valid_instance?(Instance.new(data, '', root, '', nil, @before_validation))
       end
 
       def validate(data)
-        validate_instance(Instance.new(data, '', root, '', nil, @before_validation_hooks))
+        validate_instance(Instance.new(data, '', root, '', nil, @before_validation))
       end
 
     protected
@@ -125,7 +128,7 @@ module JSONSchemer
             subinstance = instance.merge(
               schema: subschema,
               schema_pointer: "#{instance.schema_pointer}/allOf/#{index}",
-              before_validation_hooks: false
+              before_validation: false
             )
             validate_instance(subinstance, &block)
           end
@@ -136,7 +139,7 @@ module JSONSchemer
             subinstance = instance.merge(
               schema: subschema,
               schema_pointer: "#{instance.schema_pointer}/anyOf/#{index}",
-              before_validation_hooks: false
+              before_validation: false
             )
             validate_instance(subinstance)
           end
@@ -148,7 +151,7 @@ module JSONSchemer
             subinstance = instance.merge(
               schema: subschema,
               schema_pointer: "#{instance.schema_pointer}/oneOf/#{index}",
-              before_validation_hooks: false
+              before_validation: false
             )
             validate_instance(subinstance)
           end
@@ -164,12 +167,12 @@ module JSONSchemer
           subinstance = instance.merge(
             schema: not_schema,
             schema_pointer: "#{instance.schema_pointer}/not",
-            before_validation_hooks: false
+            before_validation: false
           )
           yield error(subinstance, 'not') if valid_instance?(subinstance)
         end
 
-        if if_schema && valid_instance?(instance.merge(schema: if_schema, before_validation_hooks: false))
+        if if_schema && valid_instance?(instance.merge(schema: if_schema, before_validation: false))
           validate_instance(instance.merge(schema: then_schema, schema_pointer: "#{instance.schema_pointer}/then"), &block) unless then_schema.nil?
         elsif if_schema
           validate_instance(instance.merge(schema: else_schema, schema_pointer: "#{instance.schema_pointer}/else"), &block) unless else_schema.nil?
@@ -493,9 +496,9 @@ module JSONSchemer
         dependencies = schema['dependencies']
         property_names = schema['propertyNames']
 
-        if instance.before_validation_hooks && properties
+        if instance.before_validation && properties
           properties.each do |property, property_schema|
-            instance.before_validation_hooks.each do |hook|
+            instance.before_validation.each do |hook|
               hook.call(data, property, property_schema)
             end
           end
