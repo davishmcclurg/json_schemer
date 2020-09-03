@@ -298,6 +298,29 @@ class JSONSchemerTest < Minitest::Test
     assert_equal({'start_date' => Date.new(2020, 9, 3)}, data)
   end
 
+  def test_it_accepts_a_single_proc_as_after_validation_hook
+    convert_date = ->(data, property, property_schema) {
+      if data[property] && property_schema.is_a?(Hash) && property_schema['format'] == 'date'
+        data[property] = Date.iso8601(data[property])
+      end
+    }
+    schema = {
+      'properties' => {
+        'start_date' => {
+          'type' => 'string',
+          'format' => 'date'
+        }
+      }
+    }
+    validator= JSONSchemer.schema(
+      schema,
+      after_validation: convert_date
+    )
+    data = { 'start_date' => '2020-09-03' }
+    assert validator.valid?(data)
+    assert_equal({'start_date' => Date.new(2020, 9, 3)}, data)
+  end
+
   def test_it_does_not_fail_when_the_schema_is_completely_empty
     schema = {}
     data = {

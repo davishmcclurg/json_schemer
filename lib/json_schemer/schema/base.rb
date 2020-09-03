@@ -52,7 +52,7 @@ module JSONSchemer
         @before_validation = []
         @before_validation << INSERT_DEFAULT_PROPERTY if insert_property_defaults
         @before_validation += Array(before_validation) if before_validation
-        @after_validation = after_validation
+        @after_validation = Array(after_validation)
         @formats = formats
         @keywords = keywords
         @ref_resolver = ref_resolver == 'net/http' ? CachedRefResolver.new(&NET_HTTP_REF_RESOLVER) : ref_resolver
