@@ -95,16 +95,16 @@ JSONSchemer.schema(
   # modify properties during validation. You can pass one Proc or a list of Procs to modify data.
   # Proc/[Proc]
   # default: nil
-  before_validation: ->(data, property, property_schema) {
+  before_property_validation: proc do |data, property, property_schema|
     data[property] ||= 42
-  },
+  end,
 
   # modify properties after validation. You can pass one Proc or a list of Procs to modify data.
   # Proc/[Proc]
   # default: nil
-  after_validation: ->(data, property, property_schema) {
+  after_property_validation: proc do |data, property, property_schema|
     data[property] ||= Date.iso8601(data[property]) if property_schema['format'] == 'date'
-  },
+  end,
 
   # resolve external references
   # 'net/http'/proc/lambda/respond_to?(:call)

@@ -222,7 +222,7 @@ class JSONSchemerTest < Minitest::Test
     }
     assert JSONSchemer.schema(
       schema,
-      before_validation: [parse_array]
+      before_property_validation: [parse_array]
     ).valid?(data)
     assert_equal({'list' => [1, 2, 3]}, data)
   end
@@ -246,7 +246,7 @@ class JSONSchemerTest < Minitest::Test
     }
     assert JSONSchemer.schema(
       schema,
-      before_validation: parse_array
+      before_property_validation: parse_array
     ).valid?(data)
     assert_equal({'list' => [1, 2, 3]}, data)
   end
@@ -270,7 +270,7 @@ class JSONSchemerTest < Minitest::Test
         }
       },
       insert_property_defaults: true,
-      before_validation: [replace_fake_with_peter]
+      before_property_validation: [replace_fake_with_peter]
     ).valid?(data)
     assert_equal([{ 'name' => 'Peter' }, { 'name' => 'Bob' }], data)
   end
@@ -291,7 +291,7 @@ class JSONSchemerTest < Minitest::Test
     }
     validator= JSONSchemer.schema(
       schema,
-      after_validation: [convert_date]
+      after_property_validation: [convert_date]
     )
     data = { 'start_date' => '2020-09-03' }
     assert validator.valid?(data)
@@ -314,7 +314,7 @@ class JSONSchemerTest < Minitest::Test
     }
     validator= JSONSchemer.schema(
       schema,
-      after_validation: convert_date
+      after_property_validation: convert_date
     )
     data = { 'start_date' => '2020-09-03' }
     assert validator.valid?(data)
