@@ -95,14 +95,14 @@ JSONSchemer.schema(
   # modify properties during validation. You can pass one Proc or a list of Procs to modify data.
   # Proc/[Proc]
   # default: nil
-  before_property_validation: proc do |data, property, property_schema|
+  before_property_validation: proc do |data, property, property_schema, _parent|
     data[property] ||= 42
   end,
 
   # modify properties after validation. You can pass one Proc or a list of Procs to modify data.
   # Proc/[Proc]
   # default: nil
-  after_property_validation: proc do |data, property, property_schema|
+  after_property_validation: proc do |data, property, property_schema, _parent|
     data[property] = Date.iso8601(data[property]) if && property_schema.is_a?(Hash) && property_schema['format'] == 'date'
   end,
 

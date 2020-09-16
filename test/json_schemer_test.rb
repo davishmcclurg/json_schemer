@@ -204,13 +204,13 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_it_calls_before_validation_hooks_to_modify_data
-    parse_array = ->(data, property, property_schema) {
+    parse_array = proc do |data, property, property_schema, _|
       if data.key?(property) && property_schema.is_a?(Hash) && property_schema['type'] == 'array'
         parsed = data[property].split(',')
         parsed = parsed.map!(&:to_i) if property_schema['items']['type'] == 'integer'
         data[property] = parsed
       end
-    }
+    end
     data = { 'list' => '1,2,3' }
     schema = {
       'properties' => {
@@ -227,14 +227,44 @@ class JSONSchemerTest < Minitest::Test
     assert_equal({'list' => [1, 2, 3]}, data)
   end
 
+  def test_use_before_validation_hook_to_act_on_parent_schema
+    skip_read_only = proc do |data, property, property_schema, schema|
+      return unless property_schema['readOnly']
+      schema['required'].delete(property) if schema['required']
+      if data.key?(property) && property_schema.is_a?(Hash) &&
+        data.delete(property)
+      end
+    end
+    schema = {
+      'required' => ['id'],
+      'properties' => {
+        'id' => {
+          'type' => 'integer',
+          'readOnly' => true
+        }
+      }
+    }
+    schemer = JSONSchemer.schema(
+      schema,
+      before_property_validation: [skip_read_only]
+    )
+    data = { 'id' => 1 }
+    assert_empty schemer.validate(data).to_a
+    assert_equal({}, data)
+
+    data = {}
+    assert_empty schemer.validate(data).to_a
+    assert_equal({}, data)
+  end
+
   def test_it_accepts_a_single_before_validation_hook_to_modify_data
-    parse_array = ->(data, property, property_schema) {
+    parse_array = proc do |data, property, property_schema, _|
       if data.key?(property) && property_schema.is_a?(Hash) && property_schema['type'] == 'array'
         parsed = data[property].split(',')
         parsed = parsed.map!(&:to_i) if property_schema['items']['type'] == 'integer'
         data[property] = parsed
       end
-    }
+    end
     data = { 'list' => '1,2,3' }
     schema = {
       'properties' => {
@@ -252,9 +282,9 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_it_calls_before_validation_hooks_and_still_inserts_defaults
-    replace_fake_with_peter = ->(data, property, property_schema) {
+    replace_fake_with_peter = proc do |data, property, property_schema, _|
       data[property] = 'Peter' if property == 'name' && data[property] == 'fake'
-    }
+    end
     data = [{ }, { 'name' => 'Bob' }]
     assert JSONSchemer.schema(
       {
@@ -276,11 +306,11 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_it_calls_after_validation_hooks_to_modify_data
-    convert_date = ->(data, property, property_schema) {
+    convert_date = proc do |data, property, property_schema, _|
       if data[property] && property_schema.is_a?(Hash) && property_schema['format'] == 'date'
         data[property] = Date.iso8601(data[property])
       end
-    }
+    end
     schema = {
       'properties' => {
         'start_date' => {
@@ -299,11 +329,11 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_it_accepts_a_single_proc_as_after_validation_hook
-    convert_date = ->(data, property, property_schema) {
+    convert_date = proc do |data, property, property_schema|
       if data[property] && property_schema.is_a?(Hash) && property_schema['format'] == 'date'
         data[property] = Date.iso8601(data[property])
       end
-    }
+    end
     schema = {
       'properties' => {
         'start_date' => {

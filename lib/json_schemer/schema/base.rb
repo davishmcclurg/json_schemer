@@ -505,7 +505,7 @@ module JSONSchemer
         if instance.before_property_validation && properties
           properties.each do |property, property_schema|
             instance.before_property_validation.each do |hook|
-              hook.call(data, property, property_schema)
+              hook.call(data, property, property_schema, schema)
             end
           end
         end
@@ -584,7 +584,7 @@ module JSONSchemer
         if instance.after_property_validation && properties
           properties.each do |property, property_schema|
             instance.after_property_validation.each do |hook|
-              hook.call(data, property, property_schema)
+              hook.call(data, property, property_schema, schema)
             end
           end
         end
