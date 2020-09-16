@@ -49,9 +49,8 @@ module JSONSchemer
         raise InvalidSymbolKey, 'schemas must use string keys' if schema.is_a?(Hash) && !schema.empty? && !schema.first.first.is_a?(String)
         @root = schema
         @format = format
-        @before_property_validation = []
-        @before_property_validation << INSERT_DEFAULT_PROPERTY if insert_property_defaults
-        @before_property_validation += Array(before_property_validation) if before_property_validation
+        @before_property_validation = Array(before_property_validation)
+        @before_property_validation.unshift(INSERT_DEFAULT_PROPERTY) if insert_property_defaults
         @after_property_validation = Array(after_property_validation)
         @formats = formats
         @keywords = keywords
