@@ -568,12 +568,10 @@ module JSONSchemer
       end
 
       def safe_strict_decode64(data)
-        begin
-          Base64.strict_decode64(data)
-        rescue ArgumentError => e
-          raise e unless e.message == 'invalid base64'
-          nil
-        end
+        Base64.strict_decode64(data)
+      rescue ArgumentError => e
+        raise e unless e.message == 'invalid base64'
+        nil
       end
 
       def ecma_262_regex(pattern)
