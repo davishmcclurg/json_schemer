@@ -247,6 +247,11 @@
                 "description": "a host name with a component too long",
                 "data": "a-vvvvvvvvvvvvvvvveeeeeeeeeeeeeeeerrrrrrrrrrrrrrrryyyyyyyyyyyyyyyy-long-host-name-component",
                 "valid": false
+            },
+            {
+                "description": "a host name starting with a digit",
+                "data": "1drv.ms",
+                "valid": true
             }
         ]
     }

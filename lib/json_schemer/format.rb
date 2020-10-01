@@ -3,7 +3,7 @@ module JSONSchemer
   module Format
     # this is no good
     EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/i.freeze
-    LABEL_REGEX_STRING = '\p{L}([\p{L}\p{N}\-]*[\p{L}\p{N}])?'
+    LABEL_REGEX_STRING = '[\p{L}\p{N}]([\p{L}\p{N}\-]*[\p{L}\p{N}])?'
     HOSTNAME_REGEX = /\A(#{LABEL_REGEX_STRING}\.)*#{LABEL_REGEX_STRING}\z/i.freeze
     JSON_POINTER_REGEX_STRING = '(\/([^~\/]|~[01])*)*'
     JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
