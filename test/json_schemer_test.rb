@@ -351,6 +351,24 @@ class JSONSchemerTest < Minitest::Test
     assert_equal({'start_date' => Date.new(2020, 9, 3)}, data)
   end
 
+  def test_it_does_not_modify_passed_hooks_array
+    schema = {
+      'properties' => {
+        'list' => {
+          'type' => 'array',
+          'items' => { 'type' => 'string' }
+        }
+      }
+    }
+    data = [{ 'name' => 'Bob' }]
+    assert JSONSchemer.schema(
+      schema,
+      before_property_validation: [proc {}].freeze,
+      after_property_validation: [proc {}].freeze,
+      insert_property_defaults: true
+    ).valid?(data)
+  end
+
   def test_it_does_not_fail_when_the_schema_is_completely_empty
     schema = {}
     data = {
