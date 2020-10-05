@@ -231,7 +231,7 @@ class JSONSchemerTest < Minitest::Test
     skip_read_only = proc do |data, property, property_schema, schema|
       return unless property_schema['readOnly']
       schema['required'].delete(property) if schema['required']
-      if data.key?(property) && property_schema.is_a?(Hash) &&
+      if data.key?(property) && property_schema.is_a?(Hash)
         data.delete(property)
       end
     end
