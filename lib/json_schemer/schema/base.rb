@@ -30,7 +30,7 @@ module JSONSchemer
         :eol => '\z'
       }.freeze
 
-      INSERT_DEFAULT_PROPERTY = proc do |data, property, property_schema|
+      INSERT_DEFAULT_PROPERTY = proc do |data, property, property_schema, _parent|
         if !data.key?(property) && property_schema.is_a?(Hash) && property_schema.key?('default')
           data[property] = property_schema.fetch('default').clone
         end
