@@ -112,7 +112,7 @@ module JSONSchemer
         if keywords
           keywords.each do |keyword, callable|
             if schema.key?(keyword)
-              result = callable.call(data, schema, instance.pointer)
+              result = callable.call(data, schema, instance)
               if result.is_a?(Array)
                 result.each(&block)
               elsif !result
