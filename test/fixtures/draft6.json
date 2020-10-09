@@ -5427,6 +5427,9 @@
                 "additionalProperties": {
                   "$ref": "#"
                 },
+                "propertyNames": {
+                  "format": "regex"
+                },
                 "default": {
                 }
               },
@@ -5665,6 +5668,9 @@
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
+                },
+                "propertyNames": {
+                  "format": "regex"
                 },
                 "default": {
                 }
@@ -8623,6 +8629,9 @@
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
+                },
+                "propertyNames": {
+                  "format": "regex"
                 },
                 "default": {
                 }
