@@ -203,6 +203,172 @@ class JSONSchemerTest < Minitest::Test
     }
   end
 
+  def test_it_calls_before_validation_hooks_to_modify_data
+    parse_array = proc do |data, property, property_schema, _|
+      if data.key?(property) && property_schema.is_a?(Hash) && property_schema['type'] == 'array'
+        parsed = data[property].split(',')
+        parsed = parsed.map!(&:to_i) if property_schema['items']['type'] == 'integer'
+        data[property] = parsed
+      end
+    end
+    data = { 'list' => '1,2,3' }
+    schema = {
+      'properties' => {
+        'list' => {
+          'type' => 'array',
+          'items' => { 'type' => 'integer' }
+        }
+      }
+    }
+    assert JSONSchemer.schema(
+      schema,
+      before_property_validation: [parse_array]
+    ).valid?(data)
+    assert_equal({'list' => [1, 2, 3]}, data)
+  end
+
+  def test_use_before_validation_hook_to_act_on_parent_schema
+    skip_read_only = proc do |data, property, property_schema, schema|
+      return unless property_schema['readOnly']
+      schema['required'].delete(property) if schema['required']
+      if data.key?(property) && property_schema.is_a?(Hash)
+        data.delete(property)
+      end
+    end
+    schema = {
+      'required' => ['id'],
+      'properties' => {
+        'id' => {
+          'type' => 'integer',
+          'readOnly' => true
+        }
+      }
+    }
+    schemer = JSONSchemer.schema(
+      schema,
+      before_property_validation: [skip_read_only]
+    )
+    data = { 'id' => 1 }
+    assert_empty schemer.validate(data).to_a
+    assert_equal({}, data)
+
+    data = {}
+    assert_empty schemer.validate(data).to_a
+    assert_equal({}, data)
+  end
+
+  def test_it_accepts_a_single_before_validation_hook_to_modify_data
+    parse_array = proc do |data, property, property_schema, _|
+      if data.key?(property) && property_schema.is_a?(Hash) && property_schema['type'] == 'array'
+        parsed = data[property].split(',')
+        parsed = parsed.map!(&:to_i) if property_schema['items']['type'] == 'integer'
+        data[property] = parsed
+      end
+    end
+    data = { 'list' => '1,2,3' }
+    schema = {
+      'properties' => {
+        'list' => {
+          'type' => 'array',
+          'items' => { 'type' => 'integer' }
+        }
+      }
+    }
+    assert JSONSchemer.schema(
+      schema,
+      before_property_validation: parse_array
+    ).valid?(data)
+    assert_equal({'list' => [1, 2, 3]}, data)
+  end
+
+  def test_it_calls_before_validation_hooks_and_still_inserts_defaults
+    replace_fake_with_peter = proc do |data, property, property_schema, _|
+      data[property] = 'Peter' if property == 'name' && data[property] == 'fake'
+    end
+    data = [{ }, { 'name' => 'Bob' }]
+    assert JSONSchemer.schema(
+      {
+        'type' => 'array',
+        'items' => {
+          'type' => 'object',
+          'properties' => {
+            'name' => {
+              'type' => 'string',
+              'default' => 'fake'
+            }
+          }
+        }
+      },
+      insert_property_defaults: true,
+      before_property_validation: [replace_fake_with_peter]
+    ).valid?(data)
+    assert_equal([{ 'name' => 'Peter' }, { 'name' => 'Bob' }], data)
+  end
+
+  def test_it_calls_after_validation_hooks_to_modify_data
+    convert_date = proc do |data, property, property_schema, _|
+      if data[property] && property_schema.is_a?(Hash) && property_schema['format'] == 'date'
+        data[property] = Date.iso8601(data[property])
+      end
+    end
+    schema = {
+      'properties' => {
+        'start_date' => {
+          'type' => 'string',
+          'format' => 'date'
+        }
+      }
+    }
+    validator= JSONSchemer.schema(
+      schema,
+      after_property_validation: [convert_date]
+    )
+    data = { 'start_date' => '2020-09-03' }
+    assert validator.valid?(data)
+    assert_equal({'start_date' => Date.new(2020, 9, 3)}, data)
+  end
+
+  def test_it_accepts_a_single_proc_as_after_validation_hook
+    convert_date = proc do |data, property, property_schema|
+      if data[property] && property_schema.is_a?(Hash) && property_schema['format'] == 'date'
+        data[property] = Date.iso8601(data[property])
+      end
+    end
+    schema = {
+      'properties' => {
+        'start_date' => {
+          'type' => 'string',
+          'format' => 'date'
+        }
+      }
+    }
+    validator= JSONSchemer.schema(
+      schema,
+      after_property_validation: convert_date
+    )
+    data = { 'start_date' => '2020-09-03' }
+    assert validator.valid?(data)
+    assert_equal({'start_date' => Date.new(2020, 9, 3)}, data)
+  end
+
+  def test_it_does_not_modify_passed_hooks_array
+    schema = {
+      'properties' => {
+        'list' => {
+          'type' => 'array',
+          'items' => { 'type' => 'string' }
+        }
+      }
+    }
+    data = [{ 'name' => 'Bob' }]
+    assert JSONSchemer.schema(
+      schema,
+      before_property_validation: [proc {}].freeze,
+      after_property_validation: [proc {}].freeze,
+      insert_property_defaults: true
+    ).valid?(data)
+  end
+
   def test_it_does_not_fail_when_the_schema_is_completely_empty
     schema = {}
     data = {
