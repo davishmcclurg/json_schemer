@@ -1028,4 +1028,26 @@ class JSONSchemerTest < Minitest::Test
       end
     end
   end
+
+  def test_it_validates_correctly_custom_keywords
+    root = {
+      'type' => 'number',
+      'even' => true
+    }
+    options = {
+      keywords: {
+        'even' => lambda do |data, curr_schema, _pointer|
+          if curr_schema['even']
+            data.to_i.even?
+          else
+            data.to_i.odd?
+          end
+        end
+      }
+    }
+
+    schema = JSONSchemer.schema(root, options)
+    assert schema.valid?(2)
+    refute schema.valid?(3)
+  end
 end
