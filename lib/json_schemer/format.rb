@@ -101,7 +101,14 @@ module JSONSchemer
     end
 
     def iri_escape(data)
-      URI.escape(data, /[^[[:ascii:]]]/)
+      data.gsub(/[^[:ascii:]]/) do |match|
+        us = match
+        tmp = +''
+        us.each_byte do |uc|
+          tmp << sprintf('%%%02X', uc)
+        end
+        tmp
+      end.force_encoding(Encoding::US_ASCII)
     end
 
     def valid_uri_template?(data)
