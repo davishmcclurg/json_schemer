@@ -1046,7 +1046,7 @@ class JSONSchemerTest < Minitest::Test
       }
     }
 
-    schema = JSONSchemer.schema(root, options)
+    schema = JSONSchemer.schema(root, **options)
     assert schema.valid?(2)
     refute schema.valid?(3)
   end
