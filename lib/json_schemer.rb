@@ -37,10 +37,14 @@ module JSONSchemer
 
   DEFAULT_META_SCHEMA = 'http://json-schema.org/draft-07/schema#'
 
+  WINDOWS_URI_PATH_REGEX = /\A\/[a-z]:/i
+
   FILE_URI_REF_RESOLVER = proc do |uri|
     raise InvalidFileURI, 'must use `file` scheme' unless uri.scheme == 'file'
     raise InvalidFileURI, 'cannot have a host (use `file:///`)' if uri.host && !uri.host.empty?
-    JSON.parse(File.read(uri.path))
+    path = uri.path
+    path = path[1..-1] if path.match?(WINDOWS_URI_PATH_REGEX)
+    JSON.parse(File.read(path))
   end
 
   class << self
@@ -49,7 +53,7 @@ module JSONSchemer
       when String
         schema = JSON.parse(schema)
       when Pathname
-        uri = URI.parse("file://#{schema.realpath}")
+        uri = URI.parse(File.join('file:', schema.realpath))
         if options.key?(:ref_resolver)
           schema = FILE_URI_REF_RESOLVER.call(uri)
         else
