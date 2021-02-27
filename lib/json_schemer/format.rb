@@ -61,7 +61,6 @@ module JSONSchemer
       DateTime.rfc3339(data)
       DATE_TIME_OFFSET_REGEX.match?(data)
     rescue ArgumentError => e
-      raise e unless e.message == 'invalid date'
       false
     end
 
