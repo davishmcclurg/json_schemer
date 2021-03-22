@@ -114,6 +114,41 @@ JSONSchemer.schema(
 )
 ```
 
+## Parsing errors
+To get a list of errors map the results like this.
+``` 
+require 'pp'
+
+schemer = JSONSchemer.schema(your-json-schema)
+
+result = schemer.validate({
+	Values you're inputting
+})
+
+# use pp to make it nice to look at in your console.
+pp result.map { |error| error.slice('data', 'data_pointer', 'type') }
+
+```
+
+## Local file references
+
+To use local file refereces in your schema you will need to provide an absolute path to JSONSchemer and a function to resolve those references.
+
+``` 
+# refspec is the reference provided by your schema. 
+# from {"$ref": "./secondFile.json"}, -> ./secondFile.json
+
+ref_resolver = lambda do |refspec|
+  json = JSON.load(File.read(File.join(__dir__, refspec.to_s)))
+  json
+end
+
+filename = 'mainFile.json'
+file_path = File.expand_path(File.join('..', 'schema', filename), __dir__)
+
+schemer = JSONSchemer.schema(Pathname.new(file_path), ref_resolver: ref_resolver) 
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
