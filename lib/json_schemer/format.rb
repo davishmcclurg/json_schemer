@@ -9,6 +9,8 @@ module JSONSchemer
     JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
     RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
     DATE_TIME_OFFSET_REGEX = /(Z|[\+\-]([01][0-9]|2[0-3]):[0-5][0-9])\z/i.freeze
+    HOUR_24_REGEX = /T24/.freeze
+    LEAP_SECOND_REGEX = /T\d{2}:\d{2}:6/.freeze
     IP_REGEX = /\A[\h:.]+\z/.freeze
     INVALID_QUERY_REGEX = /\s/.freeze
 
@@ -59,7 +61,9 @@ module JSONSchemer
     end
 
     def valid_date_time?(data)
-      DateTime.rfc3339(data)
+      return false if HOUR_24_REGEX.match?(data)
+      datetime = DateTime.rfc3339(data)
+      return false if LEAP_SECOND_REGEX.match?(data) && datetime.to_time.utc.strftime('%H:%M') != '23:59'
       DATE_TIME_OFFSET_REGEX.match?(data)
     rescue ArgumentError
       false
