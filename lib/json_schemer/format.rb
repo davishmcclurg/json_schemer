@@ -9,7 +9,8 @@ module JSONSchemer
     JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
     RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
     DATE_TIME_OFFSET_REGEX = /(Z|[\+\-]([01][0-9]|2[0-3]):[0-5][0-9])\z/i.freeze
-    INVALID_QUERY_REGEX = /[[:space:]]/.freeze
+    IP_REGEX = /\A[\h:.]+\z/.freeze
+    INVALID_QUERY_REGEX = /\s/.freeze
 
     def valid_spec_format?(data, format)
       case format
@@ -28,9 +29,9 @@ module JSONSchemer
       when 'idn-hostname'
         valid_hostname?(data)
       when 'ipv4'
-        valid_ip?(data, :v4)
+        valid_ip?(data, Socket::AF_INET)
       when 'ipv6'
-        valid_ip?(data, :v6)
+        valid_ip?(data, Socket::AF_INET6)
       when 'uri'
         valid_uri?(data)
       when 'uri-reference'
@@ -72,10 +73,10 @@ module JSONSchemer
       HOSTNAME_REGEX.match?(data) && data.split('.').all? { |label| label.size <= 63 }
     end
 
-    def valid_ip?(data, type)
-      ip_address = IPAddr.new(data)
-      type == :v4 ? ip_address.ipv4? : ip_address.ipv6?
-    rescue IPAddr::InvalidAddressError
+    def valid_ip?(data, family)
+      IPAddr.new(data, family)
+      IP_REGEX.match?(data)
+    rescue IPAddr::Error
       false
     end
 
