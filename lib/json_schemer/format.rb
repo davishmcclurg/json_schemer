@@ -70,7 +70,9 @@ module JSONSchemer
     end
 
     def valid_email?(data)
-      EMAIL_REGEX.match?(data)
+      return false unless EMAIL_REGEX.match?(data)
+      local, _domain = data.partition('@')
+      !local.start_with?('.') && !local.end_with?('.') && !local.include?('..')
     end
 
     def valid_hostname?(data)
