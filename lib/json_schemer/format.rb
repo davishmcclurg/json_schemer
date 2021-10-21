@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 module JSONSchemer
   module Format
+    include Hostname
+
     # this is no good
     EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/i.freeze
-    LABEL_REGEX_STRING = '[\p{L}\p{N}]([\p{L}\p{N}\-]*[\p{L}\p{N}])?'
-    HOSTNAME_REGEX = /\A(#{LABEL_REGEX_STRING}\.)*#{LABEL_REGEX_STRING}\z/i.freeze
     JSON_POINTER_REGEX_STRING = '(\/([^~\/]|~[01])*)*'
     JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
     RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
@@ -73,10 +73,6 @@ module JSONSchemer
       return false unless EMAIL_REGEX.match?(data)
       local, _domain = data.partition('@')
       !local.start_with?('.') && !local.end_with?('.') && !local.include?('..')
-    end
-
-    def valid_hostname?(data)
-      HOSTNAME_REGEX.match?(data) && data.split('.').all? { |label| label.size <= 63 }
     end
 
     def valid_ip?(data, family)

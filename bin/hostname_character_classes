@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+require 'open-uri'
+require 'csv'
+
+# https://datatracker.ietf.org/doc/html/rfc5892#appendix-A.1
+# https://datatracker.ietf.org/doc/html/rfc5892#appendix-A.2
+
+csv_options = { :col_sep => ';', :skip_blanks => true, :skip_lines => /\A#/ }
+
+unicode_data = URI('https://www.unicode.org/Public/UCD/latest/ucd/UnicodeData.txt')
+derived_joining_type = URI('https://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedJoiningType.txt')
+
+# https://www.unicode.org/reports/tr44/#Canonical_Combining_Class_Values
+virama_canonical_combining_class = '9'
+
+virama_codes = CSV.new(unicode_data.read, **csv_options).select do |code, _name, _category, canonical_combining_class|
+  canonical_combining_class == virama_canonical_combining_class
+end.map(&:first)
+
+# https://www.unicode.org/reports/tr44/#Default_Values
+# https://www.unicode.org/reports/tr44/#Derived_Extracted
+codes_by_joining_type = CSV.new(derived_joining_type.read, **csv_options).group_by do |_code, joining_type|
+  joining_type.gsub(/#.+/, '').strip
+end.transform_values do |rows|
+  rows.map do |code, _joining_type|
+    code.strip
+  end
+end
+
+def codes_to_character_class(codes)
+  characters = codes.map do |code|
+    code.gsub(/(\h+)/, '\u{\1}').gsub('..', '-')
+  end
+  "[#{characters.join}]"
+end
+
+puts "VIRAMA_CHARACTER_CLASS = '#{codes_to_character_class(virama_codes)}'"
+
+codes_by_joining_type.slice('L', 'D', 'T', 'R').each do |joining_type, codes|
+  puts "JOINING_TYPE_#{joining_type}_CHARACTER_CLASS = '#{codes_to_character_class(codes)}'"
+end
