@@ -122,12 +122,13 @@ module JSONSchemer
         ref = schema['$ref']
         id = schema[id_keyword]
 
-        instance.parent_uri = join_uri(instance.parent_uri, id)
-
         if ref
+          instance.parent_uri ||= URI.parse(root[id_keyword]) if root.key?(id_keyword)
           validate_ref(instance, ref, &block)
           return
         end
+
+        instance.parent_uri = join_uri(instance.parent_uri, id)
 
         if format? && custom_format?(format)
           validate_custom_format(instance, formats.fetch(format), &block)
