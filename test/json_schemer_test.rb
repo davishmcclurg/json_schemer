@@ -904,10 +904,10 @@ class JSONSchemerTest < Minitest::Test
     refute(schema.valid?("foo\nfoo\nfoo"))
 
     schema = JSONSchemer.schema({ 'pattern' => '\Afoo\z' })
-    assert(schema.valid?('Afooz'))
-    refute(schema.valid?('foo'))
-    refute(schema.valid?('Afoo'))
-    refute(schema.valid?('fooz'))
+    assert(schema.valid?('foo'))
+    refute(schema.valid?(' foo'))
+    refute(schema.valid?('foo '))
+    refute(schema.valid?("foo\nfoo\nfoo"))
   end
 
   def test_it_handles_regexp_resolver
