@@ -663,13 +663,21 @@ module JSONSchemer
         elsif schema.is_a?(Hash)
           uri = join_uri(parent_uri, schema[id_keyword])
           schema.each do |key, value|
-            if key == id_keyword && uri != parent_uri
-              ids[uri.to_s] = {
-                schema: schema,
-                pointer: pointer
-              }
+            case key
+            when id_keyword
+              unless uri == parent_uri
+                ids[uri.to_s] = {
+                  schema: schema,
+                  pointer: pointer
+                }
+              end
+            when 'items', 'allOf', 'anyOf', 'oneOf', 'additionalItems', 'contains', 'additionalProperties', 'propertyNames', 'if', 'then', 'else', 'not'
+              resolve_ids(value, ids, uri, "#{pointer}/#{key}")
+            when 'properties', 'patternProperties', 'definitions', 'dependencies'
+              value.each do |subkey, subvalue|
+                resolve_ids(subvalue, ids, uri, "#{pointer}/#{key}/#{subkey}")
+              end
             end
-            resolve_ids(value, ids, uri, "#{pointer}/#{key}")
           end
         end
         ids
