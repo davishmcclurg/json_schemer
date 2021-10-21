@@ -25,8 +25,6 @@ module JSONSchemer
 
       RUBY_REGEX_TYPES_TO_ECMA_262 = {
         :anchor => {
-          :bos => 'A',
-          :eos => 'z',
           :bol => '\A',
           :eol => '\z'
         },
