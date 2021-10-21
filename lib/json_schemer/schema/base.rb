@@ -311,10 +311,11 @@ module JSONSchemer
           schema_pointer = ref.slice(1..-1)
           if valid_json_pointer?(schema_pointer)
             ref_pointer = Hana::Pointer.new(URI.decode_www_form_component(schema_pointer))
+            ref_root = ids[instance.parent_uri.to_s]&.fetch(:schema) || root
             subinstance = instance.merge(
-              schema: ref_pointer.eval(root),
+              schema: ref_pointer.eval(ref_root),
               schema_pointer: schema_pointer,
-              parent_uri: (pointer_uri(root, ref_pointer) || instance.parent_uri)
+              parent_uri: (pointer_uri(ref_root, ref_pointer) || instance.parent_uri)
             )
             validate_instance(subinstance, &block)
             return
