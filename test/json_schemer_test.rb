@@ -520,7 +520,7 @@ class JSONSchemerTest < Minitest::Test
 
   def test_can_refer_to_subschemas_inside_hashes
     root = {
-     'foo' => {
+     'definitions' => {
         'bar' => {
           '$id' => '#bar',
           'type' => 'string'
@@ -536,8 +536,8 @@ class JSONSchemerTest < Minitest::Test
       {
         'data' => 42,
         'data_pointer' => '',
-        'schema' => root['foo']['bar'],
-        'schema_pointer' => '/foo/bar',
+        'schema' => root['definitions']['bar'],
+        'schema_pointer' => '/definitions/bar',
         'root_schema' => root,
         'type' => 'string'
       },
@@ -547,8 +547,8 @@ class JSONSchemerTest < Minitest::Test
 
   def test_can_refer_to_subschemas_inside_arrays
     root = {
-     'foo' => [{
-        'bar' => {
+     'allOf' => [{
+        'if' => {
           '$id' => '#bar',
           'type' => 'string'
         }
@@ -567,8 +567,8 @@ class JSONSchemerTest < Minitest::Test
       {
         'data' => 1,
         'data_pointer' => '/a/x',
-        'schema' => root['foo'].first['bar'],
-        'schema_pointer' => '/foo/0/bar',
+        'schema' => root['allOf'].first['if'],
+        'schema_pointer' => '/allOf/0/if',
         'root_schema' => root,
         'type' => 'string'
       },
@@ -579,7 +579,7 @@ class JSONSchemerTest < Minitest::Test
   def test_can_refer_to_subschemas_in_hash_with_remote_pointer
     ref_schema = {
       '$id' => 'http://example.com/ref_schema.json',
-      'foo' => {
+      'definitions' => {
         'bar' => {
           '$id' => '#bar',
           'type' => 'string'
@@ -604,8 +604,8 @@ class JSONSchemerTest < Minitest::Test
       {
         'data' => 1,
         'data_pointer' => '/a/x',
-        'schema' => ref_schema['foo']['bar'],
-        'schema_pointer' => '/foo/bar',
+        'schema' => ref_schema['definitions']['bar'],
+        'schema_pointer' => '/definitions/bar',
         'root_schema' => ref_schema,
         'type' => 'string'
       },
@@ -616,18 +616,16 @@ class JSONSchemerTest < Minitest::Test
   def test_can_refer_to_multiple_subschemas_in_hash
     ref_schema = {
       '$id' => 'http://example.com/ref_schema.json',
-      'types' => {
+      'definitions' => {
         'uuid' => {
            '$id' => "#uuid",
            'type' => 'string',
            'pattern' => "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
         }
       },
-      'foo' => {
-        'bar' => {
-          '$id' => '#bar',
-          'allOf' => [{ "$ref" => "#uuid"}]
-        }
+      'not' => {
+        '$id' => '#bar',
+        'allOf' => [{ "$ref" => "#uuid"}]
       }
     }
     root = {
@@ -648,8 +646,8 @@ class JSONSchemerTest < Minitest::Test
       {
         'data' => "1122-112",
         'data_pointer' => '/a/x',
-        'schema' => ref_schema['types']['uuid'],
-        'schema_pointer' => '/types/uuid',
+        'schema' => ref_schema['definitions']['uuid'],
+        'schema_pointer' => '/definitions/uuid',
         'root_schema' => ref_schema,
         'type' => 'pattern'
       },
