@@ -4,6 +4,7 @@ require 'ipaddr'
 require 'json'
 require 'net/http'
 require 'pathname'
+require 'set'
 require 'time'
 require 'uri'
 
