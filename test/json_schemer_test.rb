@@ -1050,4 +1050,10 @@ class JSONSchemerTest < Minitest::Test
     assert schema.valid?(2)
     refute schema.valid?(3)
   end
+
+  def test_it_handles_multiple_of_floats
+    assert JSONSchemer.schema({ 'multipleOf' => 0.01 }).valid?(8.61)
+    refute JSONSchemer.schema({ 'multipleOf' => 0.01 }).valid?(8.666)
+    assert JSONSchemer.schema({ 'multipleOf' => 0.001 }).valid?(8.666)
+  end
 end

@@ -355,8 +355,7 @@ module JSONSchemer
         validate_exclusive_minimum(instance, exclusive_minimum, minimum, &block) if exclusive_minimum
 
         if multiple_of
-          quotient = data / multiple_of.to_f
-          yield error(instance, 'multipleOf') unless quotient.floor == quotient
+          yield error(instance, 'multipleOf') unless BigDecimal(data.to_s).modulo(multiple_of).zero?
         end
       end
 
