@@ -1008,6 +1008,12 @@ class JSONSchemerTest < Minitest::Test
     refute(schema.valid?({ 'foo' => 1 }))
   end
 
+  def test_it_handles_spaces_in_schema_path
+    schema = JSONSchemer.schema(Pathname.new(__dir__).join('schemas', 'sp ce', 'sp ce.json'))
+    assert schema.valid?('yes')
+    refute schema.valid?(0)
+  end
+
   def test_json_schema_test_suite
     {
       'draft4' => JSONSchemer::Schema::Draft4,
