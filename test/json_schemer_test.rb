@@ -2,7 +2,7 @@ require 'test_helper'
 
 class JSONSchemerTest < Minitest::Test
   def test_that_it_has_a_version_number
-    refute_nil ::JSONSchemer::VERSION
+    refute_nil(JSONSchemer::VERSION)
   end
 
   def test_it_does_something_useful
@@ -59,9 +59,9 @@ class JSONSchemerTest < Minitest::Test
       '123' => 'x'
     }
     schema = JSONSchemer.schema(schema)
-    assert schema.valid?(data)
+    assert(schema.valid?(data))
     errors = schema.validate(data)
-    assert errors.none?
+    assert(errors.none?)
   end
 
   def test_it_inserts_defaults
@@ -108,23 +108,26 @@ class JSONSchemerTest < Minitest::Test
         'x' => 30
       }
     }
-    refute JSONSchemer.schema(schema).valid?(data)
-    assert JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data)
-    assert data == {
-      'a' => 10,
-      'b' => 2,
-      'c' => {
-        'x' => 30,
-        'y' => 4
-      },
-      'd' => {
-        'x' => {
-          'y' => {
-            'z' => 1
+    refute(JSONSchemer.schema(schema).valid?(data))
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal(
+      {
+        'a' => 10,
+        'b' => 2,
+        'c' => {
+          'x' => 30,
+          'y' => 4
+        },
+        'd' => {
+          'x' => {
+            'y' => {
+              'z' => 1
+            }
           }
         }
-      }
-    }
+      },
+      data
+    )
   end
 
   def test_it_does_not_fail_using_insert_defaults_when_no_properties_are_defined_by_schema
@@ -134,10 +137,8 @@ class JSONSchemerTest < Minitest::Test
     data = {
       'a' => 1
     }
-    assert JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data)
-    assert data == {
-      'a' => 1
-    }
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal({ 'a' => 1 }, data)
   end
 
   def test_it_does_not_fail_using_insert_defaults_when_properties_contains_a_boolean_defined_property
@@ -149,10 +150,8 @@ class JSONSchemerTest < Minitest::Test
     data = {
       'a' => 1
     }
-    assert JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data)
-    assert data == {
-      'a' => 1
-    }
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal({ 'a' => 1 }, data)
   end
 
   def test_it_does_not_fail_using_insert_defaults_when_properties_contains_a_boolean_defined_property_that_does_not_exist
@@ -164,10 +163,8 @@ class JSONSchemerTest < Minitest::Test
     data = {
       'a' => 1
     }
-    assert JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data)
-    assert data == {
-      'a' => 1,
-    }
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal({ 'a' => 1 }, data)
   end
 
   def test_it_does_not_insert_defaults_in_conditional_subschemas
@@ -191,14 +188,10 @@ class JSONSchemerTest < Minitest::Test
     data = {
       'a' => 1
     }
-    assert JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data)
-    assert data == {
-      'a' => 1
-    }
-    refute JSONSchemer.schema(schema.merge('not' => subschema), insert_property_defaults: true).valid?(data)
-    assert data == {
-      'a' => 1
-    }
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal({ 'a' => 1 }, data)
+    refute(JSONSchemer.schema(schema.merge('not' => subschema), insert_property_defaults: true).valid?(data))
+    assert_equal({ 'a' => 1 }, data)
   end
 
   def test_it_calls_before_validation_hooks_to_modify_data
@@ -218,10 +211,10 @@ class JSONSchemerTest < Minitest::Test
         }
       }
     }
-    assert JSONSchemer.schema(
+    assert(JSONSchemer.schema(
       schema,
       before_property_validation: [parse_array]
-    ).valid?(data)
+    ).valid?(data))
     assert_equal({'list' => [1, 2, 3]}, data)
   end
 
@@ -247,11 +240,11 @@ class JSONSchemerTest < Minitest::Test
       before_property_validation: [skip_read_only]
     )
     data = { 'id' => 1 }
-    assert_empty schemer.validate(data).to_a
+    assert_empty(schemer.validate(data).to_a)
     assert_equal({}, data)
 
     data = {}
-    assert_empty schemer.validate(data).to_a
+    assert_empty(schemer.validate(data).to_a)
     assert_equal({}, data)
   end
 
@@ -272,10 +265,10 @@ class JSONSchemerTest < Minitest::Test
         }
       }
     }
-    assert JSONSchemer.schema(
+    assert(JSONSchemer.schema(
       schema,
       before_property_validation: parse_array
-    ).valid?(data)
+    ).valid?(data))
     assert_equal({'list' => [1, 2, 3]}, data)
   end
 
@@ -284,7 +277,7 @@ class JSONSchemerTest < Minitest::Test
       data[property] = 'Peter' if property == 'name' && data[property] == 'fake'
     end
     data = [{ }, { 'name' => 'Bob' }]
-    assert JSONSchemer.schema(
+    assert(JSONSchemer.schema(
       {
         'type' => 'array',
         'items' => {
@@ -299,7 +292,7 @@ class JSONSchemerTest < Minitest::Test
       },
       insert_property_defaults: true,
       before_property_validation: [replace_fake_with_peter]
-    ).valid?(data)
+    ).valid?(data))
     assert_equal([{ 'name' => 'Peter' }, { 'name' => 'Bob' }], data)
   end
 
@@ -322,7 +315,7 @@ class JSONSchemerTest < Minitest::Test
       after_property_validation: [convert_date]
     )
     data = { 'start_date' => '2020-09-03' }
-    assert validator.valid?(data)
+    assert(validator.valid?(data))
     assert_equal({'start_date' => Date.new(2020, 9, 3)}, data)
   end
 
@@ -345,7 +338,7 @@ class JSONSchemerTest < Minitest::Test
       after_property_validation: convert_date
     )
     data = { 'start_date' => '2020-09-03' }
-    assert validator.valid?(data)
+    assert(validator.valid?(data))
     assert_equal({'start_date' => Date.new(2020, 9, 3)}, data)
   end
 
@@ -359,12 +352,12 @@ class JSONSchemerTest < Minitest::Test
       }
     }
     data = [{ 'name' => 'Bob' }]
-    assert JSONSchemer.schema(
+    assert(JSONSchemer.schema(
       schema,
       before_property_validation: [proc {}].freeze,
       after_property_validation: [proc {}].freeze,
       insert_property_defaults: true
-    ).valid?(data)
+    ).valid?(data))
   end
 
   def test_it_does_not_fail_when_the_schema_is_completely_empty
@@ -372,10 +365,8 @@ class JSONSchemerTest < Minitest::Test
     data = {
       'a' => 1
     }
-    assert JSONSchemer.schema(schema).valid?(data)
-    assert data == {
-      'a' => 1
-    }
+    assert(JSONSchemer.schema(schema).valid?(data))
+    assert_equal({ 'a' => 1 }, data)
   end
 
   def test_it_allows_disabling_format
@@ -383,15 +374,15 @@ class JSONSchemerTest < Minitest::Test
       { 'format' => 'email' },
       format: false
     )
-    assert schema.valid?('not-an-email')
+    assert(schema.valid?('not-an-email'))
   end
 
   def test_it_ignores_format_for_invalid_type
     schema = JSONSchemer.schema({
       'format' => 'email'
     })
-    refute schema.valid?('not-an-email')
-    assert schema.valid?({})
+    refute(schema.valid?('not-an-email'))
+    assert(schema.valid?({}))
   end
 
   def test_it_allows_false_custom_format
@@ -416,9 +407,9 @@ class JSONSchemerTest < Minitest::Test
       'two' => 'not-a-time'
     }
     errors = schema.validate(data).to_a
-    assert errors.size == 1
-    assert errors.first.fetch('data') == 'not-a-time'
-    assert errors.first.fetch('type') == 'format'
+    assert_equal(1, errors.size)
+    assert_equal('not-a-time', errors.first.fetch('data'))
+    assert_equal('format', errors.first.fetch('type'))
   end
 
   def test_it_allows_callable_custom_format
@@ -428,8 +419,8 @@ class JSONSchemerTest < Minitest::Test
         'custom' => proc { |x| x == 'valid' }
       }
     )
-    assert schema.valid?('valid')
-    refute schema.valid?('invalid')
+    assert(schema.valid?('valid'))
+    refute(schema.valid?('invalid'))
   end
 
   def test_it_returns_correct_pointers_for_ref_pointer
@@ -448,14 +439,17 @@ class JSONSchemerTest < Minitest::Test
     }
     schema = JSONSchemer.schema(root)
     errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
-    assert errors.first == {
-      'data' => 1,
-      'data_pointer' => '/a/x',
-      'schema' => ref_schema,
-      'schema_pointer' => '/definitions/y',
-      'root_schema' => root,
-      'type' => 'string'
-    }
+    assert_equal(
+      {
+        'data' => 1,
+        'data_pointer' => '/a/x',
+        'schema' => ref_schema,
+        'schema_pointer' => '/definitions/y',
+        'root_schema' => root,
+        'type' => 'string'
+      },
+      errors.first
+    )
   end
 
   def test_it_returns_correct_pointers_for_remote_ref_pointer
@@ -479,14 +473,17 @@ class JSONSchemerTest < Minitest::Test
       ref_resolver: proc { ref }
     )
     errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
-    assert errors.first == {
-      'data' => 1,
-      'data_pointer' => '/a/x',
-      'schema' => ref_schema,
-      'schema_pointer' => '/definitions/y',
-      'root_schema' => ref,
-      'type' => 'string'
-    }
+    assert_equal(
+      {
+        'data' => 1,
+        'data_pointer' => '/a/x',
+        'schema' => ref_schema,
+        'schema_pointer' => '/definitions/y',
+        'root_schema' => ref,
+        'type' => 'string'
+      },
+      errors.first
+    )
   end
 
   def test_it_returns_correct_pointers_for_ref_id
@@ -508,14 +505,17 @@ class JSONSchemerTest < Minitest::Test
     }
     schema = JSONSchemer.schema(root)
     errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
-    assert errors.first == {
-      'data' => 1,
-      'data_pointer' => '/a/x',
-      'schema' => ref_schema,
-      'schema_pointer' => '/definitions/y',
-      'root_schema' => root,
-      'type' => 'string'
-    }
+    assert_equal(
+      {
+        'data' => 1,
+        'data_pointer' => '/a/x',
+        'schema' => ref_schema,
+        'schema_pointer' => '/definitions/y',
+        'root_schema' => root,
+        'type' => 'string'
+      },
+      errors.first
+    )
   end
 
   def test_can_refer_to_subschemas_inside_hashes
@@ -532,14 +532,17 @@ class JSONSchemerTest < Minitest::Test
       root
     )
     errors = schema.validate(42).to_a
-    assert errors.first == {
-      'data' => 42,
-      'data_pointer' => '',
-      'schema' => root['foo']['bar'],
-      'schema_pointer' => '/foo/bar',
-      'root_schema' => root,
-      'type' => 'string'
-    }
+    assert_equal(
+      {
+        'data' => 42,
+        'data_pointer' => '',
+        'schema' => root['foo']['bar'],
+        'schema_pointer' => '/foo/bar',
+        'root_schema' => root,
+        'type' => 'string'
+      },
+      errors.first
+    )
   end
 
   def test_can_refer_to_subschemas_inside_arrays
@@ -560,14 +563,17 @@ class JSONSchemerTest < Minitest::Test
     }
     schema = JSONSchemer.schema(root)
     errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
-    assert errors.first == {
-      'data' => 1,
-      'data_pointer' => '/a/x',
-      'schema' => root['foo'].first['bar'],
-      'schema_pointer' => '/foo/0/bar',
-      'root_schema' => root,
-      'type' => 'string'
-    }
+    assert_equal(
+      {
+        'data' => 1,
+        'data_pointer' => '/a/x',
+        'schema' => root['foo'].first['bar'],
+        'schema_pointer' => '/foo/0/bar',
+        'root_schema' => root,
+        'type' => 'string'
+      },
+      errors.first
+    )
   end
 
   def test_can_refer_to_subschemas_in_hash_with_remote_pointer
@@ -594,14 +600,17 @@ class JSONSchemerTest < Minitest::Test
       ref_resolver: proc { ref_schema }
     )
     errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
-    assert errors.first == {
-      'data' => 1,
-      'data_pointer' => '/a/x',
-      'schema' => ref_schema['foo']['bar'],
-      'schema_pointer' => '/foo/bar',
-      'root_schema' => ref_schema,
-      'type' => 'string'
-    }
+    assert_equal(
+      {
+        'data' => 1,
+        'data_pointer' => '/a/x',
+        'schema' => ref_schema['foo']['bar'],
+        'schema_pointer' => '/foo/bar',
+        'root_schema' => ref_schema,
+        'type' => 'string'
+      },
+      errors.first
+    )
   end
 
   def test_can_refer_to_multiple_subschemas_in_hash
@@ -635,14 +644,17 @@ class JSONSchemerTest < Minitest::Test
       ref_resolver: proc { ref_schema }
     )
     errors = schema.validate({ 'a' => { 'x' => "1122-112" } }).to_a
-    assert errors.first == {
-      'data' => "1122-112",
-      'data_pointer' => '/a/x',
-      'schema' => ref_schema['types']['uuid'],
-      'schema_pointer' => '/types/uuid',
-      'root_schema' => ref_schema,
-      'type' => 'pattern'
-    }
+    assert_equal(
+      {
+        'data' => "1122-112",
+        'data_pointer' => '/a/x',
+        'schema' => ref_schema['types']['uuid'],
+        'schema_pointer' => '/types/uuid',
+        'root_schema' => ref_schema,
+        'type' => 'pattern'
+      },
+      errors.first
+    )
   end
 
   def test_it_returns_correct_pointers_for_remote_ref_id
@@ -669,14 +681,17 @@ class JSONSchemerTest < Minitest::Test
       ref_resolver: proc { ref }
     )
     errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
-    assert errors.first == {
-      'data' => 1,
-      'data_pointer' => '/a/x',
-      'schema' => ref_schema,
-      'schema_pointer' => '/definitions/y',
-      'root_schema' => ref,
-      'type' => 'string'
-    }
+    assert_equal(
+      {
+        'data' => 1,
+        'data_pointer' => '/a/x',
+        'schema' => ref_schema,
+        'schema_pointer' => '/definitions/y',
+        'root_schema' => ref,
+        'type' => 'string'
+      },
+      errors.first
+    )
   end
 
   def test_it_returns_correct_pointers_for_items_array
@@ -693,8 +708,8 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
-    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/0', '/properties/x/items/0']
-    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/x/1', '/properties/x/items/1']
+    assert_equal(['/x/0', '/properties/x/items/0'], errors.first.values_at('data_pointer', 'schema_pointer'))
+    assert_equal(['/x/1', '/properties/x/items/1'], errors.last.values_at('data_pointer', 'schema_pointer'))
   end
 
   def test_it_returns_correct_pointers_for_additional_items
@@ -711,8 +726,8 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
-    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/0', '/properties/x/items/0']
-    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/x/1', '/properties/x/additionalItems']
+    assert_equal(['/x/0', '/properties/x/items/0'], errors.first.values_at('data_pointer', 'schema_pointer'))
+    assert_equal(['/x/1', '/properties/x/additionalItems'], errors.last.values_at('data_pointer', 'schema_pointer'))
   end
 
   def test_it_returns_correct_pointers_for_items
@@ -726,8 +741,8 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
-    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/0', '/properties/x/items']
-    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/x/1', '/properties/x/items']
+    assert_equal(['/x/0', '/properties/x/items'], errors.first.values_at('data_pointer', 'schema_pointer'))
+    assert_equal(['/x/1', '/properties/x/items'], errors.last.values_at('data_pointer', 'schema_pointer'))
   end
 
   def test_it_returns_correct_pointers_for_dependencies
@@ -749,8 +764,8 @@ class JSONSchemerTest < Minitest::Test
         'z' => 2
       }
     }).to_a
-    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/a', '/properties/a/dependencies/x']
-    assert errors.last.values_at('data_pointer', 'schema_pointer') == ['/a', '/properties/a/dependencies/z']
+    assert_equal(['/a', '/properties/a/dependencies/x'], errors.first.values_at('data_pointer', 'schema_pointer'))
+    assert_equal(['/a', '/properties/a/dependencies/z'], errors.last.values_at('data_pointer', 'schema_pointer'))
   end
 
   def test_it_returns_correct_pointers_for_property_names
@@ -764,7 +779,7 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => { 'abc' => 1 } }).to_a
-    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x', '/properties/x/propertyNames']
+    assert_equal(['/x', '/properties/x/propertyNames'], errors.first.values_at('data_pointer', 'schema_pointer'))
   end
 
   def test_it_returns_correct_pointers_for_pattern_properties
@@ -780,7 +795,7 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => { 'abc' => 1 } }).to_a
-    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/abc', '/properties/x/patternProperties/^a']
+    assert_equal(['/x/abc', '/properties/x/patternProperties/^a'], errors.first.values_at('data_pointer', 'schema_pointer'))
   end
 
   def test_it_returns_correct_pointers_for_additional_properties
@@ -794,7 +809,7 @@ class JSONSchemerTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => { 'abc' => 1 } }).to_a
-    assert errors.first.values_at('data_pointer', 'schema_pointer') == ['/x/abc', '/properties/x/additionalProperties']
+    assert_equal(['/x/abc', '/properties/x/additionalProperties'], errors.first.values_at('data_pointer', 'schema_pointer'))
   end
 
   def test_it_raises_for_invalid_file_uris
@@ -805,17 +820,17 @@ class JSONSchemerTest < Minitest::Test
 
   def test_it_handles_pathnames
     schema = JSONSchemer.schema(Pathname.new(__dir__).join('schemas', 'schema1.json'))
-    assert schema.validate({ 'id' => 1 }).first.fetch('type') == 'required'
-    assert schema.validate({ 'a' => 'abc' }).first.fetch('type') == 'required'
-    assert schema.validate({ 'id' => 1, 'a' => 1 }).first.fetch('type') == 'string'
-    assert schema.valid?({ 'id' => 1, 'a' => 'abc' })
+    assert_equal('required', schema.validate({ 'id' => 1 }).first.fetch('type'))
+    assert_equal('required', schema.validate({ 'a' => 'abc' }).first.fetch('type'))
+    assert_equal('string', schema.validate({ 'id' => 1, 'a' => 1 }).first.fetch('type'))
+    assert(schema.valid?({ 'id' => 1, 'a' => 'abc' }))
   end
 
   def test_required_validation_adds_missing_keys
     schema = JSONSchemer.schema(Pathname.new(__dir__).join('schemas', 'schema1.json'))
     error = schema.validate({ 'id' => 1 }).first
-    assert error.fetch('type') == 'required'
-    assert error.fetch('details') == { 'missing_keys' => ['a'] }
+    assert_equal('required', error.fetch('type'))
+    assert_equal({ 'missing_keys' => ['a'] }, error.fetch('details'))
   end
 
   def test_it_allows_custom_ref_resolver_with_pathnames
@@ -827,8 +842,8 @@ class JSONSchemerTest < Minitest::Test
         true
       end
     )
-    assert schema.valid?({ 'id' => 1, 'a' => 'abc' })
-    assert count == 2
+    assert(schema.valid?({ 'id' => 1, 'a' => 'abc' }))
+    assert_equal(2, count)
   end
 
   def test_it_raises_for_invalid_ref_resolution
@@ -841,8 +856,8 @@ class JSONSchemerTest < Minitest::Test
 
   def test_it_handles_json_strings
     schema = JSONSchemer.schema('{ "type": "integer" }')
-    assert schema.valid?(1)
-    refute schema.valid?('1')
+    assert(schema.valid?(1))
+    refute(schema.valid?('1'))
   end
 
   def test_it_checks_for_symbol_keys
@@ -870,27 +885,27 @@ class JSONSchemerTest < Minitest::Test
       counts[uri.to_s] += 1
       { 'type' => 'string' }
     end
-    assert JSONSchemer.schema(schema, :ref_resolver => ref_resolver).valid?(data)
-    assert counts['http://example.com/1'] == 2
-    assert counts['http://example.com/2'] == 1
+    assert(JSONSchemer.schema(schema, :ref_resolver => ref_resolver).valid?(data))
+    assert_equal(2, counts['http://example.com/1'])
+    assert_equal(1, counts['http://example.com/2'])
     counts.clear
-    assert JSONSchemer.schema(schema, :ref_resolver => JSONSchemer::CachedRefResolver.new(&ref_resolver)).valid?(data)
-    assert counts['http://example.com/1'] == 1
-    assert counts['http://example.com/2'] == 1
+    assert(JSONSchemer.schema(schema, :ref_resolver => JSONSchemer::CachedRefResolver.new(&ref_resolver)).valid?(data))
+    assert_equal(1, counts['http://example.com/1'])
+    assert_equal(1, counts['http://example.com/2'])
   end
 
   def test_it_handles_regex_anchors
     schema = JSONSchemer.schema({ 'pattern' => '^foo$' })
-    assert schema.valid?('foo')
-    refute schema.valid?(' foo')
-    refute schema.valid?('foo ')
-    refute schema.valid?("foo\nfoo\nfoo")
+    assert(schema.valid?('foo'))
+    refute(schema.valid?(' foo'))
+    refute(schema.valid?('foo '))
+    refute(schema.valid?("foo\nfoo\nfoo"))
 
     schema = JSONSchemer.schema({ 'pattern' => '\Afoo\z' })
-    assert schema.valid?('Afooz')
-    refute schema.valid?('foo')
-    refute schema.valid?('Afoo')
-    refute schema.valid?('fooz')
+    assert(schema.valid?('Afooz'))
+    refute(schema.valid?('foo'))
+    refute(schema.valid?('Afoo'))
+    refute(schema.valid?('fooz'))
   end
 
   def test_it_returns_nested_errors
@@ -936,42 +951,51 @@ class JSONSchemerTest < Minitest::Test
       }
     }
     schema = JSONSchemer.schema(root)
-    assert schema.validate({ 'numberOfModules' => 32 }).first == {
-      'data' => 32,
-      'data_pointer' => '/numberOfModules',
-      'schema' => {
-        'type' => 'integer',
-        'maximum' => 37,
-        'minimum' => 25
+    assert_equal(
+      {
+        'data' => 32,
+        'data_pointer' => '/numberOfModules',
+        'schema' => {
+          'type' => 'integer',
+          'maximum' => 37,
+          'minimum' => 25
+        },
+        'schema_pointer' => '/properties/numberOfModules/allOf/1/not',
+        'root_schema' => root,
+        'type' => 'not'
       },
-      'schema_pointer' => '/properties/numberOfModules/allOf/1/not',
-      'root_schema' => root,
-      'type' => 'not'
-    }
-    assert schema.validate({ 'numberOfModules' => true }).first == {
-      'data' => true,
-      'data_pointer' => '/numberOfModules',
-      'schema' => {
+      schema.validate({ 'numberOfModules' => 32 }).first
+    )
+    assert_equal(
+      {
+        'data' => true,
+        'data_pointer' => '/numberOfModules',
+        'schema' => {
+          'type' => 'integer'
+        },
+        'schema_pointer' => '/properties/numberOfModules/anyOf/0',
+        'root_schema' => root,
         'type' => 'integer'
       },
-      'schema_pointer' => '/properties/numberOfModules/anyOf/0',
-      'root_schema' => root,
-      'type' => 'integer'
-    }
-    assert schema.validate({ 'numberOfModules' => 8 }).first == {
-      'data' => 8,
-      'data_pointer' => '/numberOfModules',
-      'schema' => root.fetch('properties').fetch('numberOfModules'),
-      'schema_pointer' => '/properties/numberOfModules',
-      'root_schema' => root,
-      'type' => 'oneOf'
-    }
+      schema.validate({ 'numberOfModules' => true }).first
+    )
+    assert_equal(
+      {
+        'data' => 8,
+        'data_pointer' => '/numberOfModules',
+        'schema' => root.fetch('properties').fetch('numberOfModules'),
+        'schema_pointer' => '/properties/numberOfModules',
+        'root_schema' => root,
+        'type' => 'oneOf'
+      },
+      schema.validate({ 'numberOfModules' => 8 }).first
+    )
   end
 
   def test_it_handles_nested_refs
     schema = JSONSchemer.schema(Pathname.new(__dir__).join('schemas', 'nested_ref1.json'))
-    assert schema.valid?(1)
-    refute schema.valid?('1')
+    assert(schema.valid?(1))
+    refute(schema.valid?('1'))
   end
 
   def test_it_handles_json_pointer_refs_with_special_characters
@@ -980,8 +1004,8 @@ class JSONSchemerTest < Minitest::Test
       'properties' => { 'foo' => { '$ref' => '#/definitions/~1some~1{id}'} },
       'definitions' => { '/some/{id}' => { 'type' => 'string' } }
     })
-    assert schema.valid?({ 'foo' => 'bar' })
-    refute schema.valid?({ 'foo' => 1 })
+    assert(schema.valid?({ 'foo' => 'bar' }))
+    refute(schema.valid?({ 'foo' => 1 }))
   end
 
   def test_json_schema_test_suite
@@ -1012,7 +1036,7 @@ class JSONSchemerTest < Minitest::Test
             if test.fetch('valid')
               assert_empty(errors, file)
             else
-              assert(errors.any?, file)
+              refute_empty(errors, file)
             end
             errors
           end
@@ -1045,13 +1069,13 @@ class JSONSchemerTest < Minitest::Test
     }
 
     schema = JSONSchemer.schema(root, **options)
-    assert schema.valid?(2)
-    refute schema.valid?(3)
+    assert(schema.valid?(2))
+    refute(schema.valid?(3))
   end
 
   def test_it_handles_multiple_of_floats
-    assert JSONSchemer.schema({ 'multipleOf' => 0.01 }).valid?(8.61)
-    refute JSONSchemer.schema({ 'multipleOf' => 0.01 }).valid?(8.666)
-    assert JSONSchemer.schema({ 'multipleOf' => 0.001 }).valid?(8.666)
+    assert(JSONSchemer.schema({ 'multipleOf' => 0.01 }).valid?(8.61))
+    refute(JSONSchemer.schema({ 'multipleOf' => 0.01 }).valid?(8.666))
+    assert(JSONSchemer.schema({ 'multipleOf' => 0.001 }).valid?(8.666))
   end
 end
