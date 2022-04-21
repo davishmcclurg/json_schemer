@@ -60,7 +60,7 @@ module JSONSchemer
     def valid_date_time?(data)
       DateTime.rfc3339(data)
       DATE_TIME_OFFSET_REGEX.match?(data)
-    rescue ArgumentError => e
+    rescue ArgumentError
       false
     end
 
