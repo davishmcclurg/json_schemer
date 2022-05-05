@@ -114,6 +114,30 @@ JSONSchemer.schema(
 )
 ```
 
+## CLI
+
+The `json_schemer` executable takes a JSON schema file as the first argument followed by one or more JSON data files to validate. If there are any validation errors, it outputs them and returns an error code.
+
+Validation errors are output as single-line JSON objects. The `--errors` option can be used to limit the number of errors returned or prevent output entirely (and fail fast).
+
+The schema or data can also be read from stdin using `-`.
+
+```
+% json_schemer --help
+Usage:
+  json_schemer [options] <schema> <data>...
+  json_schemer [options] <schema> -
+  json_schemer [options] - <data>...
+  json_schemer -h | --help
+  json_schemer --version
+
+Options:
+  -e, --errors MAX                 Maximum number of errors to output
+                                   Use "0" to validate with no output
+  -h, --help                       Show help
+  -v, --version                    Show version
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
