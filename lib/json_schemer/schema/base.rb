@@ -58,7 +58,7 @@ module JSONSchemer
         @formats = formats
         @keywords = keywords
         @ref_resolver = ref_resolver == 'net/http' ? CachedRefResolver.new(&NET_HTTP_REF_RESOLVER) : ref_resolver
-        @regexp_class = regexp_clas
+        @regexp_class = regexp_class
       end
 
       def valid?(data)
