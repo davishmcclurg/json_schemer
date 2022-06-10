@@ -908,6 +908,27 @@ class JSONSchemerTest < Minitest::Test
     refute(schema.valid?('fooz'))
   end
 
+  def test_it_handles_regex_class
+    new_regexp_class = Class.new(Regexp) do
+      def self.counts
+        @@counts ||= 0
+      end
+
+      def self.counts=(value)
+        @@counts = value
+      end
+
+      def initialize(*args)
+        self.class.counts += 1
+        super
+      end
+    end
+
+    schema = JSONSchemer.schema({ 'pattern' => '^foo$' }, regexp_class: new_regexp_class)
+    assert(schema.valid?('foo'))
+    assert_equal(1, new_regexp_class.counts)
+  end
+
   def test_it_returns_nested_errors
     root = {
       'type' => 'object',
