@@ -4,7 +4,7 @@ module JSONSchemer
     class Base
       include Format
 
-      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :parent_uri, :before_property_validation, :after_property_validation) do
+      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :parent_uri, :before_property_validation, :after_property_validation, :regexp_class) do
         def merge(
           data: self.data,
           data_pointer: self.data_pointer,
@@ -12,14 +12,16 @@ module JSONSchemer
           schema_pointer: self.schema_pointer,
           parent_uri: self.parent_uri,
           before_property_validation: self.before_property_validation,
-          after_property_validation: self.after_property_validation
+          after_property_validation: self.after_property_validation,
+          regexp_class: self.regexp_class
         )
-          self.class.new(data, data_pointer, schema, schema_pointer, parent_uri, before_property_validation, after_property_validation)
+          self.class.new(data, data_pointer, schema, schema_pointer, parent_uri, before_property_validation, after_property_validation, regexp_class)
         end
       end
 
       ID_KEYWORD = '$id'
       DEFAULT_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
+      DEFAULT_REGEXP_CLASS = Regexp
       NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }
       BOOLEANS = Set[true, false].freeze
 
@@ -44,7 +46,8 @@ module JSONSchemer
         after_property_validation: nil,
         formats: nil,
         keywords: nil,
-        ref_resolver: DEFAULT_REF_RESOLVER
+        ref_resolver: DEFAULT_REF_RESOLVER,
+        regexp_class: DEFAULT_REGEXP_CLASS
       )
         raise InvalidSymbolKey, 'schemas must use string keys' if schema.is_a?(Hash) && !schema.empty? && !schema.first.first.is_a?(String)
         @root = schema
@@ -55,14 +58,15 @@ module JSONSchemer
         @formats = formats
         @keywords = keywords
         @ref_resolver = ref_resolver == 'net/http' ? CachedRefResolver.new(&NET_HTTP_REF_RESOLVER) : ref_resolver
+        @regexp_class = regexp_clas
       end
 
       def valid?(data)
-        valid_instance?(Instance.new(data, '', root, '', nil, @before_property_validation, @after_property_validation))
+        valid_instance?(Instance.new(data, '', root, '', nil, @before_property_validation, @after_property_validation, regexp_class))
       end
 
       def validate(data)
-        validate_instance(Instance.new(data, '', root, '', nil, @before_property_validation, @after_property_validation))
+        validate_instance(Instance.new(data, '', root, '', nil, @before_property_validation, @after_property_validation, regexp_class))
       end
 
     protected
@@ -131,7 +135,7 @@ module JSONSchemer
               schema: subschema,
               schema_pointer: "#{instance.schema_pointer}/allOf/#{index}",
               before_property_validation: false,
-              after_property_validation: false
+              after_property_validation: false,
             )
             validate_instance(subinstance, &block)
           end
@@ -204,7 +208,7 @@ module JSONSchemer
 
     private
 
-      attr_reader :root, :formats, :keywords, :ref_resolver
+      attr_reader :root, :formats, :keywords, :ref_resolver, :regexp_class
 
       def id_keyword
         ID_KEYWORD
@@ -228,7 +232,8 @@ module JSONSchemer
           format: format?,
           formats: formats,
           keywords: keywords,
-          ref_resolver: ref_resolver
+          ref_resolver: ref_resolver,
+          regexp_class: regexp_class
         )
       end
 
@@ -598,7 +603,7 @@ module JSONSchemer
 
       def ecma_262_regex(pattern)
         @ecma_262_regex ||= {}
-        @ecma_262_regex[pattern] ||= Regexp.new(
+        @ecma_262_regex[pattern] ||= regexp_class.new(
           Regexp::Scanner.scan(pattern).map do |type, token, text|
             type == :anchor ? RUBY_REGEX_ANCHORS_TO_ECMA_262.fetch(token, text) : text
           end.join
