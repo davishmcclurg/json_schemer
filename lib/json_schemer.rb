@@ -1,27 +1,11 @@
 # frozen_string_literal: true
 require 'base64'
-require 'bigdecimal'
-require 'ipaddr'
 require 'json'
-require 'net/http'
 require 'pathname'
 require 'set'
-require 'time'
 require 'uri'
 
-require 'ecma-re-validator'
-require 'hana'
-require 'regexp_parser'
-require 'uri_template'
-
 require 'json_schemer/version'
-require 'json_schemer/format'
-require 'json_schemer/errors'
-require 'json_schemer/cached_ref_resolver'
-require 'json_schemer/schema/base'
-require 'json_schemer/schema/draft4'
-require 'json_schemer/schema/draft6'
-require 'json_schemer/schema/draft7'
 
 module JSONSchemer
   class UnsupportedMetaSchema < StandardError; end
@@ -30,11 +14,23 @@ module JSONSchemer
   class InvalidFileURI < StandardError; end
   class InvalidSymbolKey < StandardError; end
 
+  autoload :Version, 'json_schemer/version'
+  autoload :Format, 'json_schemer/format'
+  autoload :Errors, 'json_schemer/errors'
+  autoload :CachedRefResolver, 'json_schemer/cached_ref_resolver'
+
+  module Schema
+    autoload :Base, 'json_schemer/schema/base'
+    autoload :Draft4, 'json_schemer/schema/draft4'
+    autoload :Draft6, 'json_schemer/schema/draft6'
+    autoload :Draft7, 'json_schemer/schema/draft7'
+  end
+
   DRAFT_CLASS_BY_META_SCHEMA = {
-    'http://json-schema.org/schema#' => Schema::Draft4, # Version-less $schema deprecated after Draft 4
-    'http://json-schema.org/draft-04/schema#' => Schema::Draft4,
-    'http://json-schema.org/draft-06/schema#' => Schema::Draft6,
-    'http://json-schema.org/draft-07/schema#' => Schema::Draft7
+    'http://json-schema.org/schema#' => :Draft4, # Version-less $schema deprecated after Draft 4
+    'http://json-schema.org/draft-04/schema#' => :Draft4,
+    'http://json-schema.org/draft-06/schema#' => :Draft6,
+    'http://json-schema.org/draft-07/schema#' => :Draft7
   }.freeze
 
   DEFAULT_META_SCHEMA = 'http://json-schema.org/draft-07/schema#'
@@ -72,7 +68,7 @@ module JSONSchemer
 
     def draft_class(schema)
       meta_schema = schema.is_a?(Hash) && schema.key?('$schema') ? schema['$schema'] : DEFAULT_META_SCHEMA
-      DRAFT_CLASS_BY_META_SCHEMA[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
+      Schema.const_get(DRAFT_CLASS_BY_META_SCHEMA[meta_schema]) || raise(UnsupportedMetaSchema, meta_schema)
     end
   end
 end

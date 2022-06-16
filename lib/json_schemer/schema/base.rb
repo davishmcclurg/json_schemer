@@ -1,4 +1,9 @@
 # frozen_string_literal: true
+require 'bigdecimal'
+require 'hana'
+require 'net/http'
+require 'regexp_parser'
+
 module JSONSchemer
   module Schema
     class Base
