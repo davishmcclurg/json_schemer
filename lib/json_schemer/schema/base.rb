@@ -84,7 +84,6 @@ module JSONSchemer
         return if schema == true || schema.empty?
 
         type = schema['type']
-        enum = schema['enum']
         all_of = schema['allOf']
         any_of = schema['anyOf']
         one_of = schema['oneOf']
@@ -122,7 +121,7 @@ module JSONSchemer
           end
         end
 
-        yield error(instance, 'enum') if enum && !enum.include?(data)
+        validate_enum(instance, &block)
         yield error(instance, 'const') if schema.key?('const') && schema['const'] != data
 
         if all_of
@@ -587,6 +586,13 @@ module JSONSchemer
             end
           end
         end
+      end
+
+      def validate_enum(instance, &block)
+        enum = instance.schema['enum']
+        data = instance.data
+
+        yield error(instance, 'enum') if enum && !enum.include?(data)
       end
 
       def safe_strict_decode64(data)
