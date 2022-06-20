@@ -122,7 +122,7 @@ module JSONSchemer
         end
 
         validate_enum(instance, &block)
-        yield error(instance, 'const') if schema.key?('const') && schema['const'] != data
+        validate_const(instance, &block)
 
         if all_of
           all_of.each_with_index do |subschema, index|
@@ -593,6 +593,13 @@ module JSONSchemer
         data = instance.data
 
         yield error(instance, 'enum') if enum && !enum.include?(data)
+      end
+
+      def validate_const(instance, &block)
+        data = instance.data
+        schema = instance.schema
+
+        yield error(instance, 'const') if schema.key?('const') && schema['const'] != data
       end
 
       def safe_strict_decode64(data)
