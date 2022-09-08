@@ -134,7 +134,7 @@ module JSONSchemer
               schema: subschema,
               schema_pointer: "#{instance.schema_pointer}/allOf/#{index}",
               before_property_validation: false,
-              after_property_validation: false,
+              after_property_validation: false
             )
             validate_instance(subinstance, &block)
           end
