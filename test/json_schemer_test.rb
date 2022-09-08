@@ -924,7 +924,7 @@ class JSONSchemerTest < Minitest::Test
       end
     end
 
-    schema = JSONSchemer.schema({ 'pattern' => '^foo$' }, regexp_class: new_regexp_class)
+    schema = JSONSchemer.schema({ 'pattern' => '^foo$' }, regexp_resolver: new_regexp_class.method(:new))
     assert(schema.valid?('foo'))
     assert_equal(1, new_regexp_class.counts)
   end

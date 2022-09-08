@@ -112,10 +112,10 @@ JSONSchemer.schema(
   # default: proc { |uri| raise UnknownRef, uri.to_s }
   ref_resolver: 'net/http',
   
-  # uses different class to match regexes. You can pass class with same naming scheme as Ruby's built-in `Regexp` class from standard library.
-  # Class
-  # default: Regexp
-  regexp_class: RE2::Regexp
+  # uses different method to match regexes
+  # Proc/lambda/respond_to?(:call)
+  # default: Regexp.method(:new)
+  regexp_resolver: ->(pattern) { RE2::Regexp.new(pattern) }
 )
 ```
 
