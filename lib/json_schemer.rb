@@ -63,8 +63,9 @@ module JSONSchemer
           schema = ref_resolver.call(uri)
           options[:ref_resolver] = ref_resolver
         end
-        schema[draft_class(schema)::ID_KEYWORD] ||= uri.to_s
+        schema[draft_class(schema)::ID_KEYWORD] ||= uri.to_s unless options.key?(:anonymous)
       end
+      options.delete(:anonymous)
       draft_class(schema).new(schema, **options)
     end
 

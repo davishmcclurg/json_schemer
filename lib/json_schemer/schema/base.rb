@@ -36,6 +36,8 @@ module JSONSchemer
         end
       end
 
+      attr_reader :root
+
       def initialize(
         schema,
         format: true,
@@ -204,7 +206,7 @@ module JSONSchemer
 
     private
 
-      attr_reader :root, :formats, :keywords, :ref_resolver
+      attr_reader :formats, :keywords, :ref_resolver
 
       def id_keyword
         ID_KEYWORD

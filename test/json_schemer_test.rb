@@ -1084,4 +1084,10 @@ class JSONSchemerTest < Minitest::Test
     refute(JSONSchemer.schema({ 'multipleOf' => 0.01 }).valid?(8.666))
     assert(JSONSchemer.schema({ 'multipleOf' => 0.001 }).valid?(8.666))
   end
+
+  def test_it_affords_anonymous_schema_from_pathname
+    schema = JSONSchemer.schema(Pathname.new(__dir__).join('schemas', 'subschemas', 'schema2.json'), anonymous: true)
+    assert(!schema.root.key?(JSONSchemer::Schema::Base::ID_KEYWORD))
+    assert(schema.valid?({ 'id' => 1 }))
+  end
 end
