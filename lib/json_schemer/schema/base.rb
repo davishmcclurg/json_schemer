@@ -31,6 +31,14 @@ module JSONSchemer
         :eol => '\z'
       }.freeze
 
+      DEFAULT_REGEXP_RESOLVER = proc do |pattern|
+        Regexp.new(
+          Regexp::Scanner.scan(pattern).map do |type, token, text|
+            type == :anchor ? RUBY_REGEX_ANCHORS_TO_ECMA_262.fetch(token, text) : text
+          end.join
+        )
+      end
+
       INSERT_DEFAULT_PROPERTY = proc do |data, property, property_schema, _parent|
         if !data.key?(property) && property_schema.is_a?(Hash) && property_schema.key?('default')
           data[property] = property_schema.fetch('default').clone
@@ -46,7 +54,7 @@ module JSONSchemer
         formats: nil,
         keywords: nil,
         ref_resolver: DEFAULT_REF_RESOLVER,
-        regexp_resolver: Regexp.method(:new)
+        regexp_resolver: CachedResolver.new(&DEFAULT_REGEXP_RESOLVER)
       )
         raise InvalidSymbolKey, 'schemas must use string keys' if schema.is_a?(Hash) && !schema.empty? && !schema.first.first.is_a?(String)
         @root = schema
@@ -56,7 +64,7 @@ module JSONSchemer
         @after_property_validation = [*after_property_validation]
         @formats = formats
         @keywords = keywords
-        @ref_resolver = ref_resolver == 'net/http' ? CachedRefResolver.new(&NET_HTTP_REF_RESOLVER) : ref_resolver
+        @ref_resolver = ref_resolver == 'net/http' ? CachedResolver.new(&NET_HTTP_REF_RESOLVER) : ref_resolver
         @regexp_resolver = regexp_resolver
       end
 
@@ -402,7 +410,7 @@ module JSONSchemer
 
         yield error(instance, 'maxLength') if max_length && data.size > max_length
         yield error(instance, 'minLength') if min_length && data.size < min_length
-        yield error(instance, 'pattern') if pattern && ecma_262_regex(pattern) !~ data
+        yield error(instance, 'pattern') if pattern && resolve_regexp(pattern) !~ data
         yield error(instance, 'format') if format? && spec_format?(format) && !valid_spec_format?(data, format)
 
         if content_encoding || content_media_type
@@ -555,7 +563,7 @@ module JSONSchemer
 
           if pattern_properties
             regex_pattern_properties ||= pattern_properties.map do |pattern, property_schema|
-              [pattern, ecma_262_regex(pattern), property_schema]
+              [pattern, resolve_regexp(pattern), property_schema]
             end
             regex_pattern_properties.each do |pattern, regex, property_schema|
               if regex.match?(key)
@@ -598,15 +606,6 @@ module JSONSchemer
       rescue ArgumentError => e
         raise e unless e.message == 'invalid base64'
         nil
-      end
-
-      def ecma_262_regex(pattern)
-        @ecma_262_regex ||= {}
-        @ecma_262_regex[pattern] ||= regexp_resolver.call(
-          Regexp::Scanner.scan(pattern).map do |type, token, text|
-            type == :anchor ? RUBY_REGEX_ANCHORS_TO_ECMA_262.fetch(token, text) : text
-          end.join
-        )
       end
 
       def join_uri(a, b)
@@ -655,6 +654,10 @@ module JSONSchemer
 
       def resolve_ref(uri)
         ref_resolver.call(uri) || raise(InvalidRefResolution, uri.to_s)
+      end
+
+      def resolve_regexp(pattern)
+        regexp_resolver.call(pattern) || raise(InvalidRegexpResolution, pattern)
       end
     end
   end
