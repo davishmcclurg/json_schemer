@@ -17,7 +17,7 @@ require 'uri_template'
 require 'json_schemer/version'
 require 'json_schemer/format'
 require 'json_schemer/errors'
-require 'json_schemer/cached_ref_resolver'
+require 'json_schemer/cached_resolver'
 require 'json_schemer/schema/base'
 require 'json_schemer/schema/draft4'
 require 'json_schemer/schema/draft6'
@@ -27,6 +27,7 @@ module JSONSchemer
   class UnsupportedMetaSchema < StandardError; end
   class UnknownRef < StandardError; end
   class InvalidRefResolution < StandardError; end
+  class InvalidRegexpResolution < StandardError; end
   class InvalidFileURI < StandardError; end
   class InvalidSymbolKey < StandardError; end
 
@@ -59,7 +60,7 @@ module JSONSchemer
         if options.key?(:ref_resolver)
           schema = FILE_URI_REF_RESOLVER.call(uri)
         else
-          ref_resolver = CachedRefResolver.new(&FILE_URI_REF_RESOLVER)
+          ref_resolver = CachedResolver.new(&FILE_URI_REF_RESOLVER)
           schema = ref_resolver.call(uri)
           options[:ref_resolver] = ref_resolver
         end

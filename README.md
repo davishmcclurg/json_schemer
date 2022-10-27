@@ -110,7 +110,13 @@ JSONSchemer.schema(
   # 'net/http'/proc/lambda/respond_to?(:call)
   # 'net/http': proc { |uri| JSON.parse(Net::HTTP.get(uri)) }
   # default: proc { |uri| raise UnknownRef, uri.to_s }
-  ref_resolver: 'net/http'
+  ref_resolver: 'net/http',
+  
+  # use different method to match regexes
+  # Proc/lambda/respond_to?(:call)
+  regexp_resolver: proc do |pattern|
+    RE2::Regexp.new(pattern)
+  end
 )
 ```
 

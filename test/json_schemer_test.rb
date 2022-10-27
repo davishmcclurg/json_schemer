@@ -892,6 +892,10 @@ class JSONSchemerTest < Minitest::Test
     assert(JSONSchemer.schema(schema, :ref_resolver => JSONSchemer::CachedRefResolver.new(&ref_resolver)).valid?(data))
     assert_equal(1, counts['http://example.com/1'])
     assert_equal(1, counts['http://example.com/2'])
+    counts.clear
+    assert(JSONSchemer.schema(schema, :ref_resolver => JSONSchemer::CachedResolver.new(&ref_resolver)).valid?(data))
+    assert_equal(1, counts['http://example.com/1'])
+    assert_equal(1, counts['http://example.com/2'])
   end
 
   def test_it_handles_regex_anchors
@@ -906,6 +910,58 @@ class JSONSchemerTest < Minitest::Test
     refute(schema.valid?('foo'))
     refute(schema.valid?('Afoo'))
     refute(schema.valid?('fooz'))
+  end
+
+  def test_it_handles_regexp_resolver
+    new_regexp_class = Class.new(Regexp) do
+      def self.counts
+        @@counts ||= 0
+      end
+
+      def self.counts=(value)
+        @@counts = value
+      end
+
+      def initialize(*args)
+        self.class.counts += 1
+        super
+      end
+    end
+
+    schema = JSONSchemer.schema({ 'pattern' => '^foo$' }, regexp_resolver: new_regexp_class.method(:new))
+    assert(schema.valid?('foo'))
+    assert_equal(1, new_regexp_class.counts)
+  end
+
+  def test_it_raises_for_invalid_regexp_resolution
+    schema = JSONSchemer.schema(
+      { 'pattern' => 'whatever' },
+      :regexp_resolver => proc { |pattern| nil }
+    )
+    assert_raises(JSONSchemer::InvalidRegexpResolution) { schema.valid?('value') }
+  end
+
+  def test_cached_regexp_resolver
+    schema = {
+      'properties' => {
+        'x' => { 'pattern' => '^1$' },
+        'y' => { 'pattern' => '^1$' },
+        'z' => { 'pattern' => '^2$' }
+      }
+    }
+    data = { 'x' => '1', 'y' => '1', 'z' => '2' }
+    counts = Hash.new(0)
+    regexp_resolver = proc do |pattern|
+      counts[pattern] += 1
+      Regexp.new(pattern)
+    end
+    assert(JSONSchemer.schema(schema, :regexp_resolver => regexp_resolver).valid?(data))
+    assert_equal(2, counts['^1$'])
+    assert_equal(1, counts['^2$'])
+    counts.clear
+    assert(JSONSchemer.schema(schema, :regexp_resolver => JSONSchemer::CachedResolver.new(&regexp_resolver)).valid?(data))
+    assert_equal(1, counts['^1$'])
+    assert_equal(1, counts['^2$'])
   end
 
   def test_it_returns_nested_errors
