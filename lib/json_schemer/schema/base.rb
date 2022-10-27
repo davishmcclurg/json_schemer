@@ -30,7 +30,7 @@ module JSONSchemer
         :eol => '\z'
       }.freeze
 
-      DEFAULT_REGEXP_RESOLVER = proc do |pattern|
+      ECMA_262_REGEXP_RESOLVER = proc do |pattern|
         Regexp.new(
           Regexp::Scanner.scan(pattern).map do |type, token, text|
             type == :anchor ? RUBY_REGEX_ANCHORS_TO_ECMA_262.fetch(token, text) : text
@@ -53,7 +53,7 @@ module JSONSchemer
         formats: nil,
         keywords: nil,
         ref_resolver: DEFAULT_REF_RESOLVER,
-        regexp_resolver: CachedResolver.new(&DEFAULT_REGEXP_RESOLVER)
+        regexp_resolver: 'ecma'
       )
         raise InvalidSymbolKey, 'schemas must use string keys' if schema.is_a?(Hash) && !schema.empty? && !schema.first.first.is_a?(String)
         @root = schema
@@ -64,7 +64,14 @@ module JSONSchemer
         @formats = formats
         @keywords = keywords
         @ref_resolver = ref_resolver == 'net/http' ? CachedResolver.new(&NET_HTTP_REF_RESOLVER) : ref_resolver
-        @regexp_resolver = regexp_resolver
+        @regexp_resolver = case regexp_resolver
+        when 'ecma'
+          CachedResolver.new(&ECMA_262_REGEXP_RESOLVER)
+        when 'ruby'
+          CachedResolver.new(&Regexp.method(:new))
+        else
+          regexp_resolver
+        end
       end
 
       def valid?(data)

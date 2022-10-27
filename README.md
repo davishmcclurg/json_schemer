@@ -113,7 +113,8 @@ JSONSchemer.schema(
   ref_resolver: 'net/http',
   
   # use different method to match regexes
-  # Proc/lambda/respond_to?(:call)
+  # 'ecma'/'ruby'/proc/lambda/respond_to?(:call)
+  # default: 'ecma'
   regexp_resolver: proc do |pattern|
     RE2::Regexp.new(pattern)
   end
