@@ -933,6 +933,18 @@ class JSONSchemerTest < Minitest::Test
     assert_equal(1, new_regexp_class.counts)
   end
 
+  def test_it_allows_named_regexp_resolvers
+    schema = JSONSchemer.schema({ 'pattern' => '^test$' })
+    assert(schema.valid?("test"))
+    refute(schema.valid?("\ntest\n"))
+    schema = JSONSchemer.schema({ 'pattern' => '^test$' }, :regexp_resolver => 'ecma')
+    assert(schema.valid?("test"))
+    refute(schema.valid?("\ntest\n"))
+    schema = JSONSchemer.schema({ 'pattern' => '^test$' }, :regexp_resolver => 'ruby')
+    assert(schema.valid?("test"))
+    assert(schema.valid?("\ntest\n"))
+  end
+
   def test_it_raises_for_invalid_regexp_resolution
     schema = JSONSchemer.schema(
       { 'pattern' => 'whatever' },
