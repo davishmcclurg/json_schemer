@@ -4,7 +4,7 @@ module JSONSchemer
     class Base
       include Format
 
-      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :parent_uri, :before_property_validation, :after_property_validation, :regexp_resolver) do
+      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :parent_uri, :before_property_validation, :after_property_validation) do
         def merge(
           data: self.data,
           data_pointer: self.data_pointer,
@@ -12,10 +12,9 @@ module JSONSchemer
           schema_pointer: self.schema_pointer,
           parent_uri: self.parent_uri,
           before_property_validation: self.before_property_validation,
-          after_property_validation: self.after_property_validation,
-          regexp_resolver: self.regexp_resolver
+          after_property_validation: self.after_property_validation
         )
-          self.class.new(data, data_pointer, schema, schema_pointer, parent_uri, before_property_validation, after_property_validation, regexp_resolver)
+          self.class.new(data, data_pointer, schema, schema_pointer, parent_uri, before_property_validation, after_property_validation)
         end
       end
 
@@ -69,11 +68,11 @@ module JSONSchemer
       end
 
       def valid?(data)
-        valid_instance?(Instance.new(data, '', root, '', nil, @before_property_validation, @after_property_validation, regexp_resolver))
+        valid_instance?(Instance.new(data, '', root, '', nil, @before_property_validation, @after_property_validation))
       end
 
       def validate(data)
-        validate_instance(Instance.new(data, '', root, '', nil, @before_property_validation, @after_property_validation, regexp_resolver))
+        validate_instance(Instance.new(data, '', root, '', nil, @before_property_validation, @after_property_validation))
       end
 
     protected
