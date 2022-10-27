@@ -908,7 +908,7 @@ class JSONSchemerTest < Minitest::Test
     refute(schema.valid?('fooz'))
   end
 
-  def test_it_handles_regex_class
+  def test_it_handles_regexp_resolver
     new_regexp_class = Class.new(Regexp) do
       def self.counts
         @@counts ||= 0
