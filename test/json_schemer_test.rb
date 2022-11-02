@@ -913,7 +913,7 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_it_handles_regexp_resolver
-    new_regexp_class = Class.new(Regexp) do
+    new_regexp_class = Class.new do
       def self.counts
         @@counts ||= 0
       end
@@ -922,13 +922,17 @@ class JSONSchemerTest < Minitest::Test
         @@counts = value
       end
 
-      def initialize(*args)
+      def initialize(pattern)
+        @regexp = Regexp.new(pattern)
         self.class.counts += 1
-        super
+      end
+
+      def !~(string)
+        @regexp !~ string
       end
     end
 
-    schema = JSONSchemer.schema({ 'pattern' => '^foo$' }, regexp_resolver: new_regexp_class.method(:new))
+    schema = JSONSchemer.schema({ 'pattern' => '^foo$' }, regexp_resolver: -> (pattern) { new_regexp_class.new(pattern) })
     assert(schema.valid?('foo'))
     assert_equal(1, new_regexp_class.counts)
   end
