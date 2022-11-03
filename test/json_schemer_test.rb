@@ -927,8 +927,8 @@ class JSONSchemerTest < Minitest::Test
         self.class.counts += 1
       end
 
-      def !~(string)
-        @regexp !~ string
+      def match?(string)
+        @regexp.match?(string)
       end
     end
 
