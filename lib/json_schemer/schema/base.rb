@@ -416,7 +416,7 @@ module JSONSchemer
 
         yield error(instance, 'maxLength') if max_length && data.size > max_length
         yield error(instance, 'minLength') if min_length && data.size < min_length
-        yield error(instance, 'pattern') if pattern && resolve_regexp(pattern) !~ data
+        yield error(instance, 'pattern') if pattern && !resolve_regexp(pattern).match?(data)
         yield error(instance, 'format') if format? && spec_format?(format) && !valid_spec_format?(data, format)
 
         if content_encoding || content_media_type
