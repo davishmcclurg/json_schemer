@@ -1156,4 +1156,21 @@ class JSONSchemerTest < Minitest::Test
     refute(JSONSchemer.schema({ 'multipleOf' => 0.01 }).valid?(8.666))
     assert(JSONSchemer.schema({ 'multipleOf' => 0.001 }).valid?(8.666))
   end
+
+  def test_it_escapes_json_pointer_tokens
+    schemer = JSONSchemer.schema(
+      {
+        'type' => 'object',
+        'properties' => {
+          'foo/bar~' => {
+            'type' => 'string'
+          }
+        }
+    }
+    )
+    errors = schemer.validate({ 'foo/bar~' => 1 }).to_a
+    assert_equal(1, errors.size)
+    assert_equal('/foo~1bar~0', errors.first.fetch('data_pointer'))
+    assert_equal('/properties/foo~1bar~0', errors.first.fetch('schema_pointer'))
+  end
 end
