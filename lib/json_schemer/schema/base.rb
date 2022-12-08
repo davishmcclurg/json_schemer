@@ -44,6 +44,9 @@ module JSONSchemer
         end
       end
 
+      JSON_POINTER_TOKEN_ESCAPE_CHARS = { '~' => '~0', '/' => '~1' }
+      JSON_POINTER_TOKEN_ESCAPE_REGEXP = Regexp.union(JSON_POINTER_TOKEN_ESCAPE_CHARS.keys)
+
       def initialize(
         schema,
         format: true,
@@ -531,7 +534,8 @@ module JSONSchemer
           dependencies.each do |key, value|
             next unless data.key?(key)
             subschema = value.is_a?(Array) ? { 'required' => value } : value
-            subinstance = instance.merge(schema: subschema, schema_pointer: "#{instance.schema_pointer}/dependencies/#{key}")
+            escaped_key = escape_json_pointer_token(key)
+            subinstance = instance.merge(schema: subschema, schema_pointer: "#{instance.schema_pointer}/dependencies/#{escaped_key}")
             validate_instance(subinstance, &block)
           end
         end
@@ -545,6 +549,8 @@ module JSONSchemer
 
         regex_pattern_properties = nil
         data.each do |key, value|
+          escaped_key = escape_json_pointer_token(key)
+
           unless property_names.nil?
             subinstance = instance.merge(
               data: key,
@@ -559,9 +565,9 @@ module JSONSchemer
           if properties && properties.key?(key)
             subinstance = instance.merge(
               data: value,
-              data_pointer: "#{instance.data_pointer}/#{key}",
+              data_pointer: "#{instance.data_pointer}/#{escaped_key}",
               schema: properties[key],
-              schema_pointer: "#{instance.schema_pointer}/properties/#{key}"
+              schema_pointer: "#{instance.schema_pointer}/properties/#{escaped_key}"
             )
             validate_instance(subinstance, &block)
             matched_key = true
@@ -572,12 +578,13 @@ module JSONSchemer
               [pattern, resolve_regexp(pattern), property_schema]
             end
             regex_pattern_properties.each do |pattern, regex, property_schema|
+              escaped_pattern = escape_json_pointer_token(pattern)
               if regex.match?(key)
                 subinstance = instance.merge(
                   data: value,
-                  data_pointer: "#{instance.data_pointer}/#{key}",
+                  data_pointer: "#{instance.data_pointer}/#{escaped_key}",
                   schema: property_schema,
-                  schema_pointer: "#{instance.schema_pointer}/patternProperties/#{pattern}"
+                  schema_pointer: "#{instance.schema_pointer}/patternProperties/#{escaped_pattern}"
                 )
                 validate_instance(subinstance, &block)
                 matched_key = true
@@ -590,7 +597,7 @@ module JSONSchemer
           unless additional_properties.nil?
             subinstance = instance.merge(
               data: value,
-              data_pointer: "#{instance.data_pointer}/#{key}",
+              data_pointer: "#{instance.data_pointer}/#{escaped_key}",
               schema: additional_properties,
               schema_pointer: "#{instance.schema_pointer}/additionalProperties"
             )
@@ -612,6 +619,10 @@ module JSONSchemer
       rescue ArgumentError => e
         raise e unless e.message == 'invalid base64'
         nil
+      end
+
+      def escape_json_pointer_token(token)
+        token.gsub(JSON_POINTER_TOKEN_ESCAPE_REGEXP, JSON_POINTER_TOKEN_ESCAPE_CHARS)
       end
 
       def join_uri(a, b)
