@@ -57,6 +57,11 @@
                 "description": "object with one property",
                 "data": {"bar": 2},
                 "valid": true
+            },
+            {
+                "description": "non-object is valid",
+                "data": 1,
+                "valid": true
             }
         ]
     },
@@ -170,31 +175,6 @@
         ]
     },
     {
-        "description": "empty array of dependencies",
-        "schema": {
-            "dependencies": {
-                "foo": []
-            }
-        },
-        "tests": [
-            {
-                "description": "object with property is valid",
-                "data": { "foo": 1 },
-                "valid": true
-            },
-            {
-                "description": "empty object is valid",
-                "data": {},
-                "valid": true
-            },
-            {
-                "description": "non-object is valid",
-                "data": 1,
-                "valid": true
-            }
-        ]
-    },
-    {
         "description": "dependencies with escaped characters",
         "schema": {
             "dependencies": {
@@ -262,6 +242,44 @@
                     "foo\"bar": 2
                 },
                 "valid": false
+            }
+        ]
+    },
+    {
+        "description": "dependent subschema incompatible with root",
+        "schema": {
+            "properties": {
+                "foo": {}
+            },
+            "dependencies": {
+                "foo": {
+                    "properties": {
+                        "bar": {}
+                    },
+                    "additionalProperties": false
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "matches root",
+                "data": {"foo": 1},
+                "valid": false
+            },
+            {
+                "description": "matches dependency",
+                "data": {"bar": 1},
+                "valid": true
+            },
+            {
+                "description": "matches both",
+                "data": {"foo": 1, "bar": 2},
+                "valid": false
+            },
+            {
+                "description": "no dependency",
+                "data": {"baz": 1},
+                "valid": true
             }
         ]
     }
