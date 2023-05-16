@@ -1,15 +1,48 @@
 [
     {
         "description": "validation of URIs",
-        "schema": {"format": "uri"},
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "uri"
+        },
         "tests": [
+            {
+                "description": "all string formats ignore integers",
+                "data": 12,
+                "valid": true
+            },
+            {
+                "description": "all string formats ignore floats",
+                "data": 13.7,
+                "valid": true
+            },
+            {
+                "description": "all string formats ignore objects",
+                "data": {},
+                "valid": true
+            },
+            {
+                "description": "all string formats ignore arrays",
+                "data": [],
+                "valid": true
+            },
+            {
+                "description": "all string formats ignore booleans",
+                "data": false,
+                "valid": true
+            },
+            {
+                "description": "all string formats ignore nulls",
+                "data": null,
+                "valid": true
+            },
             {
                 "description": "a valid URL with anchor tag",
                 "data": "http://foo.bar/?baz=qux#quux",
                 "valid": true
             },
             {
-                "description": "a valid URL with anchor tag and parantheses",
+                "description": "a valid URL with anchor tag and parentheses",
                 "data": "http://foo.com/blah_(wikipedia)_blah#cite-1",
                 "valid": true
             },
@@ -96,6 +129,11 @@
             {
                 "description": "an invalid URI with spaces and missing scheme",
                 "data": ":// should fail",
+                "valid": false
+            },
+            {
+                "description": "an invalid URI with comma in scheme",
+                "data": "bar,baz:foo",
                 "valid": false
             }
         ]
