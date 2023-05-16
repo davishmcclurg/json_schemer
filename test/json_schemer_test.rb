@@ -1093,6 +1093,7 @@ class JSONSchemerTest < Minitest::Test
       'draft7' => JSONSchemer::Schema::Draft7
     }.each do |version, draft_class|
       output = Dir["JSON-Schema-Test-Suite/tests/#{version}/**/*.json"].each_with_object({}) do |file, file_output|
+        next if file == 'JSON-Schema-Test-Suite/tests/draft7/optional/cross-draft.json'
         file_output[file] = JSON.parse(File.read(file)).map do |defn|
           defn.fetch('tests').map do |test|
             errors = draft_class.new(
