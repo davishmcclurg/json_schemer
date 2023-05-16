@@ -33,14 +33,12 @@ module JSONSchemer
   class InvalidFileURI < StandardError; end
   class InvalidSymbolKey < StandardError; end
 
-  DRAFT_CLASS_BY_META_SCHEMA = {
+  SCHEMA_CLASS_BY_META_SCHEMA = {
     'http://json-schema.org/schema#' => Schema::Draft4, # Version-less $schema deprecated after Draft 4
     'http://json-schema.org/draft-04/schema#' => Schema::Draft4,
     'http://json-schema.org/draft-06/schema#' => Schema::Draft6,
     'http://json-schema.org/draft-07/schema#' => Schema::Draft7
   }.freeze
-
-  DEFAULT_META_SCHEMA = 'http://json-schema.org/draft-07/schema#'
 
   WINDOWS_URI_PATH_REGEX = /\A\/[a-z]:/i
 
@@ -53,7 +51,7 @@ module JSONSchemer
   end
 
   class << self
-    def schema(schema, **options)
+    def schema(schema, default_schema_class: Schema::Draft7, **options)
       case schema
       when String
         schema = JSON.parse(schema)
@@ -66,16 +64,20 @@ module JSONSchemer
           schema = ref_resolver.call(uri)
           options[:ref_resolver] = ref_resolver
         end
-        schema[draft_class(schema)::ID_KEYWORD] ||= uri.to_s
+        schema[draft_class(schema, default_schema_class)::ID_KEYWORD] ||= uri.to_s
       end
-      draft_class(schema).new(schema, **options)
+      draft_class(schema, default_schema_class).new(schema, **options)
     end
 
   private
 
-    def draft_class(schema)
-      meta_schema = schema.is_a?(Hash) && schema.key?('$schema') ? schema['$schema'] : DEFAULT_META_SCHEMA
-      DRAFT_CLASS_BY_META_SCHEMA[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
+    def draft_class(schema, default_schema_class)
+      if schema.is_a?(Hash) && schema.key?('$schema')
+        meta_schema = schema.fetch('$schema')
+        SCHEMA_CLASS_BY_META_SCHEMA[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
+      else
+        default_schema_class
+      end
     end
   end
 end
