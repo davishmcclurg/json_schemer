@@ -21,10 +21,12 @@ GEM
       unf (~> 0.1.4)
     unf (0.1.4)
       unf_ext
+    unf (0.1.4-java)
     unf_ext (0.0.8.2)
     uri_template (0.7.0)
 
 PLATFORMS
+  java
   ruby
 
 DEPENDENCIES
