@@ -1,7 +1,10 @@
 [
     {
         "description": "by int",
-        "schema": {"multipleOf": 2},
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "multipleOf": 2
+        },
         "tests": [
             {
                 "description": "int by int",
@@ -22,7 +25,10 @@
     },
     {
         "description": "by number",
-        "schema": {"multipleOf": 1.5},
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "multipleOf": 1.5
+        },
         "tests": [
             {
                 "description": "zero is multiple of anything",
@@ -43,7 +49,10 @@
     },
     {
         "description": "by small number",
-        "schema": {"multipleOf": 0.0001},
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "multipleOf": 0.0001
+        },
         "tests": [
             {
                 "description": "0.0075 is multiple of 0.0001",
@@ -54,6 +63,34 @@
                 "description": "0.00751 is not multiple of 0.0001",
                 "data": 0.00751,
                 "valid": false
+            }
+        ]
+    },
+    {
+        "description": "float division = inf",
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "type": "integer", "multipleOf": 0.123456789
+        },
+        "tests": [
+            {
+                "description": "always invalid, but naive implementations may raise an overflow error",
+                "data": 1e308,
+                "valid": false
+            }
+        ]
+    },
+    {
+        "description": "small multiple of large integer",
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "type": "integer", "multipleOf": 1e-8
+        },
+        "tests": [
+            {
+                "description": "any integer is a multiple of 1e-8",
+                "data": 12391239123,
+                "valid": true
             }
         ]
     }
