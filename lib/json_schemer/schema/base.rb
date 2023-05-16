@@ -91,6 +91,8 @@ module JSONSchemer
 
     protected
 
+      attr_reader :root
+
       def valid_instance?(instance)
         validate_instance(instance).none?
       end
@@ -229,7 +231,7 @@ module JSONSchemer
 
     private
 
-      attr_reader :root, :formats, :keywords, :ref_resolver, :regexp_resolver
+      attr_reader :formats, :keywords, :ref_resolver, :regexp_resolver
 
       def id_keyword
         ID_KEYWORD
@@ -307,51 +309,41 @@ module JSONSchemer
       end
 
       def validate_ref(instance, ref, &block)
+        ref_uri_pointer = nil
+
         if ref.start_with?('#')
-          schema_pointer = ref.slice(1..-1)
-          if valid_json_pointer?(schema_pointer)
-            ref_pointer = Hana::Pointer.new(URI.decode_www_form_component(schema_pointer))
-            ref_root = ids[instance.parent_uri.to_s]&.fetch(:schema) || root
-            subinstance = instance.merge(
-              schema: ref_pointer.eval(ref_root),
-              schema_pointer: schema_pointer,
-              parent_uri: (pointer_uri(ref_root, ref_pointer) || instance.parent_uri)
-            )
-            validate_instance(subinstance, &block)
-            return
+          fragment = ref.slice(1..-1)
+          if valid_json_pointer?(fragment)
+            ref = ''
+            ref_uri_pointer = fragment
           end
         end
 
         ref_uri = join_uri(instance.parent_uri, ref)
 
         if valid_json_pointer?(ref_uri.fragment)
-          ref_pointer = Hana::Pointer.new(URI.decode_www_form_component(ref_uri.fragment))
-          ref_root = resolve_ref(ref_uri)
-          ref_object = child(ref_root)
-          subinstance = instance.merge(
-            schema: ref_pointer.eval(ref_root),
-            schema_pointer: ref_uri.fragment,
-            parent_uri: (pointer_uri(ref_root, ref_pointer) || ref_uri)
-          )
-          ref_object.validate_instance(subinstance, &block)
-        elsif id = ids[ref_uri.to_s]
-          subinstance = instance.merge(
-            schema: id.fetch(:schema),
-            schema_pointer: id.fetch(:pointer),
-            parent_uri: ref_uri
-          )
-          validate_instance(subinstance, &block)
-        else
-          ref_root = resolve_ref(ref_uri)
-          ref_object = child(ref_root)
-          id = ref_object.ids[ref_uri.to_s] || { schema: ref_root, pointer: '' }
-          subinstance = instance.merge(
-            schema: id.fetch(:schema),
-            schema_pointer: id.fetch(:pointer),
-            parent_uri: ref_uri
-          )
-          ref_object.validate_instance(subinstance, &block)
+          ref_uri_pointer ||= ref_uri.fragment
+          ref_uri.fragment = nil
         end
+
+        ref_pointer = Hana::Pointer.new(URI.decode_www_form_component(ref_uri_pointer || ''))
+
+        ref_object = if ids.key?(ref_uri.to_s) || (ref_uri_pointer && (ref_uri == instance.parent_uri || ref_uri.to_s.empty?))
+          self
+        else
+          child(resolve_ref(ref_uri))
+        end
+
+        ref_schema, ref_schema_pointer = ref_object.ids[ref_uri.to_s]&.fetch_values(:schema, :pointer) || [ref_object.root, '']
+        parent_uri = ref_uri_pointer ? (pointer_uri(ref_schema, ref_pointer) || instance.parent_uri) : ref_uri
+
+        subinstance = instance.merge(
+          schema: ref_pointer.eval(ref_schema),
+          schema_pointer: "#{ref_schema_pointer}#{ref_uri_pointer}",
+          parent_uri: parent_uri
+        )
+
+        ref_object.validate_instance(subinstance, &block)
       end
 
       def validate_custom_format(instance, custom_format)
