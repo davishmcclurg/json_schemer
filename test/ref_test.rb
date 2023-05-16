@@ -215,7 +215,7 @@ class RefTest < Minitest::Test
   def test_it_handles_json_pointer_refs_with_special_characters
     schema = JSONSchemer.schema({
       'type' => 'object',
-      'properties' => { 'foo' => { '$ref' => '#/definitions/~1some~1{id}'} },
+      'properties' => { 'foo' => { '$ref' => '#/definitions/~1some~1%7Bid%7D'} },
       'definitions' => { '/some/{id}' => { 'type' => 'string' } }
     })
     assert(schema.valid?({ 'foo' => 'bar' }))

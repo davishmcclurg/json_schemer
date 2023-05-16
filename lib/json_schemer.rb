@@ -57,28 +57,25 @@ module JSONSchemer
       when String
         schema = JSON.parse(schema)
       when Pathname
-        uri = URI.parse(File.join('file:', URI::DEFAULT_PARSER.escape(schema.realpath.to_s)))
-        if options.key?(:ref_resolver)
-          schema = FILE_URI_REF_RESOLVER.call(uri)
+        base_uri = URI.parse(File.join('file:', URI::DEFAULT_PARSER.escape(schema.realpath.to_s)))
+        options[:base_uri] = base_uri
+        schema = if options.key?(:ref_resolver)
+          FILE_URI_REF_RESOLVER.call(base_uri)
         else
           ref_resolver = CachedResolver.new(&FILE_URI_REF_RESOLVER)
-          schema = ref_resolver.call(uri)
           options[:ref_resolver] = ref_resolver
+          ref_resolver.call(base_uri)
         end
-        schema[draft_class(schema, default_schema_class)::ID_KEYWORD] ||= uri.to_s
       end
-      draft_class(schema, default_schema_class).new(schema, **options)
-    end
 
-  private
-
-    def draft_class(schema, default_schema_class)
-      if schema.is_a?(Hash) && schema.key?('$schema')
+      schema_class = if schema.is_a?(Hash) && schema.key?('$schema')
         meta_schema = schema.fetch('$schema')
         SCHEMA_CLASS_BY_META_SCHEMA[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
       else
         default_schema_class
       end
+
+      schema_class.new(schema, **options)
     end
   end
 end

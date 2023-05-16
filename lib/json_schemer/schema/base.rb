@@ -4,17 +4,17 @@ module JSONSchemer
     class Base
       include Format
 
-      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :parent_uri, :before_property_validation, :after_property_validation) do
+      Instance = Struct.new(:data, :data_pointer, :schema, :schema_pointer, :base_uri, :before_property_validation, :after_property_validation) do
         def merge(
           data: self.data,
           data_pointer: self.data_pointer,
           schema: self.schema,
           schema_pointer: self.schema_pointer,
-          parent_uri: self.parent_uri,
+          base_uri: self.base_uri,
           before_property_validation: self.before_property_validation,
           after_property_validation: self.after_property_validation
         )
-          self.class.new(data, data_pointer, schema, schema_pointer, parent_uri, before_property_validation, after_property_validation)
+          self.class.new(data, data_pointer, schema, schema_pointer, base_uri, before_property_validation, after_property_validation)
         end
       end
 
@@ -53,6 +53,7 @@ module JSONSchemer
 
       def initialize(
         schema,
+        base_uri: nil,
         format: true,
         insert_property_defaults: false,
         before_property_validation: nil,
@@ -64,6 +65,7 @@ module JSONSchemer
       )
         raise InvalidSymbolKey, 'schemas must use string keys' if schema.is_a?(Hash) && !schema.empty? && !schema.first.first.is_a?(String)
         @root = schema
+        @base_uri = base_uri
         @format = format
         @before_property_validation = [*before_property_validation]
         @before_property_validation.unshift(INSERT_DEFAULT_PROPERTY) if insert_property_defaults
@@ -82,14 +84,16 @@ module JSONSchemer
       end
 
       def valid?(data)
-        valid_instance?(Instance.new(data, '', root, '', nil, @before_property_validation, @after_property_validation))
+        valid_instance?(Instance.new(data, '', root, '', @base_uri, @before_property_validation, @after_property_validation))
       end
 
       def validate(data)
-        validate_instance(Instance.new(data, '', root, '', nil, @before_property_validation, @after_property_validation))
+        validate_instance(Instance.new(data, '', root, '', @base_uri, @before_property_validation, @after_property_validation))
       end
 
     protected
+
+      attr_reader :root
 
       def valid_instance?(instance)
         validate_instance(instance).none?
@@ -120,12 +124,12 @@ module JSONSchemer
         ref = schema['$ref']
         id = schema[id_keyword]
 
-        instance.parent_uri = join_uri(instance.parent_uri, id)
-
         if ref
           validate_ref(instance, ref, &block)
           return
         end
+
+        instance.base_uri = join_uri(instance.base_uri, id)
 
         if format? && custom_format?(format)
           validate_custom_format(instance, formats.fetch(format), &block)
@@ -228,7 +232,7 @@ module JSONSchemer
 
     private
 
-      attr_reader :root, :formats, :keywords, :ref_resolver, :regexp_resolver
+      attr_reader :formats, :keywords, :ref_resolver, :regexp_resolver
 
       def id_keyword
         ID_KEYWORD
@@ -246,10 +250,11 @@ module JSONSchemer
         !custom_format?(format) && supported_format?(format)
       end
 
-      def child(schema)
+      def child(schema, base_uri:)
         JSONSchemer.schema(
           schema,
           default_schema_class: self.class,
+          base_uri: base_uri,
           format: format?,
           formats: formats,
           keywords: keywords,
@@ -306,50 +311,38 @@ module JSONSchemer
       end
 
       def validate_ref(instance, ref, &block)
-        if ref.start_with?('#')
-          schema_pointer = ref.slice(1..-1)
-          if valid_json_pointer?(schema_pointer)
-            ref_pointer = Hana::Pointer.new(URI.decode_www_form_component(schema_pointer))
-            subinstance = instance.merge(
-              schema: ref_pointer.eval(root),
-              schema_pointer: schema_pointer,
-              parent_uri: (pointer_uri(root, ref_pointer) || instance.parent_uri)
-            )
-            validate_instance(subinstance, &block)
-            return
+        ref_uri = join_uri(instance.base_uri, ref)
+
+        ref_uri_pointer = ''
+        if valid_json_pointer?(ref_uri.fragment)
+          ref_uri_pointer = ref_uri.fragment
+          ref_uri.fragment = nil
+        end
+
+        ref_object = if ids.key?(ref_uri) || ref_uri.to_s == @base_uri.to_s
+          self
+        else
+          child(resolve_ref(ref_uri), base_uri: ref_uri)
+        end
+
+        ref_schema, ref_schema_pointer = ref_object.ids[ref_uri] || [ref_object.root, '']
+
+        ref_uri_pointer_parts = Hana::Pointer.parse(URI.decode_www_form_component(ref_uri_pointer))
+        schema, base_uri = ref_uri_pointer_parts.reduce([ref_schema, ref_uri]) do |(obj, uri), token|
+          if obj.is_a?(Array)
+            [obj.fetch(token.to_i), uri]
+          else
+            [obj.fetch(token), join_uri(uri, obj[id_keyword])]
           end
         end
 
-        ref_uri = join_uri(instance.parent_uri, ref)
+        subinstance = instance.merge(
+          schema: schema,
+          schema_pointer: "#{ref_schema_pointer}#{ref_uri_pointer}",
+          base_uri: base_uri
+        )
 
-        if valid_json_pointer?(ref_uri.fragment)
-          ref_pointer = Hana::Pointer.new(URI.decode_www_form_component(ref_uri.fragment))
-          ref_root = resolve_ref(ref_uri)
-          ref_object = child(ref_root)
-          subinstance = instance.merge(
-            schema: ref_pointer.eval(ref_root),
-            schema_pointer: ref_uri.fragment,
-            parent_uri: (pointer_uri(ref_root, ref_pointer) || ref_uri)
-          )
-          ref_object.validate_instance(subinstance, &block)
-        elsif id = ids[ref_uri.to_s]
-          subinstance = instance.merge(
-            schema: id.fetch(:schema),
-            schema_pointer: id.fetch(:pointer),
-            parent_uri: ref_uri
-          )
-          validate_instance(subinstance, &block)
-        else
-          ref_root = resolve_ref(ref_uri)
-          ref_object = child(ref_root)
-          id = ref_object.ids[ref_uri.to_s] || { schema: ref_root, pointer: '' }
-          subinstance = instance.merge(
-            schema: id.fetch(:schema),
-            schema_pointer: id.fetch(:pointer),
-            parent_uri: ref_uri
-          )
-          ref_object.validate_instance(subinstance, &block)
-        end
+        ref_object.validate_instance(subinstance, &block)
       end
 
       def validate_custom_format(instance, custom_format)
@@ -631,7 +624,7 @@ module JSONSchemer
 
       def join_uri(a, b)
         b = URI.parse(b) if b
-        if a && b && a.relative? && b.relative?
+        uri = if a && b && a.relative? && b.relative?
           b
         elsif a && b
           URI.join(a, b)
@@ -640,35 +633,19 @@ module JSONSchemer
         else
           a
         end
+        uri.fragment = nil if uri.is_a?(URI) && uri.fragment == ''
+        uri
       end
 
-      def pointer_uri(schema, pointer)
-        uri_parts = nil
-        pointer.reduce(schema) do |obj, token|
-          next obj.fetch(token.to_i) if obj.is_a?(Array)
-          if obj_id = obj[id_keyword]
-            uri_parts ||= []
-            uri_parts << obj_id
-          end
-          obj.fetch(token)
-        end
-        uri_parts ? URI.join(*uri_parts) : nil
-      end
-
-      def resolve_ids(schema, ids = {}, parent_uri = nil, pointer = '')
+      def resolve_ids(schema, ids = {}, base_uri = @base_uri, pointer = '')
         if schema.is_a?(Array)
-          schema.each_with_index { |subschema, index| resolve_ids(subschema, ids, parent_uri, "#{pointer}/#{index}") }
+          schema.each_with_index { |subschema, index| resolve_ids(subschema, ids, base_uri, "#{pointer}/#{index}") }
         elsif schema.is_a?(Hash)
-          uri = join_uri(parent_uri, schema[id_keyword])
+          uri = join_uri(base_uri, schema[id_keyword])
           schema.each do |key, value|
             case key
             when id_keyword
-              unless uri == parent_uri
-                ids[uri.to_s] = {
-                  schema: schema,
-                  pointer: pointer
-                }
-              end
+              ids[uri] ||= [schema, pointer]
             when 'items', 'allOf', 'anyOf', 'oneOf', 'additionalItems', 'contains', 'additionalProperties', 'propertyNames', 'if', 'then', 'else', 'not'
               resolve_ids(value, ids, uri, "#{pointer}/#{key}")
             when 'properties', 'patternProperties', 'definitions', 'dependencies'
