@@ -250,6 +250,7 @@ module JSONSchemer
       def child(schema)
         JSONSchemer.schema(
           schema,
+          default_meta_schema: self.class::META_SCHEMA,
           format: format?,
           formats: formats,
           keywords: keywords,

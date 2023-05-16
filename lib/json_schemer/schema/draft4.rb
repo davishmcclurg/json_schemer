@@ -2,6 +2,7 @@
 module JSONSchemer
   module Schema
     class Draft4 < Base
+      META_SCHEMA = 'http://json-schema.org/draft-04/schema#'
       ID_KEYWORD = 'id'
       SUPPORTED_FORMATS = Set[
         'date-time',

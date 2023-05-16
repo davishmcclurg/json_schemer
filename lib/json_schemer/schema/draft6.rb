@@ -2,6 +2,7 @@
 module JSONSchemer
   module Schema
     class Draft6 < Base
+      META_SCHEMA = 'http://json-schema.org/draft-06/schema#'
       SUPPORTED_FORMATS = Set[
         'date-time',
         'email',
