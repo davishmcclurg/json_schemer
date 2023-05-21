@@ -28,6 +28,7 @@ require 'json_schemer/schema/draft7'
 module JSONSchemer
   class UnsupportedMetaSchema < StandardError; end
   class UnknownRef < StandardError; end
+  class UnknownFormat < StandardError; end
   class InvalidRefResolution < StandardError; end
   class InvalidRegexpResolution < StandardError; end
   class InvalidFileURI < StandardError; end

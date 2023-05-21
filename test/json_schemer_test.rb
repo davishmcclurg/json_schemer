@@ -202,12 +202,19 @@ class JSONSchemerTest < Minitest::Test
         data[property] = parsed
       end
     end
-    data = { 'list' => '1,2,3' }
+    data = { 'list' => '1,2,3', 'list_not_integer' => 'a,b,c', 'other' => 'x' }
     schema = {
       'properties' => {
         'list' => {
           'type' => 'array',
           'items' => { 'type' => 'integer' }
+        },
+        'list_not_integer' => {
+          'type' => 'array',
+          'items' => { 'type' => 'string' }
+        },
+        'other' => {
+          'type' => 'string'
         }
       }
     }
@@ -215,22 +222,29 @@ class JSONSchemerTest < Minitest::Test
       schema,
       before_property_validation: [parse_array]
     ).valid?(data))
-    assert_equal({'list' => [1, 2, 3]}, data)
+    assert_equal({'list' => [1, 2, 3], 'list_not_integer' => %w[a b c], 'other' => 'x'}, data)
   end
 
   def test_use_before_validation_hook_to_act_on_parent_schema
     skip_read_only = proc do |data, property, property_schema, schema|
-      return unless property_schema['readOnly']
-      schema['required'].delete(property) if schema['required']
+      next unless property_schema['readOnly']
+      schema['required'].delete(property)
       if data.key?(property) && property_schema.is_a?(Hash)
         data.delete(property)
       end
     end
     schema = {
-      'required' => ['id'],
+      'required' => ['read_only_existing'],
       'properties' => {
-        'id' => {
+        'read_only_existing' => {
           'type' => 'integer',
+          'readOnly' => true
+        },
+        'not_read_only' => {
+          'type' => 'string'
+        },
+        'read_only_missing' => {
+          'type' => 'string',
           'readOnly' => true
         }
       }
@@ -239,9 +253,9 @@ class JSONSchemerTest < Minitest::Test
       schema,
       before_property_validation: [skip_read_only]
     )
-    data = { 'id' => 1 }
+    data = { 'read_only_existing' => 1, 'not_read_only' => 'x' }
     assert_empty(schemer.validate(data).to_a)
-    assert_equal({}, data)
+    assert_equal({ 'not_read_only' => 'x' }, data)
 
     data = {}
     assert_empty(schemer.validate(data).to_a)
@@ -251,17 +265,23 @@ class JSONSchemerTest < Minitest::Test
   def test_it_accepts_a_single_before_validation_hook_to_modify_data
     parse_array = proc do |data, property, property_schema, _|
       if data.key?(property) && property_schema.is_a?(Hash) && property_schema['type'] == 'array'
-        parsed = data[property].split(',')
-        parsed = parsed.map!(&:to_i) if property_schema['items']['type'] == 'integer'
-        data[property] = parsed
+        data[property] = data[property].split(',')
+        data[property].map!(&:to_i) if property_schema['items']['type'] == 'integer'
       end
     end
-    data = { 'list' => '1,2,3' }
+    data = { 'list' => '1,2,3', 'list_not_integer' => 'a,b,c', 'other' => 'x' }
     schema = {
       'properties' => {
         'list' => {
           'type' => 'array',
           'items' => { 'type' => 'integer' }
+        },
+        'list_not_integer' => {
+          'type' => 'array',
+          'items' => { 'type' => 'string' }
+        },
+        'other' => {
+          'type' => 'string'
         }
       }
     }
@@ -269,7 +289,7 @@ class JSONSchemerTest < Minitest::Test
       schema,
       before_property_validation: parse_array
     ).valid?(data))
-    assert_equal({'list' => [1, 2, 3]}, data)
+    assert_equal({'list' => [1, 2, 3], 'list_not_integer' => %w[a b c], 'other' => 'x'}, data)
   end
 
   def test_it_calls_before_validation_hooks_and_still_inserts_defaults
@@ -307,6 +327,9 @@ class JSONSchemerTest < Minitest::Test
         'start_date' => {
           'type' => 'string',
           'format' => 'date'
+        },
+        'email' => {
+          'format' => 'email'
         }
       }
     }
@@ -314,9 +337,9 @@ class JSONSchemerTest < Minitest::Test
       schema,
       after_property_validation: [convert_date]
     )
-    data = { 'start_date' => '2020-09-03' }
+    data = { 'start_date' => '2020-09-03', 'email' => 'example@example.com' }
     assert(validator.valid?(data))
-    assert_equal({'start_date' => Date.new(2020, 9, 3)}, data)
+    assert_equal({'start_date' => Date.new(2020, 9, 3), 'email' => 'example@example.com'}, data)
   end
 
   def test_it_accepts_a_single_proc_as_after_validation_hook
@@ -330,6 +353,9 @@ class JSONSchemerTest < Minitest::Test
         'start_date' => {
           'type' => 'string',
           'format' => 'date'
+        },
+        'email' => {
+          'format' => 'email'
         }
       }
     }
@@ -337,9 +363,9 @@ class JSONSchemerTest < Minitest::Test
       schema,
       after_property_validation: convert_date
     )
-    data = { 'start_date' => '2020-09-03' }
+    data = { 'start_date' => '2020-09-03', 'email' => 'example@example.com' }
     assert(validator.valid?(data))
-    assert_equal({'start_date' => Date.new(2020, 9, 3)}, data)
+    assert_equal({'start_date' => Date.new(2020, 9, 3), 'email' => 'example@example.com' }, data)
   end
 
   def test_it_does_not_modify_passed_hooks_array
@@ -421,6 +447,12 @@ class JSONSchemerTest < Minitest::Test
     )
     assert(schema.valid?('valid'))
     refute(schema.valid?('invalid'))
+  end
+
+  def test_it_ignores_unknown_format
+    schemer = JSONSchemer.schema({ 'type' => 'string', 'format' => 'unknown' })
+    assert(schemer.valid?('1'))
+    refute(schemer.valid?(1))
   end
 
   def test_it_returns_correct_pointers_for_ref_pointer
@@ -898,6 +930,12 @@ class JSONSchemerTest < Minitest::Test
     assert_equal(1, counts['http://example.com/2'])
   end
 
+  def test_net_http_ref_resolver
+    schemer = JSONSchemer.schema({ '$ref' => 'http://json-schema.org/draft-07/schema#' }, :ref_resolver => 'net/http')
+    assert(schemer.valid?({ 'type' => 'string' }))
+    refute(schemer.valid?({ 'type' => 1 }))
+  end
+
   def test_it_handles_regex_anchors
     schema = JSONSchemer.schema({ 'pattern' => '^foo$' })
     assert(schema.valid?('foo'))
@@ -1087,24 +1125,34 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_it_validates_correctly_custom_keywords
-    root = {
-      'type' => 'number',
-      'even' => true
-    }
     options = {
       keywords: {
+        'ignored' => nil,
         'even' => lambda do |data, curr_schema, _pointer|
-          if curr_schema['even']
-            data.to_i.even?
+          curr_schema.fetch('even') == data.to_i.even?
+        end
+      }
+    }
+
+    schema = JSONSchemer.schema({ 'even' => true }, **options)
+    assert(schema.valid?(2))
+    refute(schema.valid?(3))
+
+    options = {
+      keywords: {
+        'two' => lambda do |data, curr_schema, _pointer|
+          if curr_schema.fetch('two') == (data == 2)
+            []
           else
-            data.to_i.odd?
+            ['error1', 'error2']
           end
         end
       }
     }
 
-    schema = JSONSchemer.schema(root, **options)
-    assert(schema.valid?(2))
+    schema = JSONSchemer.schema({ 'two' => true }, **options)
+    assert_equal([], schema.validate(2).to_a)
+    assert_equal(['error1', 'error2'], schema.validate(3).to_a)
     refute(schema.valid?(3))
   end
 
@@ -1129,5 +1177,43 @@ class JSONSchemerTest < Minitest::Test
     assert_equal(1, errors.size)
     assert_equal('/foo~1bar~0', errors.first.fetch('data_pointer'))
     assert_equal('/properties/foo~1bar~0', errors.first.fetch('schema_pointer'))
+  end
+
+  def test_it_ignores_invalid_types
+    assert(JSONSchemer.schema({ 'type' => 'invalid' }).valid?({}))
+    assert(JSONSchemer.schema({ 'type' => Object.new }).valid?({}))
+  end
+
+  def test_it_raises_for_unsupported_content_encoding
+    assert_raises(NotImplementedError) { JSONSchemer.schema({ 'contentEncoding' => '7bit' }).valid?('') }
+  end
+
+  def test_it_raises_for_unsupported_content_media_type
+    assert_raises(NotImplementedError) { JSONSchemer.schema({ 'contentMediaType' => 'application/xml' }).valid?('') }
+  end
+
+  def test_it_raises_for_unknown_format
+    schemer = JSONSchemer.schema({ 'format' => 'unknown' })
+    schemer.stub(:supported_format?, true) do
+      assert_raises(JSONSchemer::UnknownFormat) { schemer.valid?('') }
+    end
+  end
+
+  def test_it_handles_windows_paths
+    schema = JSONSchemer.schema(Pathname.new(__dir__).join('schemas', 'windows_path.json'))
+    read = proc do |path|
+      assert_equal('c:/not/a/real/path', path)
+      '{ "type": "string" }'
+    end
+    File.stub(:read, read) do
+      assert(schema.valid?('1'))
+      refute(schema.valid?(1))
+    end
+  end
+
+  def test_it_validates_spaces_in_uri_format
+    schema = JSONSchemer.schema({ 'format' => 'uri' })
+    refute(schema.valid?('http://example.com?sp ce'))
+    refute(schema.valid?('mailto:sp ce@example.com'))
   end
 end

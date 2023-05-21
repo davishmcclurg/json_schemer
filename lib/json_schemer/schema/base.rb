@@ -617,8 +617,7 @@ module JSONSchemer
 
       def safe_strict_decode64(data)
         Base64.strict_decode64(data)
-      rescue ArgumentError => e
-        raise e unless e.message == 'invalid base64'
+      rescue ArgumentError
         nil
       end
 

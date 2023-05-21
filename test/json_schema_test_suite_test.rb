@@ -45,11 +45,13 @@ class JSONSchemaTestSuiteTest < Minitest::Test
         end
       end
 
+      # :nocov:
       if ENV['WRITE_FIXTURES'] == 'true'
         fixture.write("#{JSON.pretty_generate(output)}\n")
       else
         assert_equal(output, JSON.parse(fixture.read))
       end
+      # :nocov:
     end
   end
 end

@@ -99,4 +99,19 @@ class PrettyErrorsTest < Minitest::Test
     error = schema.validate({ 'one' => 'abc' }).to_a.first
     assert_equal("property '/one' is not: \"one\"", JSONSchemer::Errors.pretty(error))
   end
+
+  def test_generic_message
+    schema = JSONSchemer.schema(
+      {
+        'properties' => {
+          'two' => {
+            'type' => 'integer',
+            'maximum' => 2
+          }
+        }
+      }
+    )
+    error = schema.validate({ 'two' => 3 }).to_a.first
+    assert_equal("property '/two' is invalid: error_type=maximum", JSONSchemer::Errors.pretty(error))
+  end
 end
