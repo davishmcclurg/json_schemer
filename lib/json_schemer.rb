@@ -9,7 +9,6 @@ require 'set'
 require 'time'
 require 'uri'
 
-require 'ecma-re-validator'
 require 'hana'
 require 'regexp_parser'
 require 'simpleidn'
@@ -20,6 +19,7 @@ require 'json_schemer/format/hostname'
 require 'json_schemer/format'
 require 'json_schemer/errors'
 require 'json_schemer/cached_resolver'
+require 'json_schemer/ecma_regexp'
 require 'json_schemer/schema/base'
 require 'json_schemer/schema/draft4'
 require 'json_schemer/schema/draft6'
@@ -33,6 +33,7 @@ module JSONSchemer
   class InvalidRegexpResolution < StandardError; end
   class InvalidFileURI < StandardError; end
   class InvalidSymbolKey < StandardError; end
+  class InvalidEcmaRegexp < StandardError; end
 
   SCHEMA_CLASS_BY_META_SCHEMA = {
     'http://json-schema.org/schema#' => Schema::Draft4, # Version-less $schema deprecated after Draft 4

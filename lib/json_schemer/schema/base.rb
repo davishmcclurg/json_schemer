@@ -21,26 +21,9 @@ module JSONSchemer
       ID_KEYWORD = '$id'
       DEFAULT_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
       NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }
+      RUBY_REGEXP_RESOLVER = proc { |pattern| Regexp.new(pattern) }
+      ECMA_REGEXP_RESOLVER = proc { |pattern| Regexp.new(EcmaRegexp.ruby_equivalent(pattern)) }
       BOOLEANS = Set[true, false].freeze
-
-      RUBY_REGEX_TYPES_TO_ECMA_262 = {
-        :anchor => {
-          :bol => '\A',
-          :eol => '\z'
-        },
-        :type => {
-          :space => '[\t\r\n\f\v\uFEFF\u2029\p{Zs}]',
-          :nonspace => '[^\t\r\n\f\v\uFEFF\u2029\p{Zs}]'
-        }
-      }.freeze
-
-      ECMA_262_REGEXP_RESOLVER = proc do |pattern|
-        Regexp.new(
-          Regexp::Scanner.scan(pattern).map do |type, token, text|
-            RUBY_REGEX_TYPES_TO_ECMA_262.dig(type, token) || text
-          end.join
-        )
-      end
 
       INSERT_DEFAULT_PROPERTY = proc do |data, property, property_schema, _parent|
         if !data.key?(property) && property_schema.is_a?(Hash) && property_schema.key?('default')
@@ -75,9 +58,9 @@ module JSONSchemer
         @ref_resolver = ref_resolver == 'net/http' ? CachedResolver.new(&NET_HTTP_REF_RESOLVER) : ref_resolver
         @regexp_resolver = case regexp_resolver
         when 'ecma'
-          CachedResolver.new(&ECMA_262_REGEXP_RESOLVER)
+          CachedResolver.new(&ECMA_REGEXP_RESOLVER)
         when 'ruby'
-          CachedResolver.new(&Regexp.method(:new))
+          CachedResolver.new(&RUBY_REGEXP_RESOLVER)
         else
           regexp_resolver
         end
