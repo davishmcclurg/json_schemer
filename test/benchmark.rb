@@ -1,17 +1,24 @@
 # frozen_string_literal: true
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'bundler/inline'
 
-require 'benchmark/ips'
-require 'jschema'
-require 'json-schema'
-require 'json_schema'
-require 'json_schemer'
-require 'json_validation'
-require 'rj_schema'
-# require 'jsonschema'
+require 'digest' # json_validation
 
-# json_validation
-require 'digest'
+Fixnum = Integer # jsonschema
+
+gemfile do
+  source 'https://rubygems.org'
+
+  gem 'benchmark-ips'
+  gem 'webrick'
+  gem 'jschema'
+  gem 'json-schema'
+  gem 'json_schema'
+  gem 'json_validation'
+  # gem 'jsonschema'
+  gem 'rj_schema'
+
+  gem 'json_schemer', :path => '../'
+end
 
 benchmarks = {
   'simple' => {
@@ -80,12 +87,14 @@ Benchmark.ips do |x|
 
     # json-schema
 
-    x.report("json-schema, #{name}, valid") do
-      raise unless JSON::Validator.validate(schema, valid)
+    x.report("json-schema, uninitialized, #{name}, valid") do
+      errors = JSON::Validator.fully_validate(schema, valid)
+      raise if errors.any?
     end
 
-    x.report("json-schema, #{name}, invalid") do
-      raise if JSON::Validator.validate(schema, invalid)
+    x.report("json-schema, uninitialized, #{name}, invalid") do
+      errors = JSON::Validator.fully_validate(schema, invalid)
+      raise if errors.empty?
     end
 
     # json_schema
@@ -154,22 +163,22 @@ Benchmark.ips do |x|
 
     x.report("rj_schema, uninitialized, #{name}, valid") do
       errors = RjSchema::Validator.new.validate(schema, valid)
-      raise if errors.any?
+      raise if errors.fetch(:machine_errors).any?
     end
 
     x.report("rj_schema, uninitialized, #{name}, invalid") do
       errors = RjSchema::Validator.new.validate(schema, invalid)
-      raise if errors.empty?
+      raise if errors.fetch(:machine_errors).empty?
     end
 
     x.report("rj_schema, initialized, #{name}, valid") do
       errors = initialized_rj_schema.validate(:"schema", valid)
-      raise if errors.any?
+      raise if errors.fetch(:machine_errors).any?
     end
 
     x.report("rj_schema, initialized, #{name}, invalid") do
       errors = initialized_rj_schema.validate(:"schema", invalid)
-      raise if errors.empty?
+      raise if errors.fetch(:machine_errors).empty?
     end
 
     # jsonschema
