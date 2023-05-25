@@ -1086,50 +1086,6 @@ class JSONSchemerTest < Minitest::Test
     refute schema.valid?(0)
   end
 
-  def test_json_schema_test_suite
-    {
-      'draft4' => JSONSchemer::Schema::Draft4,
-      'draft6' => JSONSchemer::Schema::Draft6,
-      'draft7' => JSONSchemer::Schema::Draft7
-    }.each do |version, draft_class|
-      output = Dir["JSON-Schema-Test-Suite/tests/#{version}/**/*.json"].each_with_object({}) do |file, file_output|
-        next if file == 'JSON-Schema-Test-Suite/tests/draft7/optional/cross-draft.json'
-        file_output[file] = JSON.parse(File.read(file)).map do |defn|
-          defn.fetch('tests').map do |test|
-            errors = draft_class.new(
-              defn.fetch('schema'),
-              ref_resolver: proc do |uri|
-                # Resolve localhost test schemas
-                if uri.host == 'localhost'
-                  path = Pathname.new(__dir__).join('..', 'JSON-Schema-Test-Suite', 'remotes', uri.path.gsub(/\A\//, ''))
-                  JSON.parse(path.read)
-                else
-                  response = Net::HTTP.get_response(uri)
-                  if response.is_a?(Net::HTTPRedirection)
-                    response = Net::HTTP.get_response(URI.parse(response.fetch('location')))
-                  end
-                  JSON.parse(response.body)
-                end
-              end
-            ).validate(test.fetch('data')).to_a
-            if test.fetch('valid')
-              assert_empty(errors, file)
-            else
-              refute_empty(errors, file)
-            end
-            errors
-          end
-        end
-      end
-      fixture = Pathname.new(__dir__).join('fixtures', "#{version}.json")
-      if ENV['WRITE_FIXTURES'] == 'true'
-        fixture.write("#{JSON.pretty_generate(output)}\n")
-      else
-        assert_equal(output, JSON.parse(fixture.read))
-      end
-    end
-  end
-
   def test_it_validates_correctly_custom_keywords
     root = {
       'type' => 'number',
