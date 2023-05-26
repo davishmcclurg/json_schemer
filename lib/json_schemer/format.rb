@@ -50,6 +50,8 @@ module JSONSchemer
         valid_relative_json_pointer?(data)
       when 'regex'
         EcmaReValidator.valid?(data)
+      else
+        raise UnknownFormat, format
       end
     end
 

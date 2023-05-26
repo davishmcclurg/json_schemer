@@ -245,6 +245,7 @@ module JSONSchemer
       def child(schema)
         JSONSchemer.schema(
           schema,
+          default_schema_class: self.class,
           format: format?,
           formats: formats,
           keywords: keywords,
@@ -616,8 +617,7 @@ module JSONSchemer
 
       def safe_strict_decode64(data)
         Base64.strict_decode64(data)
-      rescue ArgumentError => e
-        raise e unless e.message == 'invalid base64'
+      rescue ArgumentError
         nil
       end
 
