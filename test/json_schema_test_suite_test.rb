@@ -38,7 +38,7 @@ class JSONSchemaTestSuiteTest < Minitest::Test
           tests.map do |test|
             data, valid = test.values_at('data', 'valid')
 
-            errors = draft_class.new(schema, ref_resolver: ref_resolver).validate(data).to_a
+            errors = draft_class.new(schema, ref_resolver: ref_resolver, regexp_resolver: 'ecma').validate(data).to_a
 
             if valid
               assert_empty(errors, "file: #{file}\nschema: #{JSON.pretty_generate(schema)}\ntest: #{JSON.pretty_generate(test)}")

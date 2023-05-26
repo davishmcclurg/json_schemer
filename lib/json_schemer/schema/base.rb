@@ -44,7 +44,7 @@ module JSONSchemer
         formats: nil,
         keywords: nil,
         ref_resolver: DEFAULT_REF_RESOLVER,
-        regexp_resolver: 'ecma'
+        regexp_resolver: 'ruby'
       )
         raise InvalidSymbolKey, 'schemas must use string keys' if schema.is_a?(Hash) && !schema.empty? && !schema.first.first.is_a?(String)
         @root = schema

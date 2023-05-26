@@ -2,21 +2,23 @@ require 'test_helper'
 
 class RegexTest < Minitest::Test
   def test_it_handles_regex_anchors
-    schema = JSONSchemer.schema({ 'pattern' => '^foo$' })
+    schema = JSONSchemer.schema({ 'pattern' => '^foo$' }, :regexp_resolver => 'ecma')
     assert(schema.valid?('foo'))
     refute(schema.valid?(' foo'))
     refute(schema.valid?('foo '))
     refute(schema.valid?("bar\nfoo\nbar"))
 
-    schema = JSONSchemer.schema({ 'pattern' => '^foo$' }, :regexp_resolver => 'ruby')
+    schema = JSONSchemer.schema({ 'pattern' => '^foo$' })
     assert(schema.valid?('foo'))
     refute(schema.valid?(' foo'))
     refute(schema.valid?('foo '))
     assert(schema.valid?("bar\nfoo\nbar"))
 
-    assert_raises(JSONSchemer::InvalidEcmaRegexp) { JSONSchemer.schema({ 'pattern' => '\Afoo\z' }).valid?('foo') }
+    assert_raises(JSONSchemer::InvalidEcmaRegexp) do
+      JSONSchemer.schema({ 'pattern' => '\Afoo\z' }, :regexp_resolver => 'ecma').valid?('foo')
+    end
 
-    schema = JSONSchemer.schema({ 'pattern' => '\Afoo\z' }, :regexp_resolver => 'ruby')
+    schema = JSONSchemer.schema({ 'pattern' => '\Afoo\z' })
     assert(schema.valid?('foo'))
     refute(schema.valid?(' foo'))
     refute(schema.valid?('foo '))
@@ -51,7 +53,7 @@ class RegexTest < Minitest::Test
   def test_it_allows_named_regexp_resolvers
     schema = JSONSchemer.schema({ 'pattern' => '^test$' })
     assert(schema.valid?("test"))
-    refute(schema.valid?("\ntest\n"))
+    assert(schema.valid?("\ntest\n"))
     schema = JSONSchemer.schema({ 'pattern' => '^test$' }, :regexp_resolver => 'ecma')
     assert(schema.valid?("test"))
     refute(schema.valid?("\ntest\n"))
