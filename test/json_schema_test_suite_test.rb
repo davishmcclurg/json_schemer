@@ -1,12 +1,6 @@
 require 'test_helper'
 
 class JSONSchemaTestSuiteTest < Minitest::Test
-  DRAFTS = {
-    'draft4' => JSONSchemer::Schema::Draft4,
-    'draft6' => JSONSchemer::Schema::Draft6,
-    'draft7' => JSONSchemer::Schema::Draft7
-  }
-
   def test_json_schema_test_suite
     ref_resolver = proc do |uri|
       if uri.host == 'localhost'
@@ -17,13 +11,11 @@ class JSONSchemaTestSuiteTest < Minitest::Test
       end
     end
 
-    DRAFTS.each do |draft, draft_class|
-      files = Dir["JSON-Schema-Test-Suite/tests/#{draft}/**/*.json"]
-      fixture = Pathname.new(__dir__).join('fixtures', "#{draft}.json")
+    JSONSchemer::SCHEMA_CLASS_BY_META_SCHEMA.values.uniq.each do |schema_class|
+      files = Dir["JSON-Schema-Test-Suite/tests/#{schema_class.draft_name}/**/*.json"]
+      fixture = Pathname.new(__dir__).join('fixtures', "#{schema_class.draft_name}.json")
 
-      meta_schema = JSON.parse(Pathname.new(__dir__).join('schemas', 'meta', "#{draft}.json").read)
-      meta_schemer = JSONSchemer.schema(meta_schema)
-      assert(meta_schemer.valid?(meta_schema))
+      assert(JSONSchemer.valid_schema?(schema_class.meta_schema))
 
       output = files.each_with_object({}) do |file, file_output|
         next if file == 'JSON-Schema-Test-Suite/tests/draft7/optional/cross-draft.json'
@@ -33,12 +25,14 @@ class JSONSchemaTestSuiteTest < Minitest::Test
         file_output[file] = definitions.map do |defn|
           tests, schema = defn.values_at('tests', 'schema')
 
-          assert(meta_schemer.valid?(schema))
+          schemer = schema_class.new(schema, ref_resolver: ref_resolver, regexp_resolver: 'ecma')
+          assert(schemer.valid_schema?)
+          assert(JSONSchemer.valid_schema?(schema, default_schema_class: schema_class))
 
           tests.map do |test|
             data, valid = test.values_at('data', 'valid')
 
-            errors = draft_class.new(schema, ref_resolver: ref_resolver, regexp_resolver: 'ecma').validate(data).to_a
+            errors = schemer.validate(data).to_a
 
             if valid
               assert_empty(errors, "file: #{file}\nschema: #{JSON.pretty_generate(schema)}\ntest: #{JSON.pretty_generate(test)}")

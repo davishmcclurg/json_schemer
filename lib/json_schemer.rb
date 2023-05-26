@@ -35,6 +35,7 @@ module JSONSchemer
   class InvalidSymbolKey < StandardError; end
   class InvalidEcmaRegexp < StandardError; end
 
+  DEFAULT_SCHEMA_CLASS = Schema::Draft7
   SCHEMA_CLASS_BY_META_SCHEMA = {
     'http://json-schema.org/schema#' => Schema::Draft4, # Version-less $schema deprecated after Draft 4
     'http://json-schema.org/draft-04/schema#' => Schema::Draft4,
@@ -53,7 +54,7 @@ module JSONSchemer
   end
 
   class << self
-    def schema(schema, default_schema_class: Schema::Draft7, **options)
+    def schema(schema, default_schema_class: DEFAULT_SCHEMA_CLASS, **options)
       case schema
       when String
         schema = JSON.parse(schema)
@@ -77,6 +78,14 @@ module JSONSchemer
       end
 
       schema_class.new(schema, **options)
+    end
+
+    def valid_schema?(schema, default_schema_class: DEFAULT_SCHEMA_CLASS)
+      schema(schema, default_schema_class: default_schema_class).valid_schema?
+    end
+
+    def validate_schema(schema, default_schema_class: DEFAULT_SCHEMA_CLASS)
+      schema(schema, default_schema_class: default_schema_class).validate_schema
     end
   end
 end

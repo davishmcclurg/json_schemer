@@ -34,6 +34,20 @@ module JSONSchemer
       JSON_POINTER_TOKEN_ESCAPE_CHARS = { '~' => '~0', '/' => '~1' }
       JSON_POINTER_TOKEN_ESCAPE_REGEXP = Regexp.union(JSON_POINTER_TOKEN_ESCAPE_CHARS.keys)
 
+      class << self
+        def draft_name
+          name.split('::').last.downcase
+        end
+
+        def meta_schema
+          @meta_schema ||= JSON.parse(Pathname.new(__dir__).join("#{draft_name}.json").read).freeze
+        end
+
+        def meta_schemer
+          @meta_schemer ||= JSONSchemer.schema(meta_schema)
+        end
+      end
+
       def initialize(
         schema,
         base_uri: nil,
@@ -72,6 +86,14 @@ module JSONSchemer
 
       def validate(data)
         validate_instance(Instance.new(data, '', root, '', @base_uri, @before_property_validation, @after_property_validation))
+      end
+
+      def valid_schema?
+        self.class.meta_schemer.valid?(root)
+      end
+
+      def validate_schema
+        self.class.meta_schemer.validate(root)
       end
 
     protected
