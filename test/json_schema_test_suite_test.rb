@@ -7,7 +7,7 @@ class JSONSchemaTestSuiteTest < Minitest::Test
         path = Pathname.new(__dir__).join('..', 'JSON-Schema-Test-Suite', 'remotes', uri.path.gsub(/\A\//, ''))
         JSON.parse(path.read)
       else
-        JSON.parse(Net::HTTP.get(uri))
+        JSONSchemer::SCHEMA_CLASS_BY_META_SCHEMA.fetch("#{uri}#").meta_schema
       end
     end
 
