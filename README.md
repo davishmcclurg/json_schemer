@@ -45,7 +45,12 @@ schemer.valid?({ 'abc' => 10 })
 # error validation (`validate` returns an enumerator)
 
 schemer.validate({ 'abc' => 10 }).to_a
-# => [{"data"=>10, "schema"=>{"type"=>"integer", "minimum"=>11}, "pointer"=>"#/abc", "type"=>"minimum"}]
+# => [{"data"=>10,
+#      "data_pointer"=>"/abc",
+#      "schema"=>{"type"=>"integer", "minimum"=>11},
+#      "schema_pointer"=>"/properties/abc",
+#      "root_schema"=>{"type"=>"object", "properties"=>{"abc"=>{"type"=>"integer", "minimum"=>11}}},
+#      "type"=>"minimum"}]
 
 # default property values
 
@@ -74,6 +79,30 @@ schemer = JSONSchemer.schema(schema)
 
 schema = '{ "type": "integer" }'
 schemer = JSONSchemer.schema(schema)
+
+# schema validation
+
+JSONSchemer.valid_schema?({ '$id' => '#valid' })
+# => true
+
+JSONSchemer.validate_schema({ '$id' => nil }).to_a
+# => [{"data"=>nil,
+#      "data_pointer"=>"/$id",
+#      "schema"=>{"type"=>"string", "format"=>"uri-reference"},
+#      "schema_pointer"=>"/properties/$id",
+#      "root_schema"=>{...meta schema},
+#      "type"=>"string"}]
+
+JSONSchemer.schema({ '$id' => '#valid' }).valid_schema?
+# => true
+
+JSONSchemer.schema({ '$id' => nil }).validate_schema.to_a
+# => [{"data"=>nil,
+#      "data_pointer"=>"/$id",
+#      "schema"=>{"type"=>"string", "format"=>"uri-reference"},
+#      "schema_pointer"=>"/properties/$id",
+#      "root_schema"=>{...meta schema},
+#      "type"=>"string"}]
 ```
 
 ## Options
