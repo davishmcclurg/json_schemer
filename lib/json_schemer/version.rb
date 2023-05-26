@@ -1,4 +1,4 @@
 # frozen_string_literal: true
 module JSONSchemer
-  VERSION = '0.2.25'
+  VERSION = '1.0.0'
 end
