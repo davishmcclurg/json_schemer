@@ -49,7 +49,7 @@ module JSONSchemer
       when 'relative-json-pointer'
         valid_relative_json_pointer?(data)
       when 'regex'
-        EcmaReValidator.valid?(data)
+        valid_regex?(data)
       else
         raise UnknownFormat, format
       end
@@ -128,6 +128,12 @@ module JSONSchemer
 
     def valid_relative_json_pointer?(data)
       RELATIVE_JSON_POINTER_REGEX.match?(data)
+    end
+
+    def valid_regex?(data)
+      !!EcmaRegexp.ruby_equivalent(data)
+    rescue InvalidEcmaRegexp
+      false
     end
   end
 end

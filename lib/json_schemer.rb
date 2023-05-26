@@ -9,7 +9,6 @@ require 'set'
 require 'time'
 require 'uri'
 
-require 'ecma-re-validator'
 require 'hana'
 require 'regexp_parser'
 require 'simpleidn'
@@ -20,6 +19,7 @@ require 'json_schemer/format/hostname'
 require 'json_schemer/format'
 require 'json_schemer/errors'
 require 'json_schemer/cached_resolver'
+require 'json_schemer/ecma_regexp'
 require 'json_schemer/schema/base'
 require 'json_schemer/schema/draft4'
 require 'json_schemer/schema/draft6'
@@ -33,6 +33,7 @@ module JSONSchemer
   class InvalidRegexpResolution < StandardError; end
   class InvalidFileURI < StandardError; end
   class InvalidSymbolKey < StandardError; end
+  class InvalidEcmaRegexp < StandardError; end
 
   SCHEMA_CLASS_BY_META_SCHEMA = {
     'http://json-schema.org/schema#' => Schema::Draft4, # Version-less $schema deprecated after Draft 4
@@ -57,28 +58,25 @@ module JSONSchemer
       when String
         schema = JSON.parse(schema)
       when Pathname
-        uri = URI.parse(File.join('file:', URI::DEFAULT_PARSER.escape(schema.realpath.to_s)))
-        if options.key?(:ref_resolver)
-          schema = FILE_URI_REF_RESOLVER.call(uri)
+        base_uri = URI.parse(File.join('file:', URI::DEFAULT_PARSER.escape(schema.realpath.to_s)))
+        options[:base_uri] = base_uri
+        schema = if options.key?(:ref_resolver)
+          FILE_URI_REF_RESOLVER.call(base_uri)
         else
           ref_resolver = CachedResolver.new(&FILE_URI_REF_RESOLVER)
-          schema = ref_resolver.call(uri)
           options[:ref_resolver] = ref_resolver
+          ref_resolver.call(base_uri)
         end
-        schema[draft_class(schema, default_schema_class)::ID_KEYWORD] ||= uri.to_s
       end
-      draft_class(schema, default_schema_class).new(schema, **options)
-    end
 
-  private
-
-    def draft_class(schema, default_schema_class)
-      if schema.is_a?(Hash) && schema.key?('$schema')
+      schema_class = if schema.is_a?(Hash) && schema.key?('$schema')
         meta_schema = schema.fetch('$schema')
         SCHEMA_CLASS_BY_META_SCHEMA[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
       else
         default_schema_class
       end
+
+      schema_class.new(schema, **options)
     end
   end
 end

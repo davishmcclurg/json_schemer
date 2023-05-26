@@ -21,6 +21,10 @@ class JSONSchemaTestSuiteTest < Minitest::Test
       files = Dir["JSON-Schema-Test-Suite/tests/#{draft}/**/*.json"]
       fixture = Pathname.new(__dir__).join('fixtures', "#{draft}.json")
 
+      meta_schema = JSON.parse(Pathname.new(__dir__).join('schemas', 'meta', "#{draft}.json").read)
+      meta_schemer = JSONSchemer.schema(meta_schema)
+      assert(meta_schemer.valid?(meta_schema))
+
       output = files.each_with_object({}) do |file, file_output|
         next if file == 'JSON-Schema-Test-Suite/tests/draft7/optional/cross-draft.json'
 
@@ -29,10 +33,12 @@ class JSONSchemaTestSuiteTest < Minitest::Test
         file_output[file] = definitions.map do |defn|
           tests, schema = defn.values_at('tests', 'schema')
 
+          assert(meta_schemer.valid?(schema))
+
           tests.map do |test|
             data, valid = test.values_at('data', 'valid')
 
-            errors = draft_class.new(schema, ref_resolver: ref_resolver).validate(data).to_a
+            errors = draft_class.new(schema, ref_resolver: ref_resolver, regexp_resolver: 'ecma').validate(data).to_a
 
             if valid
               assert_empty(errors, "file: #{file}\nschema: #{JSON.pretty_generate(schema)}\ntest: #{JSON.pretty_generate(test)}")
