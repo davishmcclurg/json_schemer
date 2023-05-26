@@ -1,15 +1,18 @@
 # frozen_string_literal: true
 module JSONSchemer
   module Format
+    include Hostname
+
     # this is no good
     EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/i.freeze
-    LABEL_REGEX_STRING = '[\p{L}\p{N}]([\p{L}\p{N}\-]*[\p{L}\p{N}])?'
-    HOSTNAME_REGEX = /\A(#{LABEL_REGEX_STRING}\.)*#{LABEL_REGEX_STRING}\z/i.freeze
     JSON_POINTER_REGEX_STRING = '(\/([^~\/]|~[01])*)*'
     JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
     RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
     DATE_TIME_OFFSET_REGEX = /(Z|[\+\-]([01][0-9]|2[0-3]):[0-5][0-9])\z/i.freeze
-    INVALID_QUERY_REGEX = /[[:space:]]/.freeze
+    HOUR_24_REGEX = /T24/.freeze
+    LEAP_SECOND_REGEX = /T\d{2}:\d{2}:6/.freeze
+    IP_REGEX = /\A[\h:.]+\z/.freeze
+    INVALID_QUERY_REGEX = /\s/.freeze
 
     def valid_spec_format?(data, format)
       case format
@@ -28,9 +31,9 @@ module JSONSchemer
       when 'idn-hostname'
         valid_hostname?(data)
       when 'ipv4'
-        valid_ip?(data, :v4)
+        valid_ip?(data, Socket::AF_INET)
       when 'ipv6'
-        valid_ip?(data, :v6)
+        valid_ip?(data, Socket::AF_INET6)
       when 'uri'
         valid_uri?(data)
       when 'uri-reference'
@@ -58,24 +61,24 @@ module JSONSchemer
     end
 
     def valid_date_time?(data)
-      DateTime.rfc3339(data)
+      return false if HOUR_24_REGEX.match?(data)
+      datetime = DateTime.rfc3339(data)
+      return false if LEAP_SECOND_REGEX.match?(data) && datetime.to_time.utc.strftime('%H:%M') != '23:59'
       DATE_TIME_OFFSET_REGEX.match?(data)
     rescue ArgumentError
       false
     end
 
     def valid_email?(data)
-      EMAIL_REGEX.match?(data)
+      return false unless EMAIL_REGEX.match?(data)
+      local, _domain = data.partition('@')
+      !local.start_with?('.') && !local.end_with?('.') && !local.include?('..')
     end
 
-    def valid_hostname?(data)
-      HOSTNAME_REGEX.match?(data) && data.split('.').all? { |label| label.size <= 63 }
-    end
-
-    def valid_ip?(data, type)
-      ip_address = IPAddr.new(data)
-      type == :v4 ? ip_address.ipv4? : ip_address.ipv6?
-    rescue IPAddr::InvalidAddressError
+    def valid_ip?(data, family)
+      IPAddr.new(data, family)
+      IP_REGEX.match?(data)
+    rescue IPAddr::Error
       false
     end
 

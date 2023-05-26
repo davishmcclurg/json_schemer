@@ -200,7 +200,7 @@ module JSONSchemer
 
         if if_schema && valid_instance?(instance.merge(schema: if_schema, before_property_validation: false, after_property_validation: false))
           validate_instance(instance.merge(schema: then_schema, schema_pointer: "#{instance.schema_pointer}/then"), &block) unless then_schema.nil?
-        elsif if_schema
+        elsif schema.key?('if')
           validate_instance(instance.merge(schema: else_schema, schema_pointer: "#{instance.schema_pointer}/else"), &block) unless else_schema.nil?
         end
 
