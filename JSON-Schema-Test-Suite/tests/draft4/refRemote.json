@@ -54,7 +54,7 @@
         "schema": {
             "id": "http://localhost:1234/",
             "items": {
-                "id": "folder/",
+                "id": "baseUriChange/",
                 "items": {"$ref": "folderInteger.json"}
             }
         },
@@ -81,7 +81,7 @@
             },
             "definitions": {
                 "baz": {
-                    "id": "folder/",
+                    "id": "baseUriChangeFolder/",
                     "type": "array",
                     "items": {"$ref": "folderInteger.json"}
                 }
@@ -110,7 +110,7 @@
             },
             "definitions": {
                 "baz": {
-                    "id": "folder/",
+                    "id": "baseUriChangeFolderInSubschema/",
                     "definitions": {
                         "bar": {
                             "type": "array",
@@ -164,6 +164,24 @@
                         "name": null
                     }
                 },
+                "valid": false
+            }
+        ]
+    },
+    {
+        "description": "Location-independent identifier in remote ref",
+        "schema": {
+            "$ref": "http://localhost:1234/locationIndependentIdentifierDraft4.json#/definitions/refToInteger"
+        },
+        "tests": [
+            {
+                "description": "integer is valid",
+                "data": 1,
+                "valid": true
+            },
+            {
+                "description": "string is invalid",
+                "data": "foo",
                 "valid": false
             }
         ]
