@@ -2,6 +2,7 @@
 module JSONSchemer
   module Format
     include Hostname
+    include URITemplate
 
     # this is no good
     EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/i.freeze
@@ -113,13 +114,6 @@ module JSONSchemer
         end
         tmp
       end.force_encoding(Encoding::US_ASCII)
-    end
-
-    def valid_uri_template?(data)
-      URITemplate.new(data)
-      true
-    rescue URITemplate::Invalid
-      false
     end
 
     def valid_json_pointer?(data)
