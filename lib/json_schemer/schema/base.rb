@@ -32,7 +32,7 @@ module JSONSchemer
       end
 
       JSON_POINTER_TOKEN_ESCAPE_CHARS = { '~' => '~0', '/' => '~1' }
-      JSON_POINTER_TOKEN_ESCAPE_REGEXP = Regexp.union(JSON_POINTER_TOKEN_ESCAPE_CHARS.keys)
+      JSON_POINTER_TOKEN_ESCAPE_REGEX = Regexp.union(JSON_POINTER_TOKEN_ESCAPE_CHARS.keys)
 
       class << self
         def draft_name
@@ -624,7 +624,7 @@ module JSONSchemer
       end
 
       def escape_json_pointer_token(token)
-        token.gsub(JSON_POINTER_TOKEN_ESCAPE_REGEXP, JSON_POINTER_TOKEN_ESCAPE_CHARS)
+        token.gsub(JSON_POINTER_TOKEN_ESCAPE_REGEX, JSON_POINTER_TOKEN_ESCAPE_CHARS)
       end
 
       def join_uri(a, b)
