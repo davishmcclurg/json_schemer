@@ -239,4 +239,66 @@ class RefTest < Minitest::Test
       refute(schema.valid?(1))
     end
   end
+
+  def test_it_handles_base_uri_change_folder
+    schema = JSONSchemer.schema(
+      {
+        '$id' => 'http://localhost:1234/draft2019-09/scope_change_defs1.json',
+        'type' => 'object',
+        'definitions' => {
+          'baz' => {
+            '$id' => 'baseUriChangeFolder/',
+            'type' => 'array',
+            'items' => {
+              '$ref' => 'folderInteger.json'
+            }
+          }
+        },
+        'properties' => {
+          'list' => {
+            '$ref' => 'baseUriChangeFolder/'
+          }
+        }
+      },
+      :ref_resolver => proc do |uri|
+        assert_equal(URI('http://localhost:1234/draft2019-09/baseUriChangeFolder/folderInteger.json'), uri)
+        '{ "type": "integer" }'
+      end
+    )
+    assert(schema.valid?({ 'list' => [1] }))
+    refute(schema.valid?({ 'list' => ['a'] }))
+  end
+
+  def test_it_handles_base_uri_change_folder_in_subschema
+    schema = JSONSchemer.schema(
+      {
+        '$id' => 'http://localhost:1234/draft2019-09/scope_change_defs2.json',
+        'type' => 'object',
+        'definitions' => {
+          'baz' => {
+            '$id' => 'baseUriChangeFolderInSubschema/',
+            'definitions' => {
+              'bar' => {
+                'type' => 'array',
+                'items' => {
+                  '$ref' => 'folderInteger.json'
+                }
+              }
+            }
+          }
+        },
+        'properties' => {
+          'list' => {
+            '$ref' => 'baseUriChangeFolderInSubschema/#/definitions/bar'
+          }
+        }
+      },
+      :ref_resolver => proc do |uri|
+        assert_equal(URI('http://localhost:1234/draft2019-09/baseUriChangeFolderInSubschema/folderInteger.json'), uri)
+        '{ "type": "integer" }'
+      end
+    )
+    assert(schema.valid?({ 'list' => [1] }))
+    refute(schema.valid?({ 'list' => ['a'] }))
+  end
 end
