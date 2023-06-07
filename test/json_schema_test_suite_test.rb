@@ -1,6 +1,18 @@
 require 'test_helper'
 
 class JSONSchemaTestSuiteTest < Minitest::Test
+  INCOMPATIBLE_FILES = if RUBY_ENGINE == 'truffleruby'
+    # :nocov:
+    Set[
+      'JSON-Schema-Test-Suite/tests/draft4/optional/ecmascript-regex.json',
+      'JSON-Schema-Test-Suite/tests/draft6/optional/ecmascript-regex.json',
+      'JSON-Schema-Test-Suite/tests/draft7/optional/ecmascript-regex.json'
+    ]
+    # :nocov:
+  else
+    Set[]
+  end
+
   def test_json_schema_test_suite
     ref_resolver = proc do |uri|
       if uri.host == 'localhost'
@@ -43,13 +55,19 @@ class JSONSchemaTestSuiteTest < Minitest::Test
             errors
           end
         end
+      rescue JSON::ParserError => e
+        # :nocov:
+        raise unless Encoding::CompatibilityError === e.cause && INCOMPATIBLE_FILES.include?(file)
+        # :nocov:
       end
 
       # :nocov:
       if ENV['WRITE_FIXTURES'] == 'true'
         fixture.write("#{JSON.pretty_generate(output)}\n")
       else
-        assert_equal(output, JSON.parse(fixture.read))
+        fixture_json = JSON.parse(fixture.read)
+        INCOMPATIBLE_FILES.each { |file| fixture_json.delete(file) }
+        assert_equal(output, fixture_json)
       end
       # :nocov:
     end
