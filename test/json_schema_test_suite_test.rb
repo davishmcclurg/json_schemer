@@ -14,7 +14,7 @@ class JSONSchemaTestSuiteTest < Minitest::Test
   end
 
   def test_json_schema_test_suite
-    ref_resolver = proc do |uri|
+    ref_resolver = JSONSchemer::CachedResolver.new do |uri|
       if uri.host == 'localhost'
         path = Pathname.new(__dir__).join('..', 'JSON-Schema-Test-Suite', 'remotes', uri.path.gsub(/\A\//, ''))
         JSON.parse(path.read)
