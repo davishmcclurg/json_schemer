@@ -330,10 +330,10 @@ module JSONSchemer
           child(resolve_ref(ref_uri), base_uri: ref_uri)
         end
 
-        ref_schema, ref_schema_pointer = ref_object.ids[ref_uri] || [ref_object.root, '']
+        ref_schema, ref_schema_pointer, ref_parent_base_uri = ref_object.ids[ref_uri] || [ref_object.root, '', ref_uri]
 
         ref_uri_pointer_parts = Hana::Pointer.parse(URI.decode_www_form_component(ref_uri_pointer))
-        schema, base_uri = ref_uri_pointer_parts.reduce([ref_schema, ref_uri]) do |(obj, uri), token|
+        schema, base_uri = ref_uri_pointer_parts.reduce([ref_schema, ref_parent_base_uri]) do |(obj, uri), token|
           if obj.is_a?(Array)
             [obj.fetch(token.to_i), uri]
           else
@@ -646,16 +646,18 @@ module JSONSchemer
         if schema.is_a?(Array)
           schema.each_with_index { |subschema, index| resolve_ids(subschema, ids, base_uri, "#{pointer}/#{index}") }
         elsif schema.is_a?(Hash)
-          uri = join_uri(base_uri, schema[id_keyword])
+          if schema.key?(id_keyword)
+            parent_base_uri = base_uri
+            base_uri = join_uri(base_uri, schema[id_keyword])
+            ids[base_uri] ||= [schema, pointer, parent_base_uri]
+          end
           schema.each do |key, value|
             case key
-            when id_keyword
-              ids[uri] ||= [schema, pointer]
             when 'items', 'allOf', 'anyOf', 'oneOf', 'additionalItems', 'contains', 'additionalProperties', 'propertyNames', 'if', 'then', 'else', 'not'
-              resolve_ids(value, ids, uri, "#{pointer}/#{key}")
+              resolve_ids(value, ids, base_uri, "#{pointer}/#{key}")
             when 'properties', 'patternProperties', 'definitions', 'dependencies'
               value.each do |subkey, subvalue|
-                resolve_ids(subvalue, ids, uri, "#{pointer}/#{key}/#{subkey}")
+                resolve_ids(subvalue, ids, base_uri, "#{pointer}/#{key}/#{subkey}")
               end
             end
           end
