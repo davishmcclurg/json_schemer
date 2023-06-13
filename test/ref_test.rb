@@ -301,4 +301,27 @@ class RefTest < Minitest::Test
     assert(schema.valid?({ 'list' => [1] }))
     refute(schema.valid?({ 'list' => ['a'] }))
   end
+
+  def test_it_handles_relative_base_uri_json_pointer_ref
+    refs = {
+      'relative' => {
+        'definitions' => {
+          'foo' => {
+            'type' => 'integer'
+          }
+        },
+        'properties' => {
+          'bar' => {
+            '$ref' => '#/definitions/foo'
+          }
+        }
+      }
+    }
+    schema = JSONSchemer.schema(
+      { '$ref' => 'relative' },
+      :ref_resolver => proc { |uri| refs[uri.to_s] }
+    )
+    assert(schema.valid?({ 'bar' => 1 }))
+    refute(schema.valid?({ 'bar' => '1' }))
+  end
 end

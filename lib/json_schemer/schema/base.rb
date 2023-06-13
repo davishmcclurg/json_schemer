@@ -324,7 +324,7 @@ module JSONSchemer
           ref_uri.fragment = nil
         end
 
-        ref_object = if ids.key?(ref_uri) || ref_uri.to_s == @base_uri.to_s
+        ref_object = if ids.key?(ref_uri) || ref_uri.to_s.empty? || ref_uri.to_s == @base_uri.to_s
           self
         else
           child(resolve_ref(ref_uri), base_uri: ref_uri)
