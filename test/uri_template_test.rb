@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class PrettyErrorsTest < Minitest::Test
+class UriTemplateTest < Minitest::Test
   def test_uri_template_format
     schema = JSONSchemer.schema({ 'type' => 'string', 'format' => 'uri-template' })
 
