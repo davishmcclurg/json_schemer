@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 module JSONSchemer
   module Format
+    include Email
     include Hostname
     include URITemplate
 
-    # this is no good
-    EMAIL_REGEX = /\A[^@\s]+@([\p{L}\d-]+\.)+[\p{L}\d\-]{2,}\z/i.freeze
     JSON_POINTER_REGEX_STRING = '(\/([^~\/]|~[01])*)*'
     JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
     RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
@@ -70,12 +69,6 @@ module JSONSchemer
       DATE_TIME_OFFSET_REGEX.match?(data)
     rescue ArgumentError
       false
-    end
-
-    def valid_email?(data)
-      return false unless EMAIL_REGEX.match?(data)
-      local, _domain = data.partition('@')
-      !local.start_with?('.') && !local.end_with?('.') && !local.include?('..')
     end
 
     def valid_ip?(data, family)

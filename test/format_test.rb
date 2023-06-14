@@ -73,4 +73,29 @@ class FormatTest < Minitest::Test
     assert(schema.valid?('valid'))
     refute(schema.valid?('invalid'))
   end
+
+  def test_email_format
+    schema = JSONSchemer.schema({ 'format' => 'email' })
+
+    {
+      "joe.bloggs@example.com" => true,
+      "2962" => false,
+      "te~st@example.com" => true,
+      "~test@example.com" => true,
+      "test~@example.com" => true,
+      "\"joe bloggs\"@example.com" => true,
+      "\"joe..bloggs\"@example.com" => true,
+      "\"joe@bloggs\"@example.com" => true,
+      "joe.bloggs@[127.0.0.1]" => true,
+      "joe.bloggs@[IPv6:::1]" => true,
+      ".test@example.com" => false,
+      "test.@example.com" => false,
+      "te.s.t@example.com" => true,
+      "te..st@example.com" => false,
+      "joe.bloggs@invalid=domain.com" => false,
+      "joe.bloggs@[127.0.0.300]" => false
+    }.each do |email, valid|
+      assert_equal(valid, schema.valid?(email))
+    end
+  end
 end
