@@ -2,8 +2,6 @@ require 'test_helper'
 require 'open3'
 
 class ExeTest < Minitest::Test
-  GEM_PATH = File.join(__dir__, '..', 'tmp', 'gems')
-  CMD = File.join(GEM_PATH, 'bin', 'json_schemer')
   SCHEMA1 = File.join(__dir__, 'schemas', 'schema1.json')
   VALID = { 'id' => 1, 'a' => 'valid' }
   INVALID1 = { 'a' => 'invalid' }
@@ -11,6 +9,7 @@ class ExeTest < Minitest::Test
   INVALID3 = { 'id' => 1, 'a' => -1 }
   INVALID4 = { 'id' => 'invalid', 'a' => 'valid' }
   INVALID5 = { 'x' => 'invalid' }
+  RUBY_2_5_WARNING_REGEX = /Your RubyGems version \([\d\.]+\) has a bug that prevents `required_ruby_version` from working for Bundler. Any scripts that use `gem install bundler` will break as soon as Bundler drops support for your Ruby version. Please upgrade RubyGems to avoid future breakage and silence this warning by running `gem update --system [\d\.]+`\n/
 
   def test_help
     stdout, stderr, status = exe('-h')
@@ -175,13 +174,9 @@ class ExeTest < Minitest::Test
 private
 
   def exe(*args, **kwargs)
-    env = {
-      'GEM_HOME' => Gem.dir,
-      'GEM_PATH' => [GEM_PATH, *Gem.path].uniq.join(File::PATH_SEPARATOR),
-      'GEM_SPEC_CACHE' => Gem.spec_cache_dir,
-      'RUBYOPT' => nil # prevent bundler/setup
-    }
-    Open3.capture3(env, CMD, *args, **kwargs)
+    Open3.capture3('bundle', 'exec', 'json_schemer', *args, **kwargs).tap do |_stdout, stderr, _status|
+      stderr.gsub!(RUBY_2_5_WARNING_REGEX, '') if RUBY_ENGINE == 'ruby' && RUBY_VERSION.match?(/\A2\.5\.\d+\z/)
+    end
   end
 
   def tmp_json(*json)
