@@ -140,20 +140,22 @@ class JSONSchemerTest < Minitest::Test
       }
     }
     schema = JSONSchemer.schema(root)
-    assert_equal(
+    assert_includes(
+      schema.validate({ 'numberOfModules' => 32 }).to_a,
       {
         'data' => 32,
         'data_pointer' => '/numberOfModules',
         'schema' => {
-          'type' => 'integer',
-          'maximum' => 37,
-          'minimum' => 25
+          'not' => {
+            'type' => 'integer',
+            'maximum' => 37,
+            'minimum' => 25
+          }
         },
-        'schema_pointer' => '/properties/numberOfModules/allOf/1/not',
+        'schema_pointer' => '/properties/numberOfModules/allOf/1',
         'root_schema' => root,
         'type' => 'not'
-      },
-      schema.validate({ 'numberOfModules' => 32 }).first
+      }
     )
     assert_equal(
       {
@@ -209,7 +211,8 @@ class JSONSchemerTest < Minitest::Test
 
     schema = JSONSchemer.schema({ 'two' => true }, **options)
     assert_equal([], schema.validate(2).to_a)
-    assert_equal(['error1', 'error2'], schema.validate(3).to_a)
+    errors = schema.validate(3).map { |error| error.fetch('type') }
+    assert_equal(['error1', 'error2'], errors)
     refute(schema.valid?(3))
   end
 
@@ -242,11 +245,11 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_it_raises_for_unsupported_content_encoding
-    assert_raises(NotImplementedError) { JSONSchemer.schema({ 'contentEncoding' => '7bit' }).valid?('') }
+    assert_raises(JSONSchemer::UnknownContentEncoding) { JSONSchemer.schema({ 'contentEncoding' => '7bit' }).valid?('') }
   end
 
   def test_it_raises_for_unsupported_content_media_type
-    assert_raises(NotImplementedError) { JSONSchemer.schema({ 'contentMediaType' => 'application/xml' }).valid?('') }
+    assert_raises(JSONSchemer::UnknownContentMediaType) { JSONSchemer.schema({ 'contentMediaType' => 'application/xml' }).valid?('') }
   end
 
   def test_it_allows_validating_schemas
@@ -261,36 +264,39 @@ class JSONSchemerTest < Minitest::Test
       'data_pointer' => '/$ref',
       'schema' => { 'type' => 'string', 'format' => 'uri-reference' },
       'schema_pointer' => '/properties/$ref',
-      'root_schema' => JSONSchemer::DEFAULT_SCHEMA_CLASS.meta_schema,
+      'root_schema' => JSONSchemer::Draft7::SCHEMA,
       'type' => 'format'
     }
     required_error = {
       'data' => { 'exclusiveMaximum' => true },
       'data_pointer' => '/properties/x',
-      'schema' => { 'required' => ['maximum'] },
-      'schema_pointer' => '/dependencies/exclusiveMaximum',
-      'root_schema' => JSONSchemer::Schema::Draft4.meta_schema,
-      'type' => 'required',
+      'schema' => JSONSchemer::Draft4::SCHEMA,
+      'schema_pointer' => '',
+      'root_schema' => JSONSchemer::Draft4::SCHEMA,
+      'type' => 'dependencies',
       'details' => { 'missing_keys' => ['maximum'] }
     }
 
-    assert(JSONSchemer.valid_schema?(valid_draft7_schema))
-    refute(JSONSchemer.valid_schema?(invalid_draft7_schema))
-    assert(JSONSchemer.schema(valid_draft7_schema).valid_schema?)
-    refute(JSONSchemer.schema(invalid_draft7_schema).valid_schema?)
+    draft7_meta_schema = JSONSchemer::DRAFT7
+    draft4_meta_schema = JSONSchemer::DRAFT4
 
-    assert_empty(JSONSchemer.validate_schema(valid_draft7_schema).to_a)
-    assert_equal([format_error], JSONSchemer.validate_schema(invalid_draft7_schema).to_a)
-    assert_empty(JSONSchemer.schema(valid_draft7_schema).validate_schema.to_a)
-    assert_equal([format_error], JSONSchemer.schema(invalid_draft7_schema).validate_schema.to_a)
+    assert(JSONSchemer.valid_schema?(valid_draft7_schema, :meta_schema => draft7_meta_schema))
+    refute(JSONSchemer.valid_schema?(invalid_draft7_schema, :meta_schema => draft7_meta_schema))
+    assert(JSONSchemer.schema(valid_draft7_schema, :meta_schema => draft7_meta_schema).valid_schema?)
+    refute(JSONSchemer.schema(invalid_draft7_schema, :meta_schema => draft7_meta_schema).valid_schema?)
 
-    assert(JSONSchemer.valid_schema?(valid_draft4_schema, default_schema_class: JSONSchemer::Schema::Draft4))
-    refute(JSONSchemer.valid_schema?(invalid_draft4_schema, default_schema_class: JSONSchemer::Schema::Draft4))
+    assert_empty(JSONSchemer.validate_schema(valid_draft7_schema, :meta_schema => draft7_meta_schema).to_a)
+    assert_equal([format_error], JSONSchemer.validate_schema(invalid_draft7_schema, :meta_schema => draft7_meta_schema).to_a)
+    assert_empty(JSONSchemer.schema(valid_draft7_schema, :meta_schema => draft7_meta_schema).validate_schema.to_a)
+    assert_equal([format_error], JSONSchemer.schema(invalid_draft7_schema, :meta_schema => draft7_meta_schema).validate_schema.to_a)
+
+    assert(JSONSchemer.valid_schema?(valid_draft4_schema, :meta_schema => draft4_meta_schema))
+    refute(JSONSchemer.valid_schema?(invalid_draft4_schema, :meta_schema => draft4_meta_schema))
     assert(JSONSchemer::valid_schema?(valid_detected_draft4_schema))
     refute(JSONSchemer::valid_schema?(invalid_detected_draft4_schema))
 
-    assert_empty(JSONSchemer.validate_schema(valid_draft7_schema, default_schema_class: JSONSchemer::Schema::Draft4).to_a)
-    assert_equal([required_error], JSONSchemer.validate_schema(invalid_draft4_schema, default_schema_class: JSONSchemer::Schema::Draft4).to_a)
+    assert_empty(JSONSchemer.validate_schema(valid_draft7_schema, :meta_schema => draft4_meta_schema).to_a)
+    assert_equal([required_error], JSONSchemer.validate_schema(invalid_draft4_schema, :meta_schema => draft4_meta_schema).to_a)
     assert_empty(JSONSchemer.validate_schema(valid_detected_draft4_schema).to_a)
     assert_equal([required_error], JSONSchemer.validate_schema(invalid_detected_draft4_schema).to_a)
   end

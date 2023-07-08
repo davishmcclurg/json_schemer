@@ -2,6 +2,26 @@
 
 JSON Schema validator. Supports drafts 4, 6, and 7.
 
+## Next
+
+- [ ] fixme
+- [ ] readme
+- [ ] coverage
+- [ ] argument passing (instance, instance_location, keyword_location, dynamic_scope, etc)
+- [ ] readOnly, writeOnly: https://github.com/davishmcclurg/json_schemer/issues/55
+- [ ] insert_property_defaults: https://github.com/davishmcclurg/json_schemer/issues/94
+- [ ] short-circuit
+- [ ] openapi
+- [ ] api
+- [ ] breaking changes
+  - [ ] format
+  - [ ] formats
+  - [ ] keywords
+  - [ ] before_property_validation, after_property_validation
+  - [ ] insert_property_defaults
+  - [ ] ref_resolver
+  - [ ] output formats
+
 ## Installation
 
 Add this line to your application's Gemfile:

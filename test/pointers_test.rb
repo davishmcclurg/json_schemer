@@ -138,7 +138,7 @@ class PointersTest < Minitest::Test
       {
         'properties' => {
           'x' => {
-            'items' => [
+            'prefixItems' => [
               { 'type' => 'integer' },
               { 'type' => 'string' }
             ]
@@ -147,8 +147,8 @@ class PointersTest < Minitest::Test
       }
     )
     errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
-    assert_equal(['/x/0', '/properties/x/items/0'], errors.first.values_at('data_pointer', 'schema_pointer'))
-    assert_equal(['/x/1', '/properties/x/items/1'], errors.last.values_at('data_pointer', 'schema_pointer'))
+    assert_equal(['/x/0', '/properties/x/prefixItems/0'], errors.first.values_at('data_pointer', 'schema_pointer'))
+    assert_equal(['/x/1', '/properties/x/prefixItems/1'], errors.last.values_at('data_pointer', 'schema_pointer'))
   end
 
   def test_it_returns_correct_pointers_for_additional_items
@@ -156,17 +156,17 @@ class PointersTest < Minitest::Test
       {
         'properties' => {
           'x' => {
-            'items' => [
+            'prefixItems' => [
               { 'type' => 'integer' }
             ],
-            'additionalItems' => { 'type' => 'string' }
+            'items' => { 'type' => 'string' }
           }
         }
       }
     )
     errors = schema.validate({ 'x' => ['wrong', 1] }).to_a
-    assert_equal(['/x/0', '/properties/x/items/0'], errors.first.values_at('data_pointer', 'schema_pointer'))
-    assert_equal(['/x/1', '/properties/x/additionalItems'], errors.last.values_at('data_pointer', 'schema_pointer'))
+    assert_equal(['/x/0', '/properties/x/prefixItems/0'], errors.first.values_at('data_pointer', 'schema_pointer'))
+    assert_equal(['/x/1', '/properties/x/items'], errors.last.values_at('data_pointer', 'schema_pointer'))
   end
 
   def test_it_returns_correct_pointers_for_items
@@ -203,7 +203,7 @@ class PointersTest < Minitest::Test
         'z' => 2
       }
     }).to_a
-    assert_equal(['/a', '/properties/a/dependencies/x'], errors.first.values_at('data_pointer', 'schema_pointer'))
+    assert_equal(['/a', '/properties/a'], errors.first.values_at('data_pointer', 'schema_pointer'))
     assert_equal(['/a', '/properties/a/dependencies/z'], errors.last.values_at('data_pointer', 'schema_pointer'))
   end
 
