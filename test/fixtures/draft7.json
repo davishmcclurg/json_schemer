@@ -2520,31 +2520,6 @@
       ],
       [
         {
-          "data": [
-            1,
-            5
-          ],
-          "data_pointer": "",
-          "schema": {
-            "items": {
-              "multipleOf": 2
-            },
-            "contains": {
-              "multipleOf": 3
-            }
-          },
-          "schema_pointer": "",
-          "root_schema": {
-            "items": {
-              "multipleOf": 2
-            },
-            "contains": {
-              "multipleOf": 3
-            }
-          },
-          "type": "contains"
-        },
-        {
           "data": 1,
           "data_pointer": "/0",
           "schema": {
@@ -2577,6 +2552,31 @@
             }
           },
           "type": "multipleOf"
+        },
+        {
+          "data": [
+            1,
+            5
+          ],
+          "data_pointer": "",
+          "schema": {
+            "items": {
+              "multipleOf": 2
+            },
+            "contains": {
+              "multipleOf": 3
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "items": {
+              "multipleOf": 2
+            },
+            "contains": {
+              "multipleOf": 3
+            }
+          },
+          "type": "contains"
         }
       ]
     ],
@@ -3220,11 +3220,13 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo"
-            ]
+            "dependencies": {
+              "bar": [
+                "foo"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/bar",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "bar": [
@@ -3232,7 +3234,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "foo"
@@ -3279,12 +3281,14 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo",
-              "bar"
-            ]
+            "dependencies": {
+              "quux": [
+                "foo",
+                "bar"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/quux",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "quux": [
@@ -3293,7 +3297,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "bar"
@@ -3309,12 +3313,14 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo",
-              "bar"
-            ]
+            "dependencies": {
+              "quux": [
+                "foo",
+                "bar"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/quux",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "quux": [
@@ -3323,7 +3329,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "foo"
@@ -3338,12 +3344,14 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo",
-              "bar"
-            ]
+            "dependencies": {
+              "quux": [
+                "foo",
+                "bar"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/quux",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "quux": [
@@ -3352,7 +3360,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "foo",
@@ -3529,11 +3537,24 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo\rbar"
-            ]
+            "dependencies": {
+              "foo\nbar": [
+                "foo\rbar"
+              ],
+              "foo\tbar": {
+                "minProperties": 4
+              },
+              "foo'bar": {
+                "required": [
+                  "foo\"bar"
+                ]
+              },
+              "foo\"bar": [
+                "foo'bar"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/foo\nbar",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "foo\nbar": [
@@ -3552,7 +3573,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "foo\rbar"
@@ -3637,11 +3658,24 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo'bar"
-            ]
+            "dependencies": {
+              "foo\nbar": [
+                "foo\rbar"
+              ],
+              "foo\tbar": {
+                "minProperties": 4
+              },
+              "foo'bar": {
+                "required": [
+                  "foo\"bar"
+                ]
+              },
+              "foo\"bar": [
+                "foo'bar"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/foo\"bar",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "foo\nbar": [
@@ -3660,7 +3694,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "foo'bar"
@@ -6293,9 +6327,11 @@
           "data": 1,
           "data_pointer": "",
           "schema": {
-            "type": "integer"
+            "not": {
+              "type": "integer"
+            }
           },
-          "schema_pointer": "/not",
+          "schema_pointer": "",
           "root_schema": {
             "not": {
               "type": "integer"
@@ -6314,12 +6350,14 @@
           "data": 1,
           "data_pointer": "",
           "schema": {
-            "type": [
-              "integer",
-              "boolean"
-            ]
+            "not": {
+              "type": [
+                "integer",
+                "boolean"
+              ]
+            }
           },
-          "schema_pointer": "/not",
+          "schema_pointer": "",
           "root_schema": {
             "not": {
               "type": [
@@ -6336,12 +6374,14 @@
           "data": true,
           "data_pointer": "",
           "schema": {
-            "type": [
-              "integer",
-              "boolean"
-            ]
+            "not": {
+              "type": [
+                "integer",
+                "boolean"
+              ]
+            }
           },
-          "schema_pointer": "/not",
+          "schema_pointer": "",
           "root_schema": {
             "not": {
               "type": [
@@ -6368,14 +6408,16 @@
           },
           "data_pointer": "",
           "schema": {
-            "type": "object",
-            "properties": {
-              "foo": {
-                "type": "string"
+            "not": {
+              "type": "object",
+              "properties": {
+                "foo": {
+                  "type": "string"
+                }
               }
             }
           },
-          "schema_pointer": "/not",
+          "schema_pointer": "",
           "root_schema": {
             "not": {
               "type": "object",
@@ -6396,8 +6438,10 @@
           "data": 1,
           "data_pointer": "/foo",
           "schema": {
+            "not": {
+            }
           },
-          "schema_pointer": "/properties/foo/not",
+          "schema_pointer": "/properties/foo",
           "root_schema": {
             "properties": {
               "foo": {
@@ -6418,8 +6462,10 @@
         {
           "data": "foo",
           "data_pointer": "",
-          "schema": true,
-          "schema_pointer": "/not",
+          "schema": {
+            "not": true
+          },
+          "schema_pointer": "",
           "root_schema": {
             "not": true
           },
@@ -7328,6 +7374,41 @@
             "contentEncoding": "base64"
           },
           "type": "contentEncoding"
+        }
+      ],
+      [
+
+      ]
+    ]
+  ],
+  "JSON-Schema-Test-Suite/tests/draft7/optional/cross-draft.json": [
+    [
+      [
+        {
+          "data": {
+            "foo": "any value"
+          },
+          "data_pointer": "/foo",
+          "schema": {
+            "$id": "http://localhost:1234/draft2019-09/dependentRequired.json",
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "dependentRequired": {
+              "foo": [
+                "bar"
+              ]
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$id": "http://localhost:1234/draft2019-09/dependentRequired.json",
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "dependentRequired": {
+              "foo": [
+                "bar"
+              ]
+            }
+          },
+          "type": "dependentRequired"
         }
       ],
       [
@@ -12571,7 +12652,7 @@
           "schema": {
             "type": "integer"
           },
-          "schema_pointer": "/definitions/percent%25field",
+          "schema_pointer": "/definitions/percent%field",
           "root_schema": {
             "definitions": {
               "tilde~field": {
@@ -13123,7 +13204,7 @@
           "schema": {
             "type": "number"
           },
-          "schema_pointer": "/definitions/foo%22bar",
+          "schema_pointer": "/definitions/foo\"bar",
           "root_schema": {
             "properties": {
               "foo\"bar": {
@@ -16089,14 +16170,16 @@
           "data": null,
           "data_pointer": "",
           "schema": {
-            "array_of_schemas": [
-              {
-                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                "type": "null"
-              }
-            ]
+            "not": {
+              "array_of_schemas": [
+                {
+                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                  "type": "null"
+                }
+              ]
+            }
           },
-          "schema_pointer": "/definitions/id_in_unknown0/not",
+          "schema_pointer": "/definitions/id_in_unknown0",
           "root_schema": {
             "definitions": {
               "id_in_unknown0": {
@@ -16142,14 +16225,16 @@
           "data": null,
           "data_pointer": "",
           "schema": {
-            "object_of_schemas": {
-              "foo": {
-                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                "type": "integer"
+            "not": {
+              "object_of_schemas": {
+                "foo": {
+                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                  "type": "integer"
+                }
               }
             }
           },
-          "schema_pointer": "/definitions/id_in_unknown1/not",
+          "schema_pointer": "/definitions/id_in_unknown1",
           "root_schema": {
             "definitions": {
               "id_in_unknown0": {
@@ -16246,14 +16331,16 @@
           "data": 1,
           "data_pointer": "",
           "schema": {
-            "array_of_schemas": [
-              {
-                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                "type": "null"
-              }
-            ]
+            "not": {
+              "array_of_schemas": [
+                {
+                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                  "type": "null"
+                }
+              ]
+            }
           },
-          "schema_pointer": "/definitions/id_in_unknown0/not",
+          "schema_pointer": "/definitions/id_in_unknown0",
           "root_schema": {
             "definitions": {
               "id_in_unknown0": {
@@ -16299,14 +16386,16 @@
           "data": 1,
           "data_pointer": "",
           "schema": {
-            "object_of_schemas": {
-              "foo": {
-                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                "type": "integer"
+            "not": {
+              "object_of_schemas": {
+                "foo": {
+                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                  "type": "integer"
+                }
               }
             }
           },
-          "schema_pointer": "/definitions/id_in_unknown1/not",
+          "schema_pointer": "/definitions/id_in_unknown1",
           "root_schema": {
             "definitions": {
               "id_in_unknown0": {
