@@ -6,7 +6,6 @@ JSON Schema validator. Supports drafts 4, 6, and 7.
 
 - [ ] fixme
 - [ ] readme
-- [ ] coverage
 - [ ] argument passing (instance, instance_location, keyword_location, dynamic_scope, etc)
 - [ ] readOnly, writeOnly: https://github.com/davishmcclurg/json_schemer/issues/55
 - [ ] insert_property_defaults: https://github.com/davishmcclurg/json_schemer/issues/94

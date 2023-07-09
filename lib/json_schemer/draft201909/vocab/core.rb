@@ -8,8 +8,6 @@ module JSONSchemer
             root.resources[:dynamic][schema.base_uri] = schema if value == true
             value
           end
-
-          def validate(*); end
         end
 
         class RecursiveRef < Keyword

@@ -252,6 +252,35 @@ class JSONSchemerTest < Minitest::Test
     assert_raises(JSONSchemer::UnknownContentMediaType) { JSONSchemer.schema({ 'contentMediaType' => 'application/xml' }).valid?('') }
   end
 
+  def test_it_raises_for_required_unknown_vocabulary
+    assert_raises(JSONSchemer::UnknownVocabulary) { JSONSchemer.schema({}, :vocabulary => { 'unknown' => true }) }
+  end
+
+  def test_it_raises_for_unknown_output_format
+    assert_raises(JSONSchemer::UnknownOutputFormat) { JSONSchemer.schema({}, :output_format => 'unknown').validate(1) }
+    assert_raises(JSONSchemer::UnknownOutputFormat) { JSONSchemer.schema({}).validate(1, :output_format => 'unknown') }
+  end
+
+  def test_it_raises_for_unsupported_meta_schema
+    assert_raises(JSONSchemer::UnsupportedMetaSchema) { JSONSchemer.schema({}, :meta_schema => 'unsupported') }
+  end
+
+  def test_string_meta_schema
+    assert_equal(JSONSchemer::DRAFT6, JSONSchemer.schema({}, :meta_schema => JSONSchemer::Draft6::BASE_URI.to_s).meta_schema)
+  end
+
+  def test_default_meta_schema
+    assert_equal(JSONSchemer::DRAFT202012, JSONSchemer::Schema.new({}).meta_schema)
+  end
+
+  def test_draft4_default_id
+    assert_equal(JSONSchemer::Schema::DEFAULT_BASE_URI, JSONSchemer.schema(true, :meta_schema => JSONSchemer::Draft4::BASE_URI.to_s).base_uri)
+  end
+
+  def test_it_ignores_content_schema_without_content_media_type
+    assert(JSONSchemer.schema({ 'contentSchema' => false }).valid?(1))
+  end
+
   def test_it_allows_validating_schemas
     valid_draft7_schema = { '$ref' => '#/definitions/~1some~1%7Bid%7D' }
     invalid_draft7_schema = { '$ref' => '#/definitions/~1some~1{id}' }

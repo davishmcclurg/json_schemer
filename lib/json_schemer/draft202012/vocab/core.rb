@@ -14,8 +14,6 @@ module JSONSchemer
             end
             value
           end
-
-          def validate(*); end
         end
 
         class Vocabulary < Keyword
@@ -35,8 +33,6 @@ module JSONSchemer
               schema.keyword_order = schema.keywords.transform_values.with_index { |_keyword_class, index| index }
             end
           end
-
-          def validate(*); end
         end
 
         class Id < Keyword
@@ -46,8 +42,6 @@ module JSONSchemer
               root.resources[:lexical][uri] = schema
             end
           end
-
-          def validate(*); end
         end
 
         class Anchor < Keyword
@@ -56,8 +50,6 @@ module JSONSchemer
               root.resources[:lexical][uri] = schema
             end
           end
-
-          def validate(*); end
         end
 
         class Ref < Keyword
@@ -81,8 +73,6 @@ module JSONSchemer
               root.resources[:dynamic][uri] = schema
             end
           end
-
-          def validate(*); end
         end
 
         class DynamicRef < Keyword
@@ -123,13 +113,9 @@ module JSONSchemer
               out[key] = subschema(subschema, key)
             end
           end
-
-          def validate(*); end
         end
 
-        class Comment < Keyword
-          def validate(*); end
-        end
+        class Comment < Keyword; end
 
         class UnknownKeyword < Keyword
           def schema!

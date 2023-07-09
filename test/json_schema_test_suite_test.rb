@@ -83,8 +83,10 @@ class JSONSchemaTestSuiteTest < Minitest::Test
 
             schemer.validate(data, :output_format => 'classic').to_a
           rescue
+            # :nocov:
             puts JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
             raise
+            # :nocov:
           end
         end
       rescue JSON::ParserError => e
@@ -132,8 +134,10 @@ class JSONSchemaTestSuiteTest < Minitest::Test
               )
             end
           rescue
+            # :nocov:
             puts JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
             raise
+            # :nocov:
           end
         end
       end

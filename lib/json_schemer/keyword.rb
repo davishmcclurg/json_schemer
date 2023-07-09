@@ -15,7 +15,7 @@ module JSONSchemer
     end
 
     def validate(_instance, _instance_location, _keyword_location, _dynamic_scope, _adjacent_results)
-      raise NotImplementedError
+      nil
     end
 
     def absolute_keyword_location

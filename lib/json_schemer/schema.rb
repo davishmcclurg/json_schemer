@@ -204,7 +204,7 @@ module JSONSchemer
     end
 
     def id_keyword
-      @id_keyword ||= (parsed['$schema'] == Draft4::BASE_URI.to_s ? 'id' : '$id')
+      @id_keyword ||= (parsed['$schema']&.parsed == Draft4::BASE_URI.to_s ? 'id' : '$id')
     end
 
     def resources
@@ -235,7 +235,7 @@ module JSONSchemer
       if value.is_a?(Hash)
         keywords = meta_schema.keywords
 
-        if value.key?('$ref') && keywords['$ref']&.exclusive?
+        if value.key?('$ref') && keywords.fetch('$ref').exclusive?
           @parsed['$ref'] = keywords.fetch('$ref').new(value.fetch('$ref'), self, '$ref')
         else
           keyword_order = meta_schema.keyword_order

@@ -15,10 +15,6 @@ module JSONSchemer
 
     attr_reader :keyword, :schema
 
-    def absolute_keyword_location
-      raise NotImplementedError
-    end
-
   private
 
     def result(instance, instance_location, keyword_location, valid, nested = nil, error: nil, annotation: nil, details: nil, ignore_nested: false)

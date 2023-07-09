@@ -12,7 +12,7 @@ module JSONSchemer
 
         class ExclusiveMaximum < Keyword
           def validate(instance, instance_location, keyword_location, _dynamic_scope, _adjacent_results)
-            maximum = schema.parsed['maximum']&.parsed
+            maximum = schema.parsed.fetch('maximum').parsed
             valid = !instance.is_a?(Numeric) || !value || !maximum || instance < maximum
             result(instance, instance_location, keyword_location, valid)
           end
@@ -20,7 +20,7 @@ module JSONSchemer
 
         class ExclusiveMinimum < Keyword
           def validate(instance, instance_location, keyword_location, _dynamic_scope, _adjacent_results)
-            minimum = schema.parsed['minimum']&.parsed
+            minimum = schema.parsed.fetch('minimum').parsed
             valid = !instance.is_a?(Numeric) || !value || !minimum || instance > minimum
             result(instance, instance_location, keyword_location, valid)
           end
