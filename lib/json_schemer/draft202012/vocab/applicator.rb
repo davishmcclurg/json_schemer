@@ -139,7 +139,6 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, dynamic_scope, adjacent_results)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Array)
 
-            # fixme: does prefixitems need to be successful?
             evaluated_index = adjacent_results[PrefixItems]&.annotation
             offset = evaluated_index ? (evaluated_index + 1) : 0
 
@@ -249,7 +248,6 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, dynamic_scope, adjacent_results)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Hash)
 
-            # fixme: do these need to be successful?
             evaluated_keys = adjacent_results[Properties]&.annotation || []
             evaluated_keys += adjacent_results[PatternProperties]&.annotation || []
             evaluated_keys = evaluated_keys.to_set

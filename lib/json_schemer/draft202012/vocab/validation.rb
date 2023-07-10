@@ -122,10 +122,7 @@ module JSONSchemer
         class MaxContains < Keyword
           def validate(instance, instance_location, keyword_location, _dynamic_scope, adjacent_results)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Array) && adjacent_results.key?(Applicator::Contains)
-
-            # fixme: does contains need to be successful?
-            evaluated_items = adjacent_results.fetch(Applicator::Contains).annotation || []
-
+            evaluated_items = adjacent_results.fetch(Applicator::Contains).annotation
             result(instance, instance_location, keyword_location, evaluated_items.size <= value)
           end
         end
@@ -133,10 +130,7 @@ module JSONSchemer
         class MinContains < Keyword
           def validate(instance, instance_location, keyword_location, _dynamic_scope, adjacent_results)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Array) && adjacent_results.key?(Applicator::Contains)
-
-            # fixme: does contains need to be successful?
-            evaluated_items = adjacent_results.fetch(Applicator::Contains).annotation || []
-
+            evaluated_items = adjacent_results.fetch(Applicator::Contains).annotation
             result(instance, instance_location, keyword_location, evaluated_items.size >= value)
           end
         end

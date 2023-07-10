@@ -39,7 +39,6 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, dynamic_scope, adjacent_results)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Array)
 
-            # fixme: does items need to be successful?
             evaluated_index = adjacent_results[Items]&.annotation
             offset = evaluated_index ? (evaluated_index + 1) : instance.size
 

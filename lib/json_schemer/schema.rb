@@ -36,7 +36,6 @@ module JSONSchemer
       parent = nil,
       root = self,
       keyword = nil,
-      # fixme: allow relative?
       base_uri: DEFAULT_BASE_URI,
       meta_schema: nil,
       vocabulary: nil,

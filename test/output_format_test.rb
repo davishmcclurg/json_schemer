@@ -65,7 +65,6 @@ class OutputFormatTest < Minitest::Test
             'keywordLocation' => '/items/$ref/additionalProperties',
             'absoluteKeywordLocation' => 'https://example.com/polygon#/$defs/point/additionalProperties',
             'instanceLocation' => '/1/z',
-            # fixme: additionalProperties?
             'error' => 'schema' # 'Additional property \'z\' found but was invalid.'
           },
           {
@@ -130,8 +129,6 @@ class OutputFormatTest < Minitest::Test
       },
       OutputHelper.as_json!(schemer.validate(instance, :output_format => 'detailed'))
     )
-
-    # fixme: verbose
   end
 
   def test_it_escapes_absolute_keyword_location
