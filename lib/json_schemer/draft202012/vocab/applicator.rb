@@ -6,7 +6,7 @@ module JSONSchemer
         class AllOf < Keyword
           def parse
             value.map.with_index do |subschema, index|
-              subschema(subschema, index.to_s, :before_property_validation => [], :after_property_validation => [])
+              subschema(subschema, index.to_s)
             end
           end
 
@@ -21,7 +21,7 @@ module JSONSchemer
         class AnyOf < Keyword
           def parse
             value.map.with_index do |subschema, index|
-              subschema(subschema, index.to_s, :before_property_validation => [], :after_property_validation => [])
+              subschema(subschema, index.to_s)
             end
           end
 
@@ -36,7 +36,7 @@ module JSONSchemer
         class OneOf < Keyword
           def parse
             value.map.with_index do |subschema, index|
-              subschema(subschema, index.to_s, :before_property_validation => [], :after_property_validation => [])
+              subschema(subschema, index.to_s)
             end
           end
 
@@ -51,7 +51,7 @@ module JSONSchemer
 
         class Not < Keyword
           def parse
-            subschema(value, :before_property_validation => [], :after_property_validation => [])
+            subschema(value)
           end
 
           def validate(instance, instance_location, keyword_location, dynamic_scope, _adjacent_results)
@@ -62,7 +62,7 @@ module JSONSchemer
 
         class If < Keyword
           def parse
-            subschema(value, :before_property_validation => [], :after_property_validation => [])
+            subschema(value)
           end
 
           def validate(instance, instance_location, keyword_location, dynamic_scope, _adjacent_results)
@@ -184,8 +184,8 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, dynamic_scope, _adjacent_results)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Hash)
 
-            if schema.before_property_validation.any?
-              schema.before_property_validation.each do |hook|
+            if root.before_property_validation.any?
+              root.before_property_validation.each do |hook|
                 parsed.each do |property, subschema|
                   hook.call(instance, property, subschema.value, schema.value)
                 end
@@ -202,8 +202,8 @@ module JSONSchemer
               end
             end
 
-            if schema.after_property_validation.any?
-              schema.after_property_validation.each do |hook|
+            if root.after_property_validation.any?
+              root.after_property_validation.each do |hook|
                 parsed.each do |property, subschema|
                   hook.call(instance, property, subschema.value, schema.value)
                 end

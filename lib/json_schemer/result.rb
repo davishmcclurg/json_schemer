@@ -96,5 +96,41 @@ module JSONSchemer
         end
       end
     end
+
+    def insert_property_defaults
+      instances = {}
+
+      results = [[self, true]]
+      while (result, valid = results.pop)
+        next if result.source.is_a?(Draft202012::Vocab::Applicator::Not)
+
+        valid &&= result.valid
+        result.nested&.each { |nested_result| results << [nested_result, valid] }
+
+        if result.source.is_a?(Draft202012::Vocab::Applicator::Properties) && result.instance.is_a?(Hash)
+          result.source.parsed.each do |property, schema|
+            next if result.instance.key?(property) || !schema.parsed.key?('default')
+            default = schema.parsed.fetch('default')
+            instance_location = Location.join(result.instance_location, property)
+            keyword_location = Location.join(Location.join(result.keyword_location, property), default.keyword)
+            default_result = default.validate(nil, instance_location, keyword_location, nil, nil)
+            instances[result.instance] ||= {}
+            instances[result.instance][property] ||= []
+            instances[result.instance][property] << [default_result, valid]
+          end
+        end
+      end
+
+      inserted = false
+
+      instances.each do |instance, properties|
+        properties.each do |property, results_with_tree_validity|
+          property_inserted = yield(instance, property, results_with_tree_validity)
+          inserted ||= (property_inserted != false)
+        end
+      end
+
+      inserted
+    end
   end
 end

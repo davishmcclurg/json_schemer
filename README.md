@@ -8,7 +8,6 @@ JSON Schema validator. Supports drafts 4, 6, and 7.
 - [ ] readme
 - [ ] argument passing (instance, instance_location, keyword_location, dynamic_scope, etc)
 - [ ] readOnly, writeOnly: https://github.com/davishmcclurg/json_schemer/issues/55
-- [ ] insert_property_defaults: https://github.com/davishmcclurg/json_schemer/issues/94
 - [ ] short-circuit
 - [ ] openapi
 - [ ] api
@@ -20,6 +19,7 @@ JSON Schema validator. Supports drafts 4, 6, and 7.
   - [ ] insert_property_defaults
   - [ ] ref_resolver
   - [ ] output formats
+  - [ ] ref base_uri (json-schemer://schema)
 
 ## Installation
 

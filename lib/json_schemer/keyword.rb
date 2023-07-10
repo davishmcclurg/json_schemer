@@ -35,8 +35,6 @@ module JSONSchemer
     def subschema(value, keyword = nil, **options)
       options[:base_uri] ||= parent.base_uri
       options[:meta_schema] ||= parent.meta_schema
-      options[:before_property_validation] ||= parent.before_property_validation
-      options[:after_property_validation] ||= parent.after_property_validation
       Schema.new(value, self, root, keyword, **options)
     end
   end

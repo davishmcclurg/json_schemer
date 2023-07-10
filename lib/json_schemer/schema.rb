@@ -16,15 +16,20 @@ module JSONSchemer
     RUBY_REGEXP_RESOLVER = proc { |pattern| Regexp.new(pattern) }
     ECMA_REGEXP_RESOLVER = proc { |pattern| Regexp.new(EcmaRegexp.ruby_equivalent(pattern)) }
 
-    INSERT_PROPERTY_DEFAULTS = proc do |instance, property, property_schema, _parent_schema|
-      if !instance.key?(property) && property_schema.is_a?(Hash) && property_schema.key?('default')
-        instance[property] = property_schema.fetch('default').clone
+    DEFAULT_PROPERTY_DEFAULT_RESOLVER = proc do |instance, property, results_with_tree_validity|
+      results_with_tree_validity = results_with_tree_validity.select(&:last) unless results_with_tree_validity.size == 1
+      annotations = results_with_tree_validity.to_set { |result, _tree_valid| result.annotation }
+      if annotations.size == 1
+        instance[property] = annotations.first.clone
+        true
+      else
+        false
       end
     end
 
     attr_accessor :base_uri, :meta_schema, :keywords, :keyword_order
     attr_reader :value, :parent, :root, :parsed
-    attr_reader :vocabulary, :format, :formats, :custom_keywords, :before_property_validation, :after_property_validation
+    attr_reader :vocabulary, :format, :formats, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults, :property_default_resolver
 
     def initialize(
       value,
@@ -41,6 +46,7 @@ module JSONSchemer
       before_property_validation: DEFAULT_BEFORE_PROPERTY_VALIDATION,
       after_property_validation: DEFAULT_AFTER_PROPERTY_VALIDATION,
       insert_property_defaults: false,
+      property_default_resolver: DEFAULT_PROPERTY_DEFAULT_RESOLVER,
       ref_resolver: DEFAULT_REF_RESOLVER,
       regexp_resolver: 'ruby',
       output_format: 'classic'
@@ -57,8 +63,9 @@ module JSONSchemer
       @formats = formats
       @custom_keywords = keywords
       @before_property_validation = Array(before_property_validation)
-      @before_property_validation = [INSERT_PROPERTY_DEFAULTS, *before_property_validation] if insert_property_defaults
       @after_property_validation = Array(after_property_validation)
+      @insert_property_defaults = insert_property_defaults
+      @property_default_resolver = property_default_resolver
       @original_ref_resolver = ref_resolver
       @original_regexp_resolver = regexp_resolver
       @output_format = output_format
@@ -70,7 +77,12 @@ module JSONSchemer
     end
 
     def validate(instance, output_format: @output_format)
-      result = validate_instance(instance, Location.root, root_keyword_location, [])
+      instance_location = Location.root
+      dynamic_scope = []
+      result = validate_instance(instance, instance_location, root_keyword_location, dynamic_scope)
+      if insert_property_defaults && result.insert_property_defaults(&property_default_resolver)
+        result = validate_instance(instance, instance_location, root_keyword_location, dynamic_scope)
+      end
       case output_format
       when 'classic'
         result.classic
@@ -159,6 +171,7 @@ module JSONSchemer
           :keywords => custom_keywords,
           :before_property_validation => before_property_validation,
           :after_property_validation => after_property_validation,
+          :property_default_resolver => property_default_resolver,
           :ref_resolver => ref_resolver,
           :regexp_resolver => regexp_resolver
         )

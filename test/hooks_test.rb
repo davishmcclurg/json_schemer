@@ -104,31 +104,135 @@ class HooksTest < Minitest::Test
     assert_equal({ 'a' => 1 }, data)
   end
 
-  def test_it_does_not_insert_defaults_in_conditional_subschemas
-    subschema = {
-      'properties' => {
-        'a' => {
-          'const' => 1
-        },
-        'b' => {
-          'const' => 2,
-          'default' => 2
-        }
-      }
+  def test_it_inserts_singular_unique_defaults_in_conditional_subschemas
+    c_schema = {
+      'const' => 3
     }
+    properties = {
+      'a' => {
+        'const' => 1
+      },
+      'b' => {
+        'const' => 2,
+        'default' => 2
+      },
+      'c' => c_schema
+    }
+    subschema = {
+      'properties' => properties
+    }
+    subschema1 = subschema.merge('properties' => properties.merge('c' => c_schema.merge('default' => 1)))
+    subschema2 = subschema.merge('properties' => properties.merge('c' => c_schema.merge('default' => 2)))
+    subschema3 = subschema.merge('properties' => properties.merge('c' => c_schema.merge('default' => 3)))
+    subschema4 = subschema.merge('properties' => properties.merge('c' => c_schema.merge('default' => 4)))
     schema = {
-      'allOf' => [subschema],
-      'anyOf' => [subschema],
-      'oneOf' => [subschema],
-      'if' => subschema
+      'allOf' => [subschema1],
+      'anyOf' => [subschema2],
+      'oneOf' => [subschema3],
+      'if' => subschema4
     }
     data = {
       'a' => 1
     }
     assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
-    assert_equal({ 'a' => 1 }, data)
+    assert_equal({ 'a' => 1, 'b' => 2 }, data)
     refute(JSONSchemer.schema(schema.merge('not' => subschema), insert_property_defaults: true).valid?(data))
-    assert_equal({ 'a' => 1 }, data)
+    assert_equal({ 'a' => 1, 'b' => 2 }, data)
+  end
+
+  def test_it_inserts_only_default_in_conditional_subschemas
+    top_level_schema = JSONSchemer.schema(
+      {
+        'required' => ['field', 'default_field'],
+        'properties' => {
+          'field' => { 'type' => 'string', 'const' => 'a' },
+          'default_field' => { 'enum' => ['f1', 'f2'], 'default' => 'f1' },
+        }
+      },
+      :insert_property_defaults => true
+    )
+
+    one_of_schema = JSONSchemer.schema(
+      {
+        'oneOf' => [
+          { '$ref' => '#/definitions/a' }
+        ],
+        'required' => ['field', 'default_field'],
+        'definitions' => {
+          'a' => {
+            'properties' => {
+              'field' => { 'type' => 'string', 'const' => 'a' },
+              'default_field' => { 'enum' => ['f1', 'f2'], 'default' => 'f1' },
+            }
+          }
+        }
+      },
+      :insert_property_defaults => true
+    )
+
+    data1 = { 'field' => 'a' }
+    data2 = { 'field' => 'a' }
+
+    assert(top_level_schema.valid?(data1))
+    assert(one_of_schema.valid?(data2))
+
+    assert_equal({ 'field' => 'a', 'default_field' => 'f1' }, data1)
+    assert_equal({ 'field' => 'a', 'default_field' => 'f1' }, data2)
+  end
+
+  def test_it_does_not_insert_defaults_in_not_subschemas
+    schema = {
+      'properties' => {
+        'a' => {
+          'default' => 1
+        }
+      }
+    }
+
+    data = { 'b' => 2 }
+    assert(JSONSchemer.schema(schema, :insert_property_defaults => true).valid?(data))
+    assert_equal({ 'b' => 2, 'a' => 1 }, data)
+
+    data = { 'b' => 2 }
+    refute(JSONSchemer.schema({ 'not' => schema }, :insert_property_defaults => true).valid?(data))
+    assert_equal({ 'b' => 2 }, data)
+  end
+
+  def test_it_inserts_default_for_successful_branch
+    schema = {
+      'oneOf' => [
+        {
+          'type' => 'object',
+          'properties' => {
+            'foo' => { 'enum' => ['a'] },
+            'bar' => { 'enum' => ['a'], 'default' => 'a' }
+          }
+        },
+        {
+          'type' => 'object',
+          'properties' => {
+            'foo' => { 'enum' => ['b'] },
+            'bar' => { 'enum' => ['b'], 'default' => 'b' }
+          }
+        },
+      ]
+    }
+
+    data = { 'foo' => 'a' }
+    assert(JSONSchemer.schema(schema).valid?(data))
+    assert_equal({ 'foo' => 'a' }, data)
+
+    data = { 'foo' => 'b' }
+    assert(JSONSchemer.schema(schema).valid?(data))
+    assert_equal({ 'foo' => 'b' }, data)
+
+    data = { 'foo' => 'a' }
+    assert(JSONSchemer.schema(schema, :insert_property_defaults => true).valid?(data))
+    assert_equal({ 'foo' => 'a', 'bar' => 'a' }, data)
+
+    data = { 'foo' => 'b' }
+    assert(JSONSchemer.schema(schema, :insert_property_defaults => true).valid?(data))
+    assert_equal({ 'foo' => 'b', 'bar' => 'b' }, data)
   end
 
   def test_it_calls_before_validation_hooks_to_modify_data
