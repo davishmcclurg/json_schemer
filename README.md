@@ -1,22 +1,16 @@
 # JSONSchemer
 
-JSON Schema validator. Supports drafts 4, 6, and 7.
+JSON Schema validator. Supports drafts 4, 6, 7, 2019-09, and 2020-12.
 
 ## Next
 
-- [ ] readme
-- [ ] argument passing (instance, instance_location, keyword_location, dynamic_scope, etc)
 - [ ] short-circuit
 - [ ] openapi
-- [ ] api
 - [ ] breaking changes
-  - [ ] format
-  - [ ] formats
-  - [ ] keywords
   - [ ] before_property_validation, after_property_validation
   - [ ] insert_property_defaults
-  - [ ] ref_resolver
   - [ ] output formats
+  - [ ] ref_resolver
   - [ ] ref base_uri (json-schemer://schema)
   - [ ] relative base_uri (json-schemer://schema)
 
@@ -100,27 +94,27 @@ schemer = JSONSchemer.schema(schema)
 
 # schema validation
 
-JSONSchemer.valid_schema?({ '$id' => '#valid' })
+JSONSchemer.valid_schema?({ '$id' => 'valid' })
 # => true
 
-JSONSchemer.validate_schema({ '$id' => nil }).to_a
-# => [{"data"=>nil,
+JSONSchemer.validate_schema({ '$id' => '#invalid' }).to_a
+# => [{"data"=>"#invalid",
 #      "data_pointer"=>"/$id",
-#      "schema"=>{"type"=>"string", "format"=>"uri-reference"},
+#      "schema"=>{"$ref"=>"#/$defs/uriReferenceString", "$comment"=>"Non-empty fragments not allowed.", "pattern"=>"^[^#]*#?$"},
 #      "schema_pointer"=>"/properties/$id",
 #      "root_schema"=>{...meta schema},
-#      "type"=>"string"}]
+#      "type"=>"pattern"}]
 
-JSONSchemer.schema({ '$id' => '#valid' }).valid_schema?
+JSONSchemer.schema({ '$id' => 'valid' }).valid_schema?
 # => true
 
-JSONSchemer.schema({ '$id' => nil }).validate_schema.to_a
-# => [{"data"=>nil,
+JSONSchemer.schema({ '$id' => '#invalid' }).validate_schema.to_a
+# => [{"data"=>"#invalid",
 #      "data_pointer"=>"/$id",
-#      "schema"=>{"type"=>"string", "format"=>"uri-reference"},
+#      "schema"=>{"$ref"=>"#/$defs/uriReferenceString", "$comment"=>"Non-empty fragments not allowed.", "pattern"=>"^[^#]*#?$"},
 #      "schema_pointer"=>"/properties/$id",
 #      "root_schema"=>{...meta schema},
-#      "type"=>"string"}]
+#      "type"=>"pattern"}]
 ```
 
 ## Options
@@ -129,7 +123,18 @@ JSONSchemer.schema({ '$id' => nil }).validate_schema.to_a
 JSONSchemer.schema(
   schema,
 
-  # validate `format` (https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-7)
+  # meta schema to use for vocabularies (keyword behavior) and schema validation
+  # String/JSONSchemer::Schema
+  # 'https://json-schema.org/draft/2020-12/schema': JSONSchemer::DRAFT202012
+  # 'https://json-schema.org/draft/2019-09/schema': JSONSchemer::DRAFT201909
+  # 'http://json-schema.org/draft-07/schema#': JSONSchemer::DRAFT7
+  # 'http://json-schema.org/draft-06/schema#': JSONSchemer::DRAFT6
+  # 'http://json-schema.org/draft-04/schema#': JSONSchemer::DRAFT4
+  # 'http://json-schema.org/schema#': JSONSchemer::DRAFT4
+  # default: JSONSchemer::DRAFT202012
+  meta_schema: 'https://json-schema.org/draft/2020-12/schema',
+
+  # validate `format` (https://json-schema.org/draft/2020-12/json-schema-validation.html#section-7)
   # true/false
   # default: true
   format: true,
@@ -165,7 +170,12 @@ JSONSchemer.schema(
   # default: 'ruby'
   regexp_resolver: proc do |pattern|
     RE2::Regexp.new(pattern)
-  end
+  end,
+
+  # output formatting (https://json-schema.org/draft/2020-12/json-schema-core.html#section-12)
+  # 'classic'/'flag'/'basic'/'detailed'/'verbose'
+  # default: 'classic'
+  output_format: 'basic'
 )
 ```
 
