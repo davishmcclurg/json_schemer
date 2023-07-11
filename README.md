@@ -6,13 +6,6 @@ JSON Schema validator. Supports drafts 4, 6, 7, 2019-09, and 2020-12.
 
 - [ ] short-circuit
 - [ ] openapi
-- [ ] breaking changes
-  - [ ] before_property_validation, after_property_validation
-  - [ ] insert_property_defaults
-  - [ ] output formats
-  - [ ] ref_resolver
-  - [ ] ref base_uri (json-schemer://schema)
-  - [ ] relative base_uri (json-schemer://schema)
 
 ## Installation
 
