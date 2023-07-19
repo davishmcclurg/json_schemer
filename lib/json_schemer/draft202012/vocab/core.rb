@@ -61,8 +61,8 @@ module JSONSchemer
             @ref_schema ||= root.resolve_ref(URI.join(schema.base_uri, value))
           end
 
-          def validate(instance, instance_location, keyword_location, dynamic_scope, _adjacent_results)
-            ref_schema.validate_instance(instance, instance_location, keyword_location, dynamic_scope)
+          def validate(instance, instance_location, keyword_location, context)
+            ref_schema.validate_instance(instance, instance_location, keyword_location, context)
           end
         end
 
@@ -90,11 +90,11 @@ module JSONSchemer
             @dynamic_anchor = (fragment == ref_uri.fragment ? fragment : nil)
           end
 
-          def validate(instance, instance_location, keyword_location, dynamic_scope, _adjacent_results)
+          def validate(instance, instance_location, keyword_location, context)
             schema = ref_schema
 
             if dynamic_anchor
-              dynamic_scope.each do |ancestor|
+              context.dynamic_scope.each do |ancestor|
                 dynamic_uri = URI.join(ancestor.base_uri, "##{dynamic_anchor}")
                 if ancestor.root.resources.fetch(:dynamic).key?(dynamic_uri)
                   schema = ancestor.root.resources.fetch(:dynamic).fetch(dynamic_uri)
@@ -103,7 +103,7 @@ module JSONSchemer
               end
             end
 
-            schema.validate_instance(instance, instance_location, keyword_location, dynamic_scope)
+            schema.validate_instance(instance, instance_location, keyword_location, context)
           end
         end
 
@@ -122,7 +122,7 @@ module JSONSchemer
             subschema(value)
           end
 
-          def validate(instance, instance_location, keyword_location, _dynamic_scope, _adjacent_results)
+          def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, true, :annotation => value)
           end
         end

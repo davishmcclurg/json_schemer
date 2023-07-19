@@ -14,7 +14,7 @@ module JSONSchemer
             subschema(value)
           end
 
-          def validate(instance, instance_location, keyword_location, dynamic_scope, adjacent_results)
+          def validate(instance, instance_location, keyword_location, context)
             items = schema.parsed['items']&.parsed
 
             if !instance.is_a?(Array) || !items.is_a?(Array) || items.size >= instance.size
@@ -24,7 +24,7 @@ module JSONSchemer
             offset = items.size
 
             nested = instance.slice(offset..-1).map.with_index do |item, index|
-              parsed.validate_instance(item, join_location(instance_location, (offset + index).to_s), keyword_location, dynamic_scope)
+              parsed.validate_instance(item, join_location(instance_location, (offset + index).to_s), keyword_location, context)
             end
 
             result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => nested.any?)
@@ -32,7 +32,7 @@ module JSONSchemer
         end
 
         class ContentEncoding < Keyword
-          def validate(instance, instance_location, keyword_location, _dynamic_scope, _adjacent_results)
+          def validate(instance, instance_location, keyword_location, _context)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(String)
 
             valid, annotation = Format.decode_content_encoding(instance, value)
@@ -42,10 +42,10 @@ module JSONSchemer
         end
 
         class ContentMediaType < Keyword
-          def validate(instance, instance_location, keyword_location, _dynamic_scope, adjacent_results)
+          def validate(instance, instance_location, keyword_location, context)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(String)
 
-            decoded_instance = adjacent_results[ContentEncoding]&.annotation || instance
+            decoded_instance = context.adjacent_results[ContentEncoding]&.annotation || instance
             valid, annotation = Format.parse_content_media_type(decoded_instance, value)
 
             result(instance, instance_location, keyword_location, valid, :annotation => annotation)

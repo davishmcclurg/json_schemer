@@ -72,6 +72,12 @@ class JSONSchemaTestSuiteTest < Minitest::Test
 
             assert_equal(
               valid,
+              schemer.valid?(data),
+              JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
+            )
+
+            assert_equal(
+              valid,
               schemer.validate(data, :output_format => 'basic').fetch('valid'),
               JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
             )

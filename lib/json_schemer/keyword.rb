@@ -14,7 +14,7 @@ module JSONSchemer
       @parsed = parse
     end
 
-    def validate(_instance, _instance_location, _keyword_location, _dynamic_scope, _adjacent_results)
+    def validate(_instance, _instance_location, _keyword_location, _context)
       nil
     end
 

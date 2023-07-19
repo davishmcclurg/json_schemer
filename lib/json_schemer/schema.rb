@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 module JSONSchemer
   class Schema
+    Context = Struct.new(:dynamic_scope, :adjacent_results, :short_circuit)
+
     include Output
     include Format::JSONPointer
 
@@ -77,10 +79,10 @@ module JSONSchemer
 
     def validate(instance, output_format: @output_format)
       instance_location = Location.root
-      dynamic_scope = []
-      result = validate_instance(instance, instance_location, root_keyword_location, dynamic_scope)
+      context = Context.new([], nil, (!insert_property_defaults && output_format == 'flag'))
+      result = validate_instance(instance, instance_location, root_keyword_location, context)
       if insert_property_defaults && result.insert_property_defaults(&property_default_resolver)
-        result = validate_instance(instance, instance_location, root_keyword_location, dynamic_scope)
+        result = validate_instance(instance, instance_location, root_keyword_location, context)
       end
       case output_format
       when 'classic'
@@ -106,8 +108,11 @@ module JSONSchemer
       meta_schema.validate(value)
     end
 
-    def validate_instance(instance, instance_location, keyword_location, dynamic_scope)
-      dynamic_scope.push(self)
+    def validate_instance(instance, instance_location, keyword_location, context)
+      context.dynamic_scope.push(self)
+      original_adjacent_results = context.adjacent_results
+      adjacent_results = context.adjacent_results = {}
+      short_circuit = context.short_circuit
 
       begin
         return result(instance, instance_location, keyword_location, false) if value == false
@@ -115,11 +120,11 @@ module JSONSchemer
 
         valid = true
         nested = []
-        adjacent_results = {}
 
         parsed.each do |keyword, keyword_instance|
-          next unless keyword_result = keyword_instance.validate(instance, instance_location, join_location(keyword_location, keyword), dynamic_scope, adjacent_results)
+          next unless keyword_result = keyword_instance.validate(instance, instance_location, join_location(keyword_location, keyword), context)
           valid &&= keyword_result.valid
+          return result(instance, instance_location, keyword_location, false) if short_circuit && !valid
           nested << keyword_result
           adjacent_results[keyword_instance.class] = keyword_result
         end
@@ -138,7 +143,8 @@ module JSONSchemer
 
         result(instance, instance_location, keyword_location, valid, nested)
       ensure
-        dynamic_scope.pop
+        context.dynamic_scope.pop
+        context.adjacent_results = original_adjacent_results
       end
     end
 

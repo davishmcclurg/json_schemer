@@ -8,17 +8,17 @@ module JSONSchemer
             subschema(value)
           end
 
-          def validate(instance, instance_location, keyword_location, dynamic_scope, adjacent_results)
+          def validate(instance, instance_location, keyword_location, context)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Array)
 
             unevaluated_items = instance.size.times.to_set
 
-            adjacent_results.each_value do |adjacent_result|
+            context.adjacent_results.each_value do |adjacent_result|
               collect_unevaluated_items(adjacent_result, instance_location, unevaluated_items)
             end
 
             nested = unevaluated_items.map do |index|
-              parsed.validate_instance(instance.fetch(index), join_location(instance_location, index.to_s), keyword_location, dynamic_scope)
+              parsed.validate_instance(instance.fetch(index), join_location(instance_location, index.to_s), keyword_location, context)
             end
 
             result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => nested.any?)
@@ -47,12 +47,12 @@ module JSONSchemer
             subschema(value)
           end
 
-          def validate(instance, instance_location, keyword_location, dynamic_scope, adjacent_results)
+          def validate(instance, instance_location, keyword_location, context)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Hash)
 
             evaluated_keys = Set[]
 
-            adjacent_results.each_value do |adjacent_result|
+            context.adjacent_results.each_value do |adjacent_result|
               collect_evaluated_keys(adjacent_result, instance_location, evaluated_keys)
             end
 
@@ -61,7 +61,7 @@ module JSONSchemer
             end
 
             nested = evaluated.map do |key, value|
-              parsed.validate_instance(value, join_location(instance_location, key), keyword_location, dynamic_scope)
+              parsed.validate_instance(value, join_location(instance_location, key), keyword_location, context)
             end
 
             result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => evaluated.keys)

@@ -20,11 +20,11 @@ module JSONSchemer
             @recursive_anchor = (ref_schema.parsed['$recursiveAnchor']&.parsed == true)
           end
 
-          def validate(instance, instance_location, keyword_location, dynamic_scope, _adjacent_results)
+          def validate(instance, instance_location, keyword_location, context)
             schema = ref_schema
 
             if recursive_anchor
-              dynamic_scope.each do |ancestor|
+              context.dynamic_scope.each do |ancestor|
                 if ancestor.root.resources.fetch(:dynamic).key?(ancestor.base_uri)
                   schema = ancestor.root.resources.fetch(:dynamic).fetch(ancestor.base_uri)
                   break
@@ -32,7 +32,7 @@ module JSONSchemer
               end
             end
 
-            schema.validate_instance(instance, instance_location, keyword_location, dynamic_scope)
+            schema.validate_instance(instance, instance_location, keyword_location, context)
           end
         end
       end

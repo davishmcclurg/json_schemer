@@ -113,7 +113,7 @@ module JSONSchemer
             default = schema.parsed.fetch('default')
             instance_location = Location.join(result.instance_location, property)
             keyword_location = Location.join(Location.join(result.keyword_location, property), default.keyword)
-            default_result = default.validate(nil, instance_location, keyword_location, nil, nil)
+            default_result = default.validate(nil, instance_location, keyword_location, nil)
             instances[result.instance] ||= {}
             instances[result.instance][property] ||= []
             instances[result.instance][property] << [default_result, valid]

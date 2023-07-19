@@ -4,7 +4,6 @@ JSON Schema validator. Supports drafts 4, 6, 7, 2019-09, and 2020-12.
 
 ## Next
 
-- [ ] short-circuit
 - [ ] openapi
 
 ## Installation

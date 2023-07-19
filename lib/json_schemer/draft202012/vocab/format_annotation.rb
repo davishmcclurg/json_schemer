@@ -16,7 +16,7 @@ module JSONSchemer
             root.format && root.formats.fetch(value, DEFAULT_FORMAT)
           end
 
-          def validate(instance, instance_location, keyword_location, _dynamic_scope, _adjacent_results)
+          def validate(instance, instance_location, keyword_location, _context)
             valid = parsed == false || parsed.call(instance, value)
             result(instance, instance_location, keyword_location, valid, :annotation => value)
           end
