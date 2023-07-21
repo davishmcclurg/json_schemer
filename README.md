@@ -117,13 +117,13 @@ JSONSchemer.schema(
 
   # meta schema to use for vocabularies (keyword behavior) and schema validation
   # String/JSONSchemer::Schema
-  # 'https://json-schema.org/draft/2020-12/schema': JSONSchemer::DRAFT202012
-  # 'https://json-schema.org/draft/2019-09/schema': JSONSchemer::DRAFT201909
-  # 'http://json-schema.org/draft-07/schema#': JSONSchemer::DRAFT7
-  # 'http://json-schema.org/draft-06/schema#': JSONSchemer::DRAFT6
-  # 'http://json-schema.org/draft-04/schema#': JSONSchemer::DRAFT4
-  # 'http://json-schema.org/schema#': JSONSchemer::DRAFT4
-  # default: JSONSchemer::DRAFT202012
+  # 'https://json-schema.org/draft/2020-12/schema': JSONSchemer.draft202012
+  # 'https://json-schema.org/draft/2019-09/schema': JSONSchemer.draft201909
+  # 'http://json-schema.org/draft-07/schema#': JSONSchemer.draft7
+  # 'http://json-schema.org/draft-06/schema#': JSONSchemer.draft6
+  # 'http://json-schema.org/draft-04/schema#': JSONSchemer.draft4
+  # 'http://json-schema.org/schema#': JSONSchemer.draft4
+  # default: JSONSchemer.draft202012
   meta_schema: 'https://json-schema.org/draft/2020-12/schema',
 
   # validate `format` (https://json-schema.org/draft/2020-12/json-schema-validation.html#section-7)

@@ -8,13 +8,13 @@ gemfile do
 end
 
 OUTPUT_DRAFTS = {
-  'draft2020-12' => JSONSchemer::DRAFT202012,
-  'draft2019-09' => JSONSchemer::DRAFT201909
+  'draft2020-12' => JSONSchemer.draft202012,
+  'draft2019-09' => JSONSchemer.draft201909
 }
 DRAFTS = OUTPUT_DRAFTS.merge(
-  'draft7' => JSONSchemer::DRAFT7,
-  'draft6' => JSONSchemer::DRAFT6,
-  'draft4' => JSONSchemer::DRAFT4
+  'draft7' => JSONSchemer.draft7,
+  'draft6' => JSONSchemer.draft6,
+  'draft4' => JSONSchemer.draft4
 )
 
 OUTPUT_SCHEMAS = OUTPUT_DRAFTS.each_with_object({}) do |(draft, _meta_schema), out|

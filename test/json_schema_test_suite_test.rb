@@ -16,13 +16,13 @@ class JSONSchemaTestSuiteTest < Minitest::Test
   end
 
   OUTPUT_DRAFTS = {
-    'draft2020-12' => JSONSchemer::DRAFT202012,
-    'draft2019-09' => JSONSchemer::DRAFT201909
+    'draft2020-12' => JSONSchemer.draft202012,
+    'draft2019-09' => JSONSchemer.draft201909
   }
   DRAFTS = OUTPUT_DRAFTS.merge(
-    'draft7' => JSONSchemer::DRAFT7,
-    'draft6' => JSONSchemer::DRAFT6,
-    'draft4' => JSONSchemer::DRAFT4
+    'draft7' => JSONSchemer.draft7,
+    'draft6' => JSONSchemer.draft6,
+    'draft4' => JSONSchemer.draft4
   )
 
   OUTPUT_SCHEMAS = OUTPUT_DRAFTS.each_with_object({}) do |(draft, _meta_schema), out|
@@ -151,7 +151,7 @@ class JSONSchemaTestSuiteTest < Minitest::Test
   end
 
   def test_meta_schemas
-    JSONSchemer::META_SCHEMAS_BY_BASE_URI_STR.each do |_base_uri_str, schemer|
+    JSONSchemer::META_SCHEMA_CALLABLES_BY_BASE_URI_STR.transform_values(&:call).each_value do |schemer|
       assert(schemer.valid_schema?)
       assert(JSONSchemer.valid_schema?(schemer.value))
     end

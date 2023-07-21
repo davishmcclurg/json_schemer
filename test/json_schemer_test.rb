@@ -266,11 +266,11 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_string_meta_schema
-    assert_equal(JSONSchemer::DRAFT6, JSONSchemer.schema({}, :meta_schema => JSONSchemer::Draft6::BASE_URI.to_s).meta_schema)
+    assert_equal(JSONSchemer.draft6, JSONSchemer.schema({}, :meta_schema => JSONSchemer::Draft6::BASE_URI.to_s).meta_schema)
   end
 
   def test_default_meta_schema
-    assert_equal(JSONSchemer::DRAFT202012, JSONSchemer::Schema.new({}).meta_schema)
+    assert_equal(JSONSchemer.draft202012, JSONSchemer::Schema.new({}).meta_schema)
   end
 
   def test_draft4_default_id
@@ -306,8 +306,8 @@ class JSONSchemerTest < Minitest::Test
       'details' => { 'missing_keys' => ['maximum'] }
     }
 
-    draft7_meta_schema = JSONSchemer::DRAFT7
-    draft4_meta_schema = JSONSchemer::DRAFT4
+    draft7_meta_schema = JSONSchemer.draft7
+    draft4_meta_schema = JSONSchemer.draft4
 
     assert(JSONSchemer.valid_schema?(valid_draft7_schema, :meta_schema => draft7_meta_schema))
     refute(JSONSchemer.valid_schema?(invalid_draft7_schema, :meta_schema => draft7_meta_schema))

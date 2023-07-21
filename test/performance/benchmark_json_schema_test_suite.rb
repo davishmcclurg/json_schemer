@@ -19,7 +19,7 @@ gemfile do
   gem 'json_schemer', :path => '.'
 end
 
-$meta_schema = JSONSchemer::DRAFT4
+$meta_schema = JSONSchemer.draft4
 $ref_uris = Dir["JSON-Schema-Test-Suite/remotes/**/*.json"].each_with_object({}) do |file, out|
   uri = URI("http://localhost:1234#{file.delete_prefix('JSON-Schema-Test-Suite/remotes')}")
   out[uri] = JSON.parse(File.read(file))

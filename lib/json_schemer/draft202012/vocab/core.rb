@@ -8,9 +8,7 @@ module JSONSchemer
             schema.meta_schema = if value == schema.base_uri.to_s
               schema
             else
-              JSONSchemer::META_SCHEMAS_BY_BASE_URI_STR.fetch(value) do
-                root.resolve_ref(URI(value))
-              end
+              META_SCHEMAS_BY_BASE_URI_STR[value] || root.resolve_ref(URI(value))
             end
             value
           end

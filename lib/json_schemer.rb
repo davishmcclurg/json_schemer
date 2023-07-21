@@ -87,47 +87,6 @@ module JSONSchemer
   }
   VOCABULARY_ORDER = VOCABULARIES.transform_values.with_index { |_vocabulary, index| index }
 
-  DRAFT202012 = Schema.new(
-    Draft202012::SCHEMA,
-    :base_uri => Draft202012::BASE_URI,
-    :ref_resolver => Draft202012::Meta::SCHEMAS.to_proc,
-    :regexp_resolver => 'ecma'
-  )
-
-  DRAFT201909 = Schema.new(
-    Draft201909::SCHEMA,
-    :base_uri => Draft201909::BASE_URI,
-    :ref_resolver => Draft201909::Meta::SCHEMAS.to_proc,
-    :regexp_resolver => 'ecma'
-  )
-
-  DRAFT7 = Schema.new(
-    Draft7::SCHEMA,
-    :vocabulary => { 'json-schemer://draft7' => true },
-    :base_uri => Draft7::BASE_URI,
-    :regexp_resolver => 'ecma'
-  )
-
-  DRAFT6 = Schema.new(
-    Draft6::SCHEMA,
-    :vocabulary => { 'json-schemer://draft6' => true },
-    :base_uri => Draft6::BASE_URI,
-    :regexp_resolver => 'ecma'
-  )
-
-  DRAFT4 = Schema.new(
-    Draft4::SCHEMA,
-    :vocabulary => { 'json-schemer://draft4' => true },
-    :base_uri => Draft4::BASE_URI,
-    :regexp_resolver => 'ecma'
-  )
-
-  META_SCHEMAS_BY_BASE_URI_STR = [DRAFT202012, DRAFT201909, DRAFT7, DRAFT6, DRAFT4].each_with_object({}) do |meta_schema, out|
-    out[meta_schema.base_uri.to_s] = meta_schema
-  end
-  META_SCHEMAS_BY_BASE_URI_STR['http://json-schema.org/schema#'] = DRAFT4 # version-less $schema deprecated after Draft 4
-  META_SCHEMAS_BY_BASE_URI_STR.freeze
-
   WINDOWS_URI_PATH_REGEX = /\A\/[a-z]:/i
 
   FILE_URI_REF_RESOLVER = proc do |uri|
@@ -139,7 +98,7 @@ module JSONSchemer
   end
 
   class << self
-    def schema(schema, meta_schema: DRAFT202012, **options)
+    def schema(schema, meta_schema: draft202012, **options)
       case schema
       when String
         schema = JSON.parse(schema)
@@ -167,5 +126,65 @@ module JSONSchemer
     def validate_schema(schema, **options)
       schema(schema, **options).validate_schema
     end
+
+    def draft202012
+      @draft202012 ||= Schema.new(
+        Draft202012::SCHEMA,
+        :base_uri => Draft202012::BASE_URI,
+        :ref_resolver => Draft202012::Meta::SCHEMAS.to_proc,
+        :regexp_resolver => 'ecma'
+      )
+    end
+
+    def draft201909
+      @draft201909 ||= Schema.new(
+        Draft201909::SCHEMA,
+        :base_uri => Draft201909::BASE_URI,
+        :ref_resolver => Draft201909::Meta::SCHEMAS.to_proc,
+        :regexp_resolver => 'ecma'
+      )
+    end
+
+    def draft7
+      @draft7 ||= Schema.new(
+        Draft7::SCHEMA,
+        :vocabulary => { 'json-schemer://draft7' => true },
+        :base_uri => Draft7::BASE_URI,
+        :regexp_resolver => 'ecma'
+      )
+    end
+
+    def draft6
+      @draft6 ||= Schema.new(
+        Draft6::SCHEMA,
+        :vocabulary => { 'json-schemer://draft6' => true },
+        :base_uri => Draft6::BASE_URI,
+        :regexp_resolver => 'ecma'
+      )
+    end
+
+    def draft4
+      @draft4 ||= Schema.new(
+        Draft4::SCHEMA,
+        :vocabulary => { 'json-schemer://draft4' => true },
+        :base_uri => Draft4::BASE_URI,
+        :regexp_resolver => 'ecma'
+      )
+    end
+  end
+
+  META_SCHEMA_CALLABLES_BY_BASE_URI_STR = {
+    Draft202012::BASE_URI.to_s => method(:draft202012),
+    Draft201909::BASE_URI.to_s => method(:draft201909),
+    Draft7::BASE_URI.to_s => method(:draft7),
+    Draft6::BASE_URI.to_s => method(:draft6),
+    Draft4::BASE_URI.to_s => method(:draft4),
+    # version-less $schema deprecated after Draft 4
+    'http://json-schema.org/schema#' => method(:draft4)
+  }.freeze
+
+  META_SCHEMAS_BY_BASE_URI_STR = Hash.new do |hash, base_uri_str|
+    next unless META_SCHEMA_CALLABLES_BY_BASE_URI_STR.key?(base_uri_str)
+    hash[base_uri_str] = META_SCHEMA_CALLABLES_BY_BASE_URI_STR.fetch(base_uri_str).call
   end
 end
