@@ -59,6 +59,41 @@ class RefTest < Minitest::Test
     )
   end
 
+  def test_can_json_pointer_refer_to_subschemas_inside_unknown_arrays
+    root = {
+      'unknown' => [{ 'type' => 'string' }],
+      'properties' => {
+        'a' => {
+          'properties' => {
+            'x' => { '$ref' => '#/unknown/0' }
+          }
+        }
+      }
+    }
+    schema = JSONSchemer.schema(root)
+    errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
+    assert_equal(
+      {
+        'data' => 1,
+        'data_pointer' => '/a/x',
+        'schema' => root['unknown'].first,
+        'schema_pointer' => '/unknown/0',
+        'root_schema' => root,
+        'type' => 'string'
+      },
+      errors.first
+    )
+  end
+
+  def test_invalid_ref_pointer
+    root = {
+      '$ref' => '#/unknown/beyond',
+      'unknown' => 'notahash'
+    }
+    schema = JSONSchemer.schema(root)
+    assert_raises(JSONSchemer::InvalidRefPointer) { schema.validate({}) }
+  end
+
   def test_can_refer_to_subschemas_in_hash_with_remote_pointer
     ref_schema = {
       '$id' => 'http://example.com/ref_schema.json',

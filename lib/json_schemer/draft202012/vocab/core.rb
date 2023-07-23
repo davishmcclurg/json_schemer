@@ -116,8 +116,28 @@ module JSONSchemer
         class Comment < Keyword; end
 
         class UnknownKeyword < Keyword
-          def schema!
-            subschema(value)
+          def parse
+            if value.is_a?(Hash)
+              {}
+            elsif value.is_a?(Array)
+              []
+            else
+              value
+            end
+          end
+
+          def fetch_unknown!(token)
+            if value.is_a?(Hash)
+              parsed[token] ||= JSONSchemer::Schema::UNKNOWN_KEYWORD_CLASS.new(value.fetch(token), self, token, schema)
+            elsif value.is_a?(Array)
+              parsed[token.to_i] ||= JSONSchemer::Schema::UNKNOWN_KEYWORD_CLASS.new(value.fetch(token.to_i), self, token, schema)
+            else
+              raise KeyError.new(:receiver => parsed, :key => token)
+            end
+          end
+
+          def unknown_schema!
+            @unknown_schema ||= subschema(value)
           end
 
           def validate(instance, instance_location, keyword_location, _context)

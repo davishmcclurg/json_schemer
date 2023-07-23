@@ -1,10 +1,6 @@
 # JSONSchemer
 
-JSON Schema validator. Supports drafts 4, 6, 7, 2019-09, and 2020-12.
-
-## Next
-
-- [ ] openapi
+JSON Schema validator. Supports drafts 4, 6, 7, 2019-09, 2020-12, and OpenAPI 3.1.
 
 ## Installation
 
@@ -123,6 +119,7 @@ JSONSchemer.schema(
   # 'http://json-schema.org/draft-06/schema#': JSONSchemer.draft6
   # 'http://json-schema.org/draft-04/schema#': JSONSchemer.draft4
   # 'http://json-schema.org/schema#': JSONSchemer.draft4
+  # 'https://spec.openapis.org/oas/3.1/dialect/base': JSONSchemer.openapi31
   # default: JSONSchemer.draft202012
   meta_schema: 'https://json-schema.org/draft/2020-12/schema',
 
@@ -169,6 +166,55 @@ JSONSchemer.schema(
   # default: 'classic'
   output_format: 'basic'
 )
+```
+
+## OpenAPI 3.1
+
+```ruby
+document = JSONSchemer.openapi({
+  'openapi' => '3.1.0',
+  'info' => {
+    'title' => 'example'
+  },
+  'components' => {
+    'schemas' => {
+      'example' => {
+        'type' => 'integer'
+      }
+    }
+  }
+})
+
+# document validation using meta schema
+
+document.valid?
+# => false
+
+document.validate.to_a
+# => [{"data"=>{"title"=>"example"},
+#      "data_pointer"=>"/info",
+#      "schema"=>{...info schema},
+#      "schema_pointer"=>"/$defs/info",
+#      "root_schema"=>{...meta schema},
+#      "type"=>"required",
+#      "details"=>{"missing_keys"=>["version"]}},
+#     ...]
+
+# data validation using schema by name (in `components/schemas`)
+
+document.schema('example').valid?(1)
+# => true
+
+document.schema('example').valid?('one')
+# => false
+
+# data validation using schema by ref
+
+document.ref('#/components/schemas/example').valid?(1)
+# => true
+
+document.ref('#/components/schemas/example').valid?('one')
+# => false
 ```
 
 ## CLI

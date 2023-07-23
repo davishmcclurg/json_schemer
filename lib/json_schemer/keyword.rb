@@ -5,12 +5,12 @@ module JSONSchemer
 
     attr_reader :value, :parent, :root, :parsed
 
-    def initialize(value, parent, keyword)
+    def initialize(value, parent, keyword, schema = parent)
       @value = value
       @parent = parent
       @root = parent.root
       @keyword = keyword
-      @schema = parent
+      @schema = schema
       @parsed = parse
     end
 
@@ -33,8 +33,8 @@ module JSONSchemer
     end
 
     def subschema(value, keyword = nil, **options)
-      options[:base_uri] ||= parent.base_uri
-      options[:meta_schema] ||= parent.meta_schema
+      options[:base_uri] ||= schema.base_uri
+      options[:meta_schema] ||= schema.meta_schema
       Schema.new(value, self, root, keyword, **options)
     end
   end

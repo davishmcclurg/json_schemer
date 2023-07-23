@@ -186,10 +186,18 @@ module JSONSchemer
       end
 
       schema = Hana::Pointer.parse(pointer).reduce(schema) do |obj, token|
-        obj.parsed.is_a?(Array) ? obj.parsed.fetch(token.to_i) : obj.parsed.fetch(token)
+        if obj.is_a?(UNKNOWN_KEYWORD_CLASS)
+          obj.fetch_unknown!(token)
+        elsif obj.parsed.is_a?(Array)
+          obj.parsed.fetch(token.to_i)
+        else
+          obj.parsed.fetch(token)
+        end
+      rescue IndexError
+        raise InvalidRefPointer, pointer
       end
 
-      schema = schema.schema! unless schema.is_a?(Schema)
+      schema = schema.unknown_schema! unless schema.is_a?(Schema)
 
       schema
     end

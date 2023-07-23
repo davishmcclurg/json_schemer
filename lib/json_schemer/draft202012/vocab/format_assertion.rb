@@ -11,7 +11,7 @@ module JSONSchemer
           end
 
           def parse
-            root.format && root.formats.fetch(value, DEFAULT_FORMAT)
+            root.format && root.formats.fetch(value) { root.meta_schema.formats.fetch(value, DEFAULT_FORMAT) }
           end
 
           def validate(instance, instance_location, keyword_location, _context)
