@@ -234,6 +234,10 @@ module JSONSchemer
       end
     end
 
+    def inspect
+      "#<#{self.class.name} @value=#{@value.inspect} @parent=#{@parent.inspect} @keyword=#{@keyword.inspect}>"
+    end
+
   private
 
     def parse

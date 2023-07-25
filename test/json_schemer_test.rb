@@ -289,6 +289,12 @@ class JSONSchemerTest < Minitest::Test
     assert_equal('array items at root do not match `additionalItems` schema', OutputHelper.as_json!(schemer.validate([1, 2])).dig('errors', 1, 'error'))
   end
 
+  def test_inspect
+    output = JSONSchemer.openapi31_document.inspect
+    assert_includes(output, 'JSONSchemer::Schema')
+    assert_includes(output, '@value=')
+  end
+
   def test_it_allows_validating_schemas
     valid_draft7_schema = { '$ref' => '#/definitions/~1some~1%7Bid%7D' }
     invalid_draft7_schema = { '$ref' => '#/definitions/~1some~1{id}' }
