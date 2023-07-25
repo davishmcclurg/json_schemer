@@ -22,7 +22,8 @@ class RefTest < Minitest::Test
         'schema' => root['definitions']['bar'],
         'schema_pointer' => '/definitions/bar',
         'root_schema' => root,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at root is not a string'
       },
       errors.first
     )
@@ -53,7 +54,8 @@ class RefTest < Minitest::Test
         'schema' => root['allOf'].first['if'],
         'schema_pointer' => '/allOf/0/if',
         'root_schema' => root,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at `/a/x` is not a string'
       },
       errors.first
     )
@@ -79,7 +81,8 @@ class RefTest < Minitest::Test
         'schema' => root['unknown'].first,
         'schema_pointer' => '/unknown/0',
         'root_schema' => root,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at `/a/x` is not a string'
       },
       errors.first
     )
@@ -125,7 +128,8 @@ class RefTest < Minitest::Test
         'schema' => ref_schema['definitions']['bar'],
         'schema_pointer' => '/definitions/bar',
         'root_schema' => ref_schema,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at `/a/x` is not a string'
       },
       errors.first
     )
@@ -167,7 +171,8 @@ class RefTest < Minitest::Test
         'schema' => ref_schema['definitions']['uuid'],
         'schema_pointer' => '/definitions/uuid',
         'root_schema' => ref_schema,
-        'type' => 'pattern'
+        'type' => 'pattern',
+        'error' => 'string at `/a/x` does not match pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
       },
       errors.first
     )

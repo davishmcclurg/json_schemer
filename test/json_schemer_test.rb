@@ -154,7 +154,8 @@ class JSONSchemerTest < Minitest::Test
         },
         'schema_pointer' => '/properties/numberOfModules/allOf/1',
         'root_schema' => root,
-        'type' => 'not'
+        'type' => 'not',
+        'error' => 'value at `/numberOfModules` matches `not` schema'
       }
     )
     assert_equal(
@@ -166,7 +167,8 @@ class JSONSchemerTest < Minitest::Test
         },
         'schema_pointer' => '/properties/numberOfModules/anyOf/0',
         'root_schema' => root,
-        'type' => 'integer'
+        'type' => 'integer',
+        'error' => 'value at `/numberOfModules` is not an integer'
       },
       schema.validate({ 'numberOfModules' => true }).first
     )
@@ -177,7 +179,8 @@ class JSONSchemerTest < Minitest::Test
         'schema' => root.fetch('properties').fetch('numberOfModules'),
         'schema_pointer' => '/properties/numberOfModules',
         'root_schema' => root,
-        'type' => 'oneOf'
+        'type' => 'oneOf',
+        'error' => 'value at `/numberOfModules` does not match exactly one `oneOf` schema'
       },
       schema.validate({ 'numberOfModules' => 8 }).first
     )
@@ -281,6 +284,11 @@ class JSONSchemerTest < Minitest::Test
     assert(JSONSchemer.schema({ 'contentSchema' => false }).valid?(1))
   end
 
+  def test_draft7_additional_items_error
+    schemer = JSONSchemer.schema({ 'items' => [true], 'additionalItems' => false }, :meta_schema => JSONSchemer.draft7, :output_format => 'verbose')
+    assert_equal('array items at root do not match `additionalItems` schema', OutputHelper.as_json!(schemer.validate([1, 2])).dig('errors', 1, 'error'))
+  end
+
   def test_it_allows_validating_schemas
     valid_draft7_schema = { '$ref' => '#/definitions/~1some~1%7Bid%7D' }
     invalid_draft7_schema = { '$ref' => '#/definitions/~1some~1{id}' }
@@ -294,7 +302,8 @@ class JSONSchemerTest < Minitest::Test
       'schema' => { 'type' => 'string', 'format' => 'uri-reference' },
       'schema_pointer' => '/properties/$ref',
       'root_schema' => JSONSchemer::Draft7::SCHEMA,
-      'type' => 'format'
+      'type' => 'format',
+      'error' => 'value at `/$ref` does not match format: uri-reference'
     }
     required_error = {
       'data' => { 'exclusiveMaximum' => true },
@@ -303,7 +312,8 @@ class JSONSchemerTest < Minitest::Test
       'schema_pointer' => '',
       'root_schema' => JSONSchemer::Draft4::SCHEMA,
       'type' => 'dependencies',
-      'details' => { 'missing_keys' => ['maximum'] }
+      'details' => { 'missing_keys' => ['maximum'] },
+      'error' => 'object at `/properties/x` either does not match applicable `dependencies` schemas or is missing required `dependencies` properties'
     }
 
     draft7_meta_schema = JSONSchemer.draft7

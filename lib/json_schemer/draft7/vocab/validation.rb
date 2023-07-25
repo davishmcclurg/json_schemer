@@ -10,6 +10,10 @@ module JSONSchemer
         end
 
         class AdditionalItems < Keyword
+          def error(formatted_instance_location:, **)
+            "array items at #{formatted_instance_location} do not match `additionalItems` schema"
+          end
+
           def parse
             subschema(value)
           end
@@ -32,6 +36,10 @@ module JSONSchemer
         end
 
         class ContentEncoding < Keyword
+          def error(formatted_instance_location:, **)
+            "string at #{formatted_instance_location} could not be decoded using encoding: #{value}"
+          end
+
           def validate(instance, instance_location, keyword_location, _context)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(String)
 
@@ -42,6 +50,10 @@ module JSONSchemer
         end
 
         class ContentMediaType < Keyword
+          def error(formatted_instance_location:, **)
+            "string at #{formatted_instance_location} could not be parsed using media type: #{value}"
+          end
+
           def validate(instance, instance_location, keyword_location, context)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(String)
 

@@ -87,7 +87,7 @@ class JSONSchemaTestSuiteTest < Minitest::Test
               assert(output_schemer.valid?(output))
             end
 
-            schemer.validate(data, :output_format => 'classic').to_a
+            schemer.validate(data, :output_format => 'classic').map { |result| result.delete('error'); result }
           rescue
             # :nocov:
             puts JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)

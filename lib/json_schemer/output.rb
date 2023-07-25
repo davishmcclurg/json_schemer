@@ -3,26 +3,15 @@ module JSONSchemer
   module Output
     FRAGMENT_ENCODE_REGEX = /[^\w?\/:@\-.~!$&'()*+,;=]/
 
-    module ClassMethods
-      def error
-        @error ||= name.rpartition('::').last.sub(/\A[[:alpha:]]/, &:downcase)
-      end
-    end
-
-    def self.included(klass)
-      klass.extend(ClassMethods)
-    end
-
     attr_reader :keyword, :schema
 
   private
 
-    def result(instance, instance_location, keyword_location, valid, nested = nil, error: nil, annotation: nil, details: nil, ignore_nested: false)
+    def result(instance, instance_location, keyword_location, valid, nested = nil, type: nil, annotation: nil, details: nil, ignore_nested: false)
       if valid
-        Result.new(self, instance, instance_location, keyword_location, valid, nested, error, annotation, details, ignore_nested, 'annotations')
+        Result.new(self, instance, instance_location, keyword_location, valid, nested, type, annotation, details, ignore_nested, 'annotations')
       else
-        error ||= self.class.error
-        Result.new(self, instance, instance_location, keyword_location, valid, nested, error, annotation, details, ignore_nested, 'errors')
+        Result.new(self, instance, instance_location, keyword_location, valid, nested, type, annotation, details, ignore_nested, 'errors')
       end
     end
 

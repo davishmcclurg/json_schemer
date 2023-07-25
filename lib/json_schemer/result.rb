@@ -1,6 +1,36 @@
 # frozen_string_literal: true
 module JSONSchemer
-  Result = Struct.new(:source, :instance, :instance_location, :keyword_location, :valid, :nested, :error, :annotation, :details, :ignore_nested, :nested_key) do
+  Result = Struct.new(:source, :instance, :instance_location, :keyword_location, :valid, :nested, :type, :annotation, :details, :ignore_nested, :nested_key) do
+    CLASSIC_ERROR_TYPES = Hash.new do |hash, klass|
+      hash[klass] = klass.name.rpartition('::').last.sub(/\A[[:alpha:]]/, &:downcase)
+    end
+
+    def output(output_format)
+      case output_format
+      when 'classic'
+        classic
+      when 'flag'
+        flag
+      when 'basic'
+        basic
+      when 'detailed'
+        detailed
+      when 'verbose'
+        verbose
+      else
+        raise UnknownOutputFormat, output_format
+      end
+    end
+
+    def error
+      return @error if defined?(@error)
+      resolved_instance_location = Location.resolve(instance_location)
+      @error = source.error(
+        :formatted_instance_location => resolved_instance_location.empty? ? 'root' : "`#{resolved_instance_location}`",
+        :details => details
+      )
+    end
+
     def to_output_unit
       out = {
         'valid' => valid,
@@ -8,7 +38,7 @@ module JSONSchemer
         'absoluteKeywordLocation' => source.absolute_keyword_location,
         'instanceLocation' => Location.resolve(instance_location)
       }
-      out['error'] = error if !valid && error
+      out['error'] = error unless valid
       out['annotation'] = annotation if valid && annotation
       out
     end
@@ -21,8 +51,9 @@ module JSONSchemer
         'schema' => schema.value,
         'schema_pointer' => schema.schema_pointer,
         'root_schema' => schema.root.value,
-        'type' => error
+        'type' => type || CLASSIC_ERROR_TYPES[source.class]
       }
+      out['error'] = error
       out['details'] = details if details
       out
     end

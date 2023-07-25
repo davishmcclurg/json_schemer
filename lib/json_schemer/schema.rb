@@ -84,20 +84,7 @@ module JSONSchemer
       if insert_property_defaults && result.insert_property_defaults(&property_default_resolver)
         result = validate_instance(instance, instance_location, root_keyword_location, context)
       end
-      case output_format
-      when 'classic'
-        result.classic
-      when 'flag'
-        result.flag
-      when 'basic'
-        result.basic
-      when 'detailed'
-        result.detailed
-      when 'verbose'
-        result.verbose
-      else
-        raise UnknownOutputFormat, output_format
-      end
+      result.output(output_format)
     end
 
     def valid_schema?
@@ -133,9 +120,11 @@ module JSONSchemer
           custom_keywords.each do |custom_keyword, callable|
             if value.key?(custom_keyword)
               [*callable.call(instance, value, instance_location)].each do |custom_keyword_result|
-                valid &&= (custom_keyword_result == true)
-                error = custom_keyword_result.is_a?(String) ? custom_keyword_result : custom_keyword
-                nested << result(instance, instance_location, keyword_location, custom_keyword_result == true, :error => error)
+                custom_keyword_valid = custom_keyword_result == true
+                valid &&= custom_keyword_valid
+                type = custom_keyword_result.is_a?(String) ? custom_keyword_result : custom_keyword
+                details = { 'keyword' => custom_keyword, 'result' => custom_keyword_result }
+                nested << result(instance, instance_location, keyword_location, custom_keyword_valid, :type => type, :details => details)
               end
             end
           end
@@ -235,6 +224,14 @@ module JSONSchemer
 
     def resources
       @resources ||= { :lexical => {}, :dynamic => {} }
+    end
+
+    def error(formatted_instance_location:, **options)
+      if value == false && parent&.respond_to?(:false_schema_error)
+        parent.false_schema_error(:formatted_instance_location => formatted_instance_location, **options)
+      else
+        "value at #{formatted_instance_location} does not match schema"
+      end
     end
 
   private

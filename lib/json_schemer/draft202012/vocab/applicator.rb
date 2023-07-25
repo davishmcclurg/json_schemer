@@ -4,6 +4,10 @@ module JSONSchemer
     module Vocab
       module Applicator
         class AllOf < Keyword
+          def error(formatted_instance_location:, **)
+            "value at #{formatted_instance_location} does not match all `allOf` schemas"
+          end
+
           def parse
             value.map.with_index do |subschema, index|
               subschema(subschema, index.to_s)
@@ -19,6 +23,10 @@ module JSONSchemer
         end
 
         class AnyOf < Keyword
+          def error(formatted_instance_location:, **)
+            "value at #{formatted_instance_location} does not match any `anyOf` schemas"
+          end
+
           def parse
             value.map.with_index do |subschema, index|
               subschema(subschema, index.to_s)
@@ -34,6 +42,10 @@ module JSONSchemer
         end
 
         class OneOf < Keyword
+          def error(formatted_instance_location:, **)
+            "value at #{formatted_instance_location} does not match exactly one `oneOf` schema"
+          end
+
           def parse
             value.map.with_index do |subschema, index|
               subschema(subschema, index.to_s)
@@ -50,6 +62,10 @@ module JSONSchemer
         end
 
         class Not < Keyword
+          def error(formatted_instance_location:, **)
+            "value at #{formatted_instance_location} matches `not` schema"
+          end
+
           def parse
             subschema(value)
           end
@@ -72,28 +88,42 @@ module JSONSchemer
         end
 
         class Then < Keyword
+          def error(formatted_instance_location:, **)
+            "value at #{formatted_instance_location} does not match conditional `then` schema"
+          end
+
           def parse
             subschema(value)
           end
 
           def validate(instance, instance_location, keyword_location, context)
             return unless context.adjacent_results.key?(If) && context.adjacent_results.fetch(If).annotation
-            parsed.validate_instance(instance, instance_location, keyword_location, context)
+            subschema_result = parsed.validate_instance(instance, instance_location, keyword_location, context)
+            result(instance, instance_location, keyword_location, subschema_result.valid, subschema_result.nested)
           end
         end
 
         class Else < Keyword
+          def error(formatted_instance_location:, **)
+            "value at #{formatted_instance_location} does not match conditional `else` schema"
+          end
+
           def parse
             subschema(value)
           end
 
           def validate(instance, instance_location, keyword_location, context)
             return unless context.adjacent_results.key?(If) && !context.adjacent_results.fetch(If).annotation
-            parsed.validate_instance(instance, instance_location, keyword_location, context)
+            subschema_result = parsed.validate_instance(instance, instance_location, keyword_location, context)
+            result(instance, instance_location, keyword_location, subschema_result.valid, subschema_result.nested)
           end
         end
 
         class DependentSchemas < Keyword
+          def error(formatted_instance_location:, **)
+            "value at #{formatted_instance_location} does not match applicable `dependentSchemas` schemas"
+          end
+
           def parse
             value.each_with_object({}) do |(key, subschema), out|
               out[key] = subschema(subschema, key)
@@ -114,6 +144,10 @@ module JSONSchemer
         end
 
         class PrefixItems < Keyword
+          def error(formatted_instance_location:, **)
+            "array items at #{formatted_instance_location} do not match corresponding `prefixItems` schemas"
+          end
+
           def parse
             value.map.with_index do |subschema, index|
               subschema(subschema, index.to_s)
@@ -132,6 +166,10 @@ module JSONSchemer
         end
 
         class Items < Keyword
+          def error(formatted_instance_location:, **)
+            "array items at #{formatted_instance_location} do not match `items` schema"
+          end
+
           def parse
             subschema(value)
           end
@@ -151,6 +189,10 @@ module JSONSchemer
         end
 
         class Contains < Keyword
+          def error(formatted_instance_location:, **)
+            "array at #{formatted_instance_location} does not contain enough items that match `contains` schema"
+          end
+
           def parse
             subschema(value)
           end
@@ -174,6 +216,10 @@ module JSONSchemer
         end
 
         class Properties < Keyword
+          def error(formatted_instance_location:, **)
+            "object properties at #{formatted_instance_location} do not match corresponding `properties` schemas"
+          end
+
           def parse
             value.each_with_object({}) do |(property, subschema), out|
               out[property] = subschema(subschema, property)
@@ -214,6 +260,10 @@ module JSONSchemer
         end
 
         class PatternProperties < Keyword
+          def error(formatted_instance_location:, **)
+            "object properties at #{formatted_instance_location} do not match corresponding `patternProperties` schemas"
+          end
+
           def parse
             value.each_with_object({}) do |(pattern, subschema), out|
               out[pattern] = subschema(subschema, pattern)
@@ -241,6 +291,14 @@ module JSONSchemer
         end
 
         class AdditionalProperties < Keyword
+          def error(formatted_instance_location:, **)
+            "object properties at #{formatted_instance_location} do not match `additionalProperties` schema"
+          end
+
+          def false_schema_error(formatted_instance_location:, **)
+            "object property at #{formatted_instance_location} is not defined and schema does not allow additional properties"
+          end
+
           def parse
             subschema(value)
           end
@@ -265,6 +323,10 @@ module JSONSchemer
         end
 
         class PropertyNames < Keyword
+          def error(formatted_instance_location:, **)
+            "object property names at #{formatted_instance_location} do not match `propertyNames` schema"
+          end
+
           def parse
             subschema(value)
           end
@@ -281,6 +343,10 @@ module JSONSchemer
         end
 
         class Dependencies < Keyword
+          def error(formatted_instance_location:, **)
+            "object at #{formatted_instance_location} either does not match applicable `dependencies` schemas or is missing required `dependencies` properties"
+          end
+
           def parse
             value.each_with_object({}) do |(key, value), out|
               out[key] = value.is_a?(Array) ? value : subschema(value, key)

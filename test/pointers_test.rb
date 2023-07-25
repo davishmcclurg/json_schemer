@@ -24,7 +24,8 @@ class PointersTest < Minitest::Test
         'schema' => ref_schema,
         'schema_pointer' => '/definitions/y',
         'root_schema' => root,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at `/a/x` is not a string'
       },
       errors.first
     )
@@ -58,7 +59,8 @@ class PointersTest < Minitest::Test
         'schema' => ref_schema,
         'schema_pointer' => '/definitions/y',
         'root_schema' => ref,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at `/a/x` is not a string'
       },
       errors.first
     )
@@ -90,7 +92,8 @@ class PointersTest < Minitest::Test
         'schema' => ref_schema,
         'schema_pointer' => '/definitions/y',
         'root_schema' => root,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at `/a/x` is not a string'
       },
       errors.first
     )
@@ -127,7 +130,8 @@ class PointersTest < Minitest::Test
         'schema' => ref_schema,
         'schema_pointer' => '/definitions/y',
         'root_schema' => ref,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at `/a/x` is not a string'
       },
       errors.first
     )

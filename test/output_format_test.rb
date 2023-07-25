@@ -43,7 +43,7 @@ class OutputFormatTest < Minitest::Test
         'keywordLocation' => '', # not in spec
         'absoluteKeywordLocation' => 'https://example.com/polygon#', # not in spec
         'instanceLocation' => '', # not in spec
-        'error' => 'schema', # not in spec
+        'error' => 'value at root does not match schema', # not in spec
         # out of order
         'errors' => [
           {
@@ -51,35 +51,35 @@ class OutputFormatTest < Minitest::Test
             'keywordLocation' => '',
             'absoluteKeywordLocation' => 'https://example.com/polygon#', # not in spec
             'instanceLocation' => '',
-            'error' => 'schema' # 'A subschema had errors.'
+            'error' => 'value at root does not match schema' # 'A subschema had errors.'
           },
           {
             'valid' => false, # not in spec
             'keywordLocation' => '/items/$ref',
             'absoluteKeywordLocation' => 'https://example.com/polygon#/$defs/point',
             'instanceLocation' => '/1',
-            'error' => 'schema' # 'A subschema had errors.'
+            'error' => 'value at `/1` does not match schema' # 'A subschema had errors.'
           },
           {
             'valid' => false, # not in spec
             'keywordLocation' => '/items/$ref/additionalProperties',
             'absoluteKeywordLocation' => 'https://example.com/polygon#/$defs/point/additionalProperties',
             'instanceLocation' => '/1/z',
-            'error' => 'schema' # 'Additional property \'z\' found but was invalid.'
+            'error' => 'object property at `/1/z` is not defined and schema does not allow additional properties' # 'Additional property \'z\' found but was invalid.'
           },
           {
             'valid' => false, # not in spec
             'keywordLocation' => '/items/$ref/required',
             'absoluteKeywordLocation' => 'https://example.com/polygon#/$defs/point/required',
             'instanceLocation' => '/1',
-            'error' => 'required' # 'Required property \'y\' not found.'
+            'error' => 'object at `/1` is missing required properties: y' # 'Required property \'y\' not found.'
           },
           {
             'valid' => false, # not in spec
             'keywordLocation' => '/minItems',
             'absoluteKeywordLocation' => 'https://example.com/polygon#/minItems', # not in spec
             'instanceLocation' => '',
-            'error' => 'minItems', # 'Expected at least 3 items but found 2'
+            'error' => 'array size at root is less than: 3', # 'Expected at least 3 items but found 2'
           }
         ]
       },
@@ -92,14 +92,14 @@ class OutputFormatTest < Minitest::Test
         'keywordLocation' => '',
         'absoluteKeywordLocation' => 'https://example.com/polygon#', # not in spec
         'instanceLocation' => '',
-        'error' => 'schema', # not in spec
+        'error' => 'value at root does not match schema', # not in spec
         'errors' => [
           {
             'valid' => false,
             'keywordLocation' => '/items/$ref',
             'absoluteKeywordLocation' => 'https://example.com/polygon#/$defs/point',
             'instanceLocation' => '/1',
-            'error' => 'schema', # not in spec
+            'error' => 'value at `/1` does not match schema', # not in spec
             # out of order
             'errors' => [
               {
@@ -107,14 +107,14 @@ class OutputFormatTest < Minitest::Test
                 'keywordLocation' => '/items/$ref/additionalProperties',
                 'absoluteKeywordLocation' => 'https://example.com/polygon#/$defs/point/additionalProperties',
                 'instanceLocation' => '/1/z',
-                'error' => 'schema' # 'Additional property \'z\' found but was invalid.'
+                'error' => 'object property at `/1/z` is not defined and schema does not allow additional properties' # 'Additional property \'z\' found but was invalid.'
               },
               {
                 'valid' => false,
                 'keywordLocation' => '/items/$ref/required',
                 'absoluteKeywordLocation' => 'https://example.com/polygon#/$defs/point/required',
                 'instanceLocation' => '/1',
-                'error' => 'required' # 'Required property \'y\' not found.'
+                'error' => 'object at `/1` is missing required properties: y' # 'Required property \'y\' not found.'
               }
             ]
           },
@@ -123,7 +123,7 @@ class OutputFormatTest < Minitest::Test
             'keywordLocation' => '/minItems',
             'absoluteKeywordLocation' => 'https://example.com/polygon#/minItems', # not in spec
             'instanceLocation' => '',
-            'error' => 'minItems' # 'Expected at least 3 items but found 2'
+            'error' => 'array size at root is less than: 3' # 'Expected at least 3 items but found 2'
           }
         ]
       },
@@ -221,28 +221,28 @@ class OutputFormatTest < Minitest::Test
         'keywordLocation' => '',
         'absoluteKeywordLocation' => 'https://example.com/schema/#',
         'instanceLocation' => '',
-        'error' => 'schema',
+        'error' => 'value at root does not match schema',
         'errors' => [
           {
             'valid' => false,
             'keywordLocation' => '/allOf/2/$ref/properties/a',
             'absoluteKeywordLocation' => 'https://example.com/schema/subschema2#/properties/a',
             'instanceLocation' => '/a',
-            'error' => 'schema'
+            'error' => 'value at `/a` does not match schema'
           },
           {
             'valid' => false,
             'keywordLocation' => '/allOf/2/$ref/properties/a/$dynamicRef/allOf/0/properties/b/type',
             'absoluteKeywordLocation' => 'https://example.com/schema/bee#/properties/b/type',
             'instanceLocation' => '/a/b',
-            'error' => 'string'
+            'error' => 'value at `/a/b` is not a string'
           },
           {
             'valid' => false,
             'keywordLocation' => '/allOf/2/$ref/properties/a/maxProperties',
             'absoluteKeywordLocation' => 'https://example.com/schema/subschema2#/properties/a/maxProperties',
             'instanceLocation' => '/a',
-            'error' => 'maxProperties'
+            'error' => 'object size at `/a` is greater than: 2'
           }
         ]
       },
@@ -255,21 +255,21 @@ class OutputFormatTest < Minitest::Test
         'keywordLocation' => '/allOf/2/$ref/properties/a',
         'absoluteKeywordLocation' => 'https://example.com/schema/subschema2#/properties/a',
         'instanceLocation' => '/a',
-        'error' => 'schema',
+        'error' => 'value at `/a` does not match schema',
         'errors' => [
           {
             'valid' => false,
             'keywordLocation' => '/allOf/2/$ref/properties/a/$dynamicRef/allOf/0/properties/b/type',
             'absoluteKeywordLocation' => 'https://example.com/schema/bee#/properties/b/type',
             'instanceLocation' => '/a/b',
-            'error' => 'string'
+            'error' => 'value at `/a/b` is not a string'
           },
           {
             'valid' => false,
             'keywordLocation' => '/allOf/2/$ref/properties/a/maxProperties',
             'absoluteKeywordLocation' => 'https://example.com/schema/subschema2#/properties/a/maxProperties',
             'instanceLocation' => '/a',
-            'error' => 'maxProperties'
+            'error' => 'object size at `/a` is greater than: 2'
           }
         ]
       },

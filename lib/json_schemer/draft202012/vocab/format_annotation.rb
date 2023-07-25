@@ -12,6 +12,10 @@ module JSONSchemer
             true
           end
 
+          def error(formatted_instance_location:, **)
+            "value at #{formatted_instance_location} does not match format: #{value}"
+          end
+
           def parse
             root.format && root.formats.fetch(value) { root.meta_schema.formats.fetch(value, DEFAULT_FORMAT) }
           end

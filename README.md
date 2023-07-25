@@ -50,7 +50,8 @@ schemer.validate({ 'abc' => 10 }).to_a
 #      "schema"=>{"type"=>"integer", "minimum"=>11},
 #      "schema_pointer"=>"/properties/abc",
 #      "root_schema"=>{"type"=>"object", "properties"=>{"abc"=>{"type"=>"integer", "minimum"=>11}}},
-#      "type"=>"minimum"}]
+#      "type"=>"minimum",
+#      "error"=>"number at `/abc` is less than: 11"}]
 
 # default property values
 
@@ -91,7 +92,8 @@ JSONSchemer.validate_schema({ '$id' => '#invalid' }).to_a
 #      "schema"=>{"$ref"=>"#/$defs/uriReferenceString", "$comment"=>"Non-empty fragments not allowed.", "pattern"=>"^[^#]*#?$"},
 #      "schema_pointer"=>"/properties/$id",
 #      "root_schema"=>{...meta schema},
-#      "type"=>"pattern"}]
+#      "type"=>"pattern",
+#      "error"=>"string at `/$id` does not match pattern: ^[^#]*#?$"}]
 
 JSONSchemer.schema({ '$id' => 'valid' }).valid_schema?
 # => true
@@ -102,7 +104,8 @@ JSONSchemer.schema({ '$id' => '#invalid' }).validate_schema.to_a
 #      "schema"=>{"$ref"=>"#/$defs/uriReferenceString", "$comment"=>"Non-empty fragments not allowed.", "pattern"=>"^[^#]*#?$"},
 #      "schema_pointer"=>"/properties/$id",
 #      "root_schema"=>{...meta schema},
-#      "type"=>"pattern"}]
+#      "type"=>"pattern",
+#      "error"=>"string at `/$id` does not match pattern: ^[^#]*#?$"}]
 ```
 
 ## Options

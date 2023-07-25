@@ -4,6 +4,10 @@ module JSONSchemer
     module Vocab
       module Unevaluated
         class UnevaluatedItems < Keyword
+          def error(formatted_instance_location:, **)
+            "array items at #{formatted_instance_location} do not match `unevaluatedItems` schema"
+          end
+
           def parse
             subschema(value)
           end
@@ -43,6 +47,10 @@ module JSONSchemer
         end
 
         class UnevaluatedProperties < Keyword
+          def error(formatted_instance_location:, **)
+            "object properties at #{formatted_instance_location} do not match `unevaluatedProperties` schema"
+          end
+
           def parse
             subschema(value)
           end

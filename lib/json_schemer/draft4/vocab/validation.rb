@@ -11,6 +11,10 @@ module JSONSchemer
         end
 
         class ExclusiveMaximum < Keyword
+          def error(formatted_instance_location:, **)
+            "number at #{formatted_instance_location} is greater than or equal to `maximum`"
+          end
+
           def validate(instance, instance_location, keyword_location, _context)
             maximum = schema.parsed.fetch('maximum').parsed
             valid = !instance.is_a?(Numeric) || !value || !maximum || instance < maximum
@@ -19,6 +23,10 @@ module JSONSchemer
         end
 
         class ExclusiveMinimum < Keyword
+          def error(formatted_instance_location:, **)
+            "number at #{formatted_instance_location} is less than or equal to `minimum`"
+          end
+
           def validate(instance, instance_location, keyword_location, _context)
             minimum = schema.parsed.fetch('minimum').parsed
             valid = !instance.is_a?(Numeric) || !value || !minimum || instance > minimum

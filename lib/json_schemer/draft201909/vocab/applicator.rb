@@ -4,6 +4,10 @@ module JSONSchemer
     module Vocab
       module Applicator
         class Items < Keyword
+          def error(formatted_instance_location:, **)
+            "array items at #{formatted_instance_location} do not match `items` schema(s)"
+          end
+
           def parse
             if value.is_a?(Array)
               value.map.with_index do |subschema, index|
@@ -32,6 +36,10 @@ module JSONSchemer
         end
 
         class AdditionalItems < Keyword
+          def error(formatted_instance_location:, **)
+            "array items at #{formatted_instance_location} do not match `additionalItems` schema"
+          end
+
           def parse
             subschema(value)
           end
@@ -51,6 +59,10 @@ module JSONSchemer
         end
 
         class UnevaluatedItems < Keyword
+          def error(formatted_instance_location:, **)
+            "array items at #{formatted_instance_location} do not match `unevaluatedItems` schema"
+          end
+
           def parse
             subschema(value)
           end

@@ -38,6 +38,10 @@ module JSONSchemer
 
           attr_accessor :skip_ref_once
 
+          def error(formatted_instance_location:, **)
+            "value at #{formatted_instance_location} does not match `discriminator` schema"
+          end
+
           def validate(instance, instance_location, keyword_location, context)
             property_name = value.fetch('propertyName')
             mapping = value['mapping'] || {}
