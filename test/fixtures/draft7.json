@@ -13263,6 +13263,37 @@
             "$id": "#foo",
             "type": "integer"
           },
+          "schema_pointer": "/definitions/A",
+          "root_schema": {
+            "$id": "https://example.com/schema-with-anchor",
+            "allOf": [
+              {
+                "$ref": "https://example.com/schema-with-anchor#foo"
+              }
+            ],
+            "definitions": {
+              "A": {
+                "$id": "#foo",
+                "type": "integer"
+              }
+            }
+          },
+          "type": "integer"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "a",
+          "data_pointer": "",
+          "schema": {
+            "$id": "#foo",
+            "type": "integer"
+          },
           "schema_pointer": "/definitions/A/definitions/B",
           "root_schema": {
             "$id": "http://localhost:1234/root",

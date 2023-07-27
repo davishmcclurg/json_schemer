@@ -4426,56 +4426,146 @@
       ],
       [
         {
-          "data": 1.1,
-          "data_pointer": "/november",
+          "data": "foo",
+          "data_pointer": "/list/0",
           "schema": {
-            "title": "integer node",
-            "$id": "integerNode",
-            "$dynamicAnchor": "foo",
-            "type": [
-              "object",
-              "integer"
-            ],
-            "$ref": "inner"
+            "$dynamicAnchor": "itemType",
+            "type": "number"
           },
-          "schema_pointer": "/else",
+          "schema_pointer": "/$defs/numberList/$defs/itemType",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://test.json-schema.org/dynamic-ref-with-multiple-paths/main",
-            "$defs": {
-              "inner": {
-                "$id": "inner",
-                "$dynamicAnchor": "foo",
-                "title": "inner",
-                "additionalProperties": {
-                  "$dynamicRef": "#foo"
-                }
-              }
-            },
             "if": {
-              "propertyNames": {
-                "pattern": "^[a-m]"
-              }
+              "properties": {
+                "kindOfList": {
+                  "const": "numbers"
+                }
+              },
+              "required": [
+                "kindOfList"
+              ]
             },
             "then": {
-              "title": "any type of node",
-              "$id": "anyLeafNode",
-              "$dynamicAnchor": "foo",
-              "$ref": "inner"
+              "$ref": "numberList"
             },
             "else": {
-              "title": "integer node",
-              "$id": "integerNode",
-              "$dynamicAnchor": "foo",
-              "type": [
-                "object",
-                "integer"
-              ],
-              "$ref": "inner"
+              "$ref": "stringList"
+            },
+            "$defs": {
+              "genericList": {
+                "$id": "genericList",
+                "properties": {
+                  "list": {
+                    "items": {
+                      "$dynamicRef": "#itemType"
+                    }
+                  }
+                },
+                "$defs": {
+                  "defaultItemType": {
+                    "$comment": "Only needed to satisfy bookending requirement",
+                    "$dynamicAnchor": "itemType"
+                  }
+                }
+              },
+              "numberList": {
+                "$id": "numberList",
+                "$defs": {
+                  "itemType": {
+                    "$dynamicAnchor": "itemType",
+                    "type": "number"
+                  }
+                },
+                "$ref": "genericList"
+              },
+              "stringList": {
+                "$id": "stringList",
+                "$defs": {
+                  "itemType": {
+                    "$dynamicAnchor": "itemType",
+                    "type": "string"
+                  }
+                },
+                "$ref": "genericList"
+              }
             }
           },
-          "type": "type"
+          "type": "number"
         }
+      ],
+      [
+        {
+          "data": 1.1,
+          "data_pointer": "/list/0",
+          "schema": {
+            "$dynamicAnchor": "itemType",
+            "type": "string"
+          },
+          "schema_pointer": "/$defs/stringList/$defs/itemType",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "https://test.json-schema.org/dynamic-ref-with-multiple-paths/main",
+            "if": {
+              "properties": {
+                "kindOfList": {
+                  "const": "numbers"
+                }
+              },
+              "required": [
+                "kindOfList"
+              ]
+            },
+            "then": {
+              "$ref": "numberList"
+            },
+            "else": {
+              "$ref": "stringList"
+            },
+            "$defs": {
+              "genericList": {
+                "$id": "genericList",
+                "properties": {
+                  "list": {
+                    "items": {
+                      "$dynamicRef": "#itemType"
+                    }
+                  }
+                },
+                "$defs": {
+                  "defaultItemType": {
+                    "$comment": "Only needed to satisfy bookending requirement",
+                    "$dynamicAnchor": "itemType"
+                  }
+                }
+              },
+              "numberList": {
+                "$id": "numberList",
+                "$defs": {
+                  "itemType": {
+                    "$dynamicAnchor": "itemType",
+                    "type": "number"
+                  }
+                },
+                "$ref": "genericList"
+              },
+              "stringList": {
+                "$id": "stringList",
+                "$defs": {
+                  "itemType": {
+                    "$dynamicAnchor": "itemType",
+                    "type": "string"
+                  }
+                },
+                "$ref": "genericList"
+              }
+            }
+          },
+          "type": "string"
+        }
+      ],
+      [
+
       ]
     ],
     [
