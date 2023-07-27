@@ -68,7 +68,6 @@ module JSONSchemer
   class InvalidRefPointer < StandardError; end
   class InvalidRegexpResolution < StandardError; end
   class InvalidFileURI < StandardError; end
-  class InvalidSymbolKey < StandardError; end
   class InvalidEcmaRegexp < StandardError; end
 
   VOCABULARIES = {

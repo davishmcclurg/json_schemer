@@ -230,11 +230,13 @@ module JSONSchemer
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Hash)
 
             if root.before_property_validation.any?
+              original_instance = context.original_instance(instance_location)
               root.before_property_validation.each do |hook|
                 parsed.each do |property, subschema|
-                  hook.call(instance, property, subschema.value, schema.value)
+                  hook.call(original_instance, property, subschema.value, schema.value)
                 end
               end
+              instance.replace(deep_stringify_keys(original_instance))
             end
 
             evaluated_keys = []
@@ -248,11 +250,13 @@ module JSONSchemer
             end
 
             if root.after_property_validation.any?
+              original_instance = context.original_instance(instance_location)
               root.after_property_validation.each do |hook|
                 parsed.each do |property, subschema|
-                  hook.call(instance, property, subschema.value, schema.value)
+                  hook.call(original_instance, property, subschema.value, schema.value)
                 end
               end
+              instance.replace(deep_stringify_keys(original_instance))
             end
 
             result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => evaluated_keys)

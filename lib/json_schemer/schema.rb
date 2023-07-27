@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 module JSONSchemer
   class Schema
-    Context = Struct.new(:dynamic_scope, :adjacent_results, :short_circuit)
+    Context = Struct.new(:instance, :dynamic_scope, :adjacent_results, :short_circuit) do
+      def original_instance(instance_location)
+        Hana::Pointer.parse(Location.resolve(instance_location)).reduce(instance) do |obj, token|
+          obj.fetch(obj.is_a?(Array) ? token.to_i : token)
+        end
+      end
+    end
 
     include Output
     include Format::JSONPointer
@@ -52,7 +58,7 @@ module JSONSchemer
       regexp_resolver: 'ruby',
       output_format: 'classic'
     )
-      @value = value
+      @value = deep_stringify_keys(value)
       @parent = parent
       @root = root
       @keyword = keyword
@@ -79,10 +85,10 @@ module JSONSchemer
 
     def validate(instance, output_format: @output_format)
       instance_location = Location.root
-      context = Context.new([], nil, (!insert_property_defaults && output_format == 'flag'))
-      result = validate_instance(instance, instance_location, root_keyword_location, context)
-      if insert_property_defaults && result.insert_property_defaults(&property_default_resolver)
-        result = validate_instance(instance, instance_location, root_keyword_location, context)
+      context = Context.new(instance, [], nil, (!insert_property_defaults && output_format == 'flag'))
+      result = validate_instance(deep_stringify_keys(instance), instance_location, root_keyword_location, context)
+      if insert_property_defaults && result.insert_property_defaults(context, &property_default_resolver)
+        result = validate_instance(deep_stringify_keys(instance), instance_location, root_keyword_location, context)
       end
       result.output(output_format)
     end
@@ -271,7 +277,6 @@ module JSONSchemer
           value.sort do |(keyword_a, _value_a), (keyword_b, _value_b)|
             keyword_order.fetch(keyword_a, last) <=> keyword_order.fetch(keyword_b, last)
           end.each do |keyword, value|
-            raise InvalidSymbolKey, 'schemas must use string keys' unless keyword.is_a?(String)
             @parsed[keyword] ||= keywords.fetch(keyword, UNKNOWN_KEYWORD_CLASS).new(value, self, keyword)
           end
         end

@@ -128,8 +128,8 @@ module JSONSchemer
       end
     end
 
-    def insert_property_defaults
-      instances = {}
+    def insert_property_defaults(context)
+      instance_locations = {}
 
       results = [[self, true]]
       while (result, valid = results.pop)
@@ -145,18 +145,19 @@ module JSONSchemer
             instance_location = Location.join(result.instance_location, property)
             keyword_location = Location.join(Location.join(result.keyword_location, property), default.keyword)
             default_result = default.validate(nil, instance_location, keyword_location, nil)
-            instances[result.instance] ||= {}
-            instances[result.instance][property] ||= []
-            instances[result.instance][property] << [default_result, valid]
+            instance_locations[result.instance_location] ||= {}
+            instance_locations[result.instance_location][property] ||= []
+            instance_locations[result.instance_location][property] << [default_result, valid]
           end
         end
       end
 
       inserted = false
 
-      instances.each do |instance, properties|
+      instance_locations.each do |instance_location, properties|
+        original_instance = context.original_instance(instance_location)
         properties.each do |property, results_with_tree_validity|
-          property_inserted = yield(instance, property, results_with_tree_validity)
+          property_inserted = yield(original_instance, property, results_with_tree_validity)
           inserted ||= (property_inserted != false)
         end
       end

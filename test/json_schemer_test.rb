@@ -86,17 +86,6 @@ class JSONSchemerTest < Minitest::Test
     refute(schema.valid?('1'))
   end
 
-  def test_it_checks_for_symbol_keys
-    assert_raises(JSONSchemer::InvalidSymbolKey) { JSONSchemer.schema({ :type => 'integer' }) }
-    schema = JSONSchemer.schema(
-      { '$ref' => 'http://example.com' },
-      :ref_resolver => proc do |uri|
-        { :type => 'integer' }
-      end
-    )
-    assert_raises(JSONSchemer::InvalidSymbolKey) { schema.valid?(1) }
-  end
-
   def test_it_returns_nested_errors
     root = {
       'type' => 'object',
@@ -344,5 +333,45 @@ class JSONSchemerTest < Minitest::Test
     assert_equal([required_error], JSONSchemer.validate_schema(invalid_draft4_schema, :meta_schema => draft4_meta_schema).to_a)
     assert_empty(JSONSchemer.validate_schema(valid_detected_draft4_schema).to_a)
     assert_equal([required_error], JSONSchemer.validate_schema(invalid_detected_draft4_schema).to_a)
+  end
+
+  def test_non_string_keys
+    schemer = JSONSchemer.schema({
+      properties: {
+        'title' => {
+          type: 'string'
+        },
+        :description => {
+          'type' => 'string'
+        }
+      }
+    })
+    assert(schemer.valid?({ title: 'some title' }))
+    assert(schemer.valid?({ 'title' => 'some title' }))
+    refute(schemer.valid?({ title: :sometitle }))
+    refute(schemer.valid?({ 'title' => :sometitle }))
+    assert(schemer.valid?({ description: 'some description' }))
+    assert(schemer.valid?({ 'description' => 'some description' }))
+    refute(schemer.valid?({ description: :somedescription }))
+    refute(schemer.valid?({ 'description' => :somedescription }))
+
+    schemer = JSONSchemer.schema({
+      'properties' => {
+        '1' => {
+          'const' => 'one'
+        },
+        2 => {
+          :const => 'two'
+        }
+      }
+    })
+    assert(schemer.valid?({ 1 => 'one' }))
+    assert(schemer.valid?({ '1' => 'one' }))
+    refute(schemer.valid?({ 1 => 'neo' }))
+    refute(schemer.valid?({ '1' => 'neo' }))
+    assert(schemer.valid?({ 2 => 'two' }))
+    assert(schemer.valid?({ '2' => 'two' }))
+    refute(schemer.valid?({ 2 => 'tow' }))
+    refute(schemer.valid?({ '2' => 'tow' }))
   end
 end

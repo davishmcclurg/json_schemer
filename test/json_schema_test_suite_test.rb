@@ -56,6 +56,8 @@ class JSONSchemaTestSuiteTest < Minitest::Test
         file_output[file] = JSON.parse(File.read(file)).map do |defn|
           tests, schema = defn.values_at('tests', 'schema')
 
+          schema = JSON.parse(JSON.generate(schema), :symbolize_names => true) if rand < 0.5
+
           schemer = JSONSchemer::Schema.new(
             schema,
             :meta_schema => meta_schema,
@@ -69,6 +71,8 @@ class JSONSchemaTestSuiteTest < Minitest::Test
 
           tests.map do |test|
             data, valid = test.values_at('data', 'valid')
+
+            data = JSON.parse(JSON.generate(data), :symbolize_names => true) if rand < 0.5
 
             assert_equal(
               valid,

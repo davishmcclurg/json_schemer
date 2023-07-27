@@ -26,5 +26,30 @@ module JSONSchemer
     def fragment_encode(location)
       Format.percent_encode(location, FRAGMENT_ENCODE_REGEX)
     end
+
+    # :nocov:
+    if Symbol.method_defined?(:name)
+      def stringify(key)
+        key.is_a?(Symbol) ? key.name : key.to_s
+      end
+    else
+      def stringify(key)
+        key.to_s
+      end
+    end
+    # :nocov:
+
+    def deep_stringify_keys(obj)
+      case obj
+      when Hash
+        obj.each_with_object({}) do |(key, value), out|
+          out[stringify(key)] = deep_stringify_keys(value)
+        end
+      when Array
+        obj.map { |item| deep_stringify_keys(item) }
+      else
+        obj
+      end
+    end
   end
 end
