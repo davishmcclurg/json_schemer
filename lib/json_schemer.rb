@@ -35,6 +35,7 @@ require 'json_schemer/draft202012/vocab/validation'
 require 'json_schemer/draft202012/vocab/format_annotation'
 require 'json_schemer/draft202012/vocab/format_assertion'
 require 'json_schemer/draft202012/vocab/content'
+require 'json_schemer/draft202012/vocab/meta_data'
 require 'json_schemer/draft202012/vocab'
 require 'json_schemer/draft201909/meta'
 require 'json_schemer/draft201909/vocab/core'
@@ -52,6 +53,10 @@ require 'json_schemer/openapi31/meta'
 require 'json_schemer/openapi31/vocab/base'
 require 'json_schemer/openapi31/vocab'
 require 'json_schemer/openapi31/document'
+require 'json_schemer/openapi30/document'
+require 'json_schemer/openapi30/meta'
+require 'json_schemer/openapi30/vocab/base'
+require 'json_schemer/openapi30/vocab'
 require 'json_schemer/openapi'
 require 'json_schemer/schema'
 
@@ -91,7 +96,8 @@ module JSONSchemer
     'json-schemer://draft6' => Draft6::Vocab::ALL,
     'json-schemer://draft4' => Draft4::Vocab::ALL,
 
-    'https://spec.openapis.org/oas/3.1/vocab/base' => OpenAPI31::Vocab::BASE
+    'https://spec.openapis.org/oas/3.1/vocab/base' => OpenAPI31::Vocab::BASE,
+    'json-schemer://openapi30' => OpenAPI30::Vocab::BASE
   }
   VOCABULARY_ORDER = VOCABULARIES.transform_values.with_index { |_vocabulary, index| index }
 
@@ -197,10 +203,40 @@ module JSONSchemer
       )
     end
 
+    def openapi30
+      @openapi30 ||= Schema.new(
+        OpenAPI30::SCHEMA,
+        :vocabulary => {
+          'json-schemer://draft4' => true,
+          'json-schemer://openapi30' => true
+        },
+        :base_uri => OpenAPI30::BASE_URI,
+        :ref_resolver => OpenAPI30::Meta::SCHEMAS.to_proc,
+        :regexp_resolver => 'ecma',
+        :formats => {
+          'int32' => proc { |instance, _value| instance.is_a?(Integer) && instance.bit_length <= 32 },
+          'int64' => proc { |instance, _value| instance.is_a?(Integer) && instance.bit_length <= 64 },
+          'float' => proc { |instance, _value| instance.is_a?(Float) },
+          'double' => proc { |instance, _value| instance.is_a?(Float) },
+          'byte' => proc { |instance, _value| Format.decode_content_encoding(instance, 'base64').first },
+          'binary' => proc { |instance, _value| instance.is_a?(String) && instance.encoding == Encoding::ASCII_8BIT },
+          'password' => proc { |_instance, _value| true }
+        }
+      )
+    end
+
     def openapi31_document
       @openapi31_document ||= Schema.new(
         OpenAPI31::Document::SCHEMA_BASE,
         :ref_resolver => OpenAPI31::Document::SCHEMAS.to_proc,
+        :regexp_resolver => 'ecma'
+      )
+    end
+
+    def openapi30_document
+      @openapi30_document ||= Schema.new(
+        OpenAPI30::Document::SCHEMA,
+        :ref_resolver => OpenAPI30::Document::SCHEMAS.to_proc,
         :regexp_resolver => 'ecma'
       )
     end
@@ -218,7 +254,8 @@ module JSONSchemer
     Draft4::BASE_URI.to_s => method(:draft4),
     # version-less $schema deprecated after Draft 4
     'http://json-schema.org/schema#' => method(:draft4),
-    OpenAPI31::BASE_URI.to_s => method(:openapi31)
+    OpenAPI31::BASE_URI.to_s => method(:openapi31),
+    OpenAPI30::BASE_URI.to_s => method(:openapi30)
   }.freeze
 
   META_SCHEMAS_BY_BASE_URI_STR = Hash.new do |hash, base_uri_str|

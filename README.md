@@ -1,6 +1,6 @@
 # JSONSchemer
 
-JSON Schema validator. Supports drafts 4, 6, 7, 2019-09, 2020-12, and OpenAPI 3.1.
+JSON Schema validator. Supports drafts 4, 6, 7, 2019-09, 2020-12, OpenAPI 3.0, and OpenAPI 3.1.
 
 ## Installation
 
@@ -123,6 +123,7 @@ JSONSchemer.schema(
   # 'http://json-schema.org/draft-04/schema#': JSONSchemer.draft4
   # 'http://json-schema.org/schema#': JSONSchemer.draft4
   # 'https://spec.openapis.org/oas/3.1/dialect/base': JSONSchemer.openapi31
+  # 'json-schemer://openapi30/schema': JSONSchemer.openapi30
   # default: JSONSchemer.draft202012
   meta_schema: 'https://json-schema.org/draft/2020-12/schema',
 
@@ -167,11 +168,16 @@ JSONSchemer.schema(
   # output formatting (https://json-schema.org/draft/2020-12/json-schema-core.html#section-12)
   # 'classic'/'flag'/'basic'/'detailed'/'verbose'
   # default: 'classic'
-  output_format: 'basic'
+  output_format: 'basic',
+
+  # validate `readOnly`/`writeOnly` keywords (https://spec.openapis.org/oas/v3.0.3#fixed-fields-19)
+  # 'read'/'write'/nil
+  # default: nil
+  access_mode: 'read'
 )
 ```
 
-## OpenAPI 3.1
+## OpenAPI
 
 ```ruby
 document = JSONSchemer.openapi({

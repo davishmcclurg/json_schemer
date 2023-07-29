@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module JSONSchemer
   class Schema
-    Context = Struct.new(:instance, :dynamic_scope, :adjacent_results, :short_circuit) do
+    Context = Struct.new(:instance, :dynamic_scope, :adjacent_results, :short_circuit, :access_mode) do
       def original_instance(instance_location)
         Hana::Pointer.parse(Location.resolve(instance_location)).reduce(instance) do |obj, token|
           obj.fetch(obj.is_a?(Array) ? token.to_i : token)
@@ -56,7 +56,8 @@ module JSONSchemer
       property_default_resolver: DEFAULT_PROPERTY_DEFAULT_RESOLVER,
       ref_resolver: DEFAULT_REF_RESOLVER,
       regexp_resolver: 'ruby',
-      output_format: 'classic'
+      output_format: 'classic',
+      access_mode: nil
     )
       @value = deep_stringify_keys(value)
       @parent = parent
@@ -76,16 +77,17 @@ module JSONSchemer
       @original_ref_resolver = ref_resolver
       @original_regexp_resolver = regexp_resolver
       @output_format = output_format
+      @access_mode = access_mode
       @parsed = parse
     end
 
-    def valid?(instance)
-      validate(instance, :output_format => 'flag').fetch('valid')
+    def valid?(instance, **options)
+      validate(instance, :output_format => 'flag', **options).fetch('valid')
     end
 
-    def validate(instance, output_format: @output_format)
+    def validate(instance, output_format: @output_format, access_mode: @access_mode)
       instance_location = Location.root
-      context = Context.new(instance, [], nil, (!insert_property_defaults && output_format == 'flag'))
+      context = Context.new(instance, [], nil, (!insert_property_defaults && output_format == 'flag'), access_mode)
       result = validate_instance(deep_stringify_keys(instance), instance_location, root_keyword_location, context)
       if insert_property_defaults && result.insert_property_defaults(context, &property_default_resolver)
         result = validate_instance(deep_stringify_keys(instance), instance_location, root_keyword_location, context)

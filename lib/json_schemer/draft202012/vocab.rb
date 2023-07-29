@@ -94,8 +94,8 @@ module JSONSchemer
         # 'description' => MetaData::Description,
         # 'default' => MetaData::Default,
         # 'deprecated' => MetaData::Deprecated,
-        # 'readOnly' => MetaData::ReadOnly,
-        # 'writeOnly' => MetaData::WriteOnly,
+        'readOnly' => MetaData::ReadOnly,
+        'writeOnly' => MetaData::WriteOnly,
         # 'examples' => MetaData::Examples
       }
     end

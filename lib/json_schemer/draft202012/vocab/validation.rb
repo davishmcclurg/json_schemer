@@ -26,11 +26,11 @@ module JSONSchemer
           end
 
           def validate(instance, instance_location, keyword_location, _context)
-            case value
+            case parsed
             when String
-              result(instance, instance_location, keyword_location, valid_type(value, instance), :type => value)
+              result(instance, instance_location, keyword_location, valid_type(parsed, instance), :type => parsed)
             when Array
-              result(instance, instance_location, keyword_location, value.any? { |type| valid_type(type, instance) })
+              result(instance, instance_location, keyword_location, parsed.any? { |type| valid_type(type, instance) })
             end
           end
 
@@ -241,9 +241,22 @@ module JSONSchemer
             "object at #{formatted_instance_location} is missing required properties: #{details.fetch('missing_keys').join(', ')}"
           end
 
-          def validate(instance, instance_location, keyword_location, _context)
+          def validate(instance, instance_location, keyword_location, context)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Hash)
-            missing_keys = value - instance.keys
+
+            required_keys = value
+
+            if context.access_mode && schema.parsed.key?('properties')
+              inapplicable_access_mode_keys = []
+              schema.parsed.fetch('properties').parsed.each do |property, subschema|
+                read_only, write_only = subschema.parsed.values_at('readOnly', 'writeOnly')
+                inapplicable_access_mode_keys << property if context.access_mode == 'write' && read_only&.parsed == true
+                inapplicable_access_mode_keys << property if context.access_mode == 'read' && write_only&.parsed == true
+              end
+              required_keys -= inapplicable_access_mode_keys
+            end
+
+            missing_keys = required_keys - instance.keys
             result(instance, instance_location, keyword_location, missing_keys.none?, :details => { 'missing_keys' => missing_keys })
           end
         end

@@ -614,20 +614,52 @@ class OpenAPITest < Minitest::Test
     schemer = JSONSchemer.schema(schema, :meta_schema => JSONSchemer.openapi31)
 
     assert(schemer.valid_schema?)
-    assert(schemer.valid?('a' => 2.pow(31)))
-    refute(schemer.valid?('a' => 2.pow(32)))
-    assert(schemer.valid?('b' => 2.pow(63)))
-    refute(schemer.valid?('b' => 2.pow(64)))
-    assert(schemer.valid?('c' => 2.0))
-    refute(schemer.valid?('c' => 2))
-    assert(schemer.valid?('d' => 2.0))
-    refute(schemer.valid?('d' => 2))
-    assert(schemer.valid?('e' => 2))
-    assert(schemer.valid?('e' => 'anything'))
+    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    assert(schemer.valid?({ 'c' => 2.0 }))
+    refute(schemer.valid?({ 'c' => 2 }))
+    assert(schemer.valid?({ 'd' => 2.0 }))
+    refute(schemer.valid?({ 'd' => 2 }))
+    assert(schemer.valid?({ 'e' => 2 }))
+    assert(schemer.valid?({ 'e' => 'anything' }))
+  end
+
+  def test_openapi30_formats
+    schema = {
+      'properties' => {
+        'a' => { 'format' => 'int32' },
+        'b' => { 'format' => 'int64' },
+        'c' => { 'format' => 'float' },
+        'd' => { 'format' => 'double' },
+        'e' => { 'format' => 'password' },
+        'f' => { 'format' => 'byte' },
+        'g' => { 'format' => 'binary' }
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema, :meta_schema => JSONSchemer.openapi30)
+
+    assert(schemer.valid_schema?)
+    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    assert(schemer.valid?({ 'c' => 2.0 }))
+    refute(schemer.valid?({ 'c' => 2 }))
+    assert(schemer.valid?({ 'd' => 2.0 }))
+    refute(schemer.valid?({ 'd' => 2 }))
+    assert(schemer.valid?({ 'e' => 2 }))
+    assert(schemer.valid?({ 'e' => 'anything' }))
+    refute(schemer.valid?({ 'f' => '!' }))
+    assert(schemer.valid?({ 'f' => 'IQ==' }))
+    refute(schemer.valid?({ 'g' => '!' }))
+    assert(schemer.valid?({ 'g' => '!'.b }))
   end
 
   def test_unsupported_openapi_version
-    assert_raises(JSONSchemer::UnsupportedOpenAPIVersion) { JSONSchemer.openapi({ 'openapi' => '3.0.0' }) }
+    assert_raises(JSONSchemer::UnsupportedOpenAPIVersion) { JSONSchemer.openapi({ 'openapi' => '2.0' }) }
   end
 
   def test_unsupported_json_schema_dialect
@@ -811,5 +843,149 @@ class OpenAPITest < Minitest::Test
     refute(document.schema('draft202012_schema').valid?({ 'type' => 'foo' }))
     refute(document.ref('#/components/schemas/openapi31_schema/$defs/draft202012_schema').valid?({ 'type' => 'foo' }))
     assert(document.ref('#/components/schemas/draft202012_schema/$defs/openapi31_schema').valid?({ 'type' => 'foo' }))
+  end
+
+  def test_access_mode
+    schemer = JSONSchemer.schema({
+      'properties' => {
+        'read_only_true' => {
+          'readOnly' => true
+        },
+        'read_only_false' => {
+          'readOnly' => false
+        },
+        'write_only_true' => {
+          'writeOnly' => true
+        },
+        'write_only_false' => {
+          'writeOnly' => false
+        }
+      }
+    })
+
+    assert(schemer.valid_schema?)
+
+    assert(schemer.valid?({ 'read_only_true' => 1, 'read_only_false' => 2, 'write_only_true' => 3, 'write_only_false' => 4 }))
+
+    assert(schemer.valid?({ 'read_only_true' => 1 }))
+    assert(schemer.valid?({ 'read_only_true' => 1 }, :access_mode => 'read'))
+    refute(schemer.valid?({ 'read_only_true' => 1 }, :access_mode => 'write'))
+    assert_includes(schemer.validate({ 'read_only_true' => 1 }, :access_mode => 'write').first.fetch('error'), 'readOnly')
+
+    assert(schemer.valid?({ 'read_only_false' => 2 }))
+    assert(schemer.valid?({ 'read_only_false' => 2 }, :access_mode => 'read'))
+    assert(schemer.valid?({ 'read_only_false' => 2 }, :access_mode => 'write'))
+
+    assert(schemer.valid?({ 'write_only_true' => 3 }))
+    refute(schemer.valid?({ 'write_only_true' => 3 }, :access_mode => 'read'))
+    assert(schemer.valid?({ 'write_only_true' => 3 }, :access_mode => 'write'))
+    assert_includes(schemer.validate({ 'write_only_true' => 3 }, :access_mode => 'read').first.fetch('error'), 'writeOnly')
+
+    assert(schemer.valid?({ 'write_only_false' => 4 }))
+    assert(schemer.valid?({ 'write_only_false' => 4 }, :access_mode => 'read'))
+    assert(schemer.valid?({ 'write_only_false' => 4 }, :access_mode => 'write'))
+
+    schemer = JSONSchemer.schema({
+      'required' => ['read_only_true', 'write_only_true'],
+      'properties' => {
+        'read_only_true' => {
+          'readOnly' => true
+        },
+        'write_only_true' => {
+          'writeOnly' => true
+        }
+      }
+    })
+
+    assert(schemer.valid_schema?)
+
+    refute(schemer.valid?({ 'read_only_true' => 1 }))
+    assert(schemer.valid?({ 'read_only_true' => 1 }, :access_mode => 'read'))
+    refute(schemer.valid?({ 'write_only_true' => 2 }))
+    assert(schemer.valid?({ 'write_only_true' => 2 }, :access_mode => 'write'))
+  end
+
+  def test_nullable
+    schemer = JSONSchemer.openapi({
+      'openapi' => '3.0.0',
+      'components' => {
+        'schemas' => {
+          'test' => {
+            'type' => 'string',
+            'nullable' => true
+          }
+        }
+      }
+    }).schema('test')
+
+    assert(schemer.valid_schema?)
+    assert(schemer.valid?('1'))
+    refute(schemer.valid?(1))
+    assert(schemer.valid?(nil))
+
+    schemer = JSONSchemer.openapi({
+      'openapi' => '3.0.0',
+      'components' => {
+        'schemas' => {
+          'test' => {
+            'type' => 'string',
+            'nullable' => false
+          }
+        }
+      }
+    }).schema('test')
+
+    assert(schemer.valid_schema?)
+    assert(schemer.valid?('1'))
+    refute(schemer.valid?(1))
+    refute(schemer.valid?(nil))
+  end
+
+  def test_openapi30
+    openapi = {
+      'openapi' => '3.0.0',
+      'info' => {
+        'title' => 'example',
+        'version' => '0.0.1'
+      },
+      'components' => {
+        'schemas' => {
+          'test' => {
+            'exclusiveMinimum' => true
+          }
+        }
+      }
+    }
+
+    document = JSONSchemer.openapi(openapi)
+    schemer = document.schema('test')
+
+    assert_equal(['required', { 'missing_keys' => ['paths'] }], document.validate.first.values_at('type', 'details'))
+    assert_equal(['dependencies', { 'missing_keys' => ['minimum'] }], schemer.validate_schema.first.values_at('type', 'details'))
+
+    openapi = {
+      'openapi' => '3.0.0',
+      'info' => {
+        'title' => 'example',
+        'version' => '0.0.1'
+      },
+      'paths' => {},
+      'components' => {
+        'schemas' => {
+          'test' => {
+            'type' => 'string',
+            'nullable' => true,
+            'minimum' => 0,
+            'exclusiveMinimum' => true
+          }
+        }
+      }
+    }
+
+    document = JSONSchemer.openapi(openapi)
+    schemer = document.schema('test')
+
+    assert(document.valid?)
+    assert(schemer.valid_schema?)
   end
 end
