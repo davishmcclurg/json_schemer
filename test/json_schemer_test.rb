@@ -406,4 +406,23 @@ class JSONSchemerTest < Minitest::Test
     )
     assert(subschemer.valid?({ 'x' => '1', 'y' => 1 }))
   end
+
+  def test_published_meta_schemas
+    [
+      JSONSchemer::Draft202012::SCHEMA,
+      *JSONSchemer::Draft202012::Meta::SCHEMAS.values,
+      JSONSchemer::Draft201909::SCHEMA,
+      *JSONSchemer::Draft201909::Meta::SCHEMAS.values,
+      JSONSchemer::Draft7::SCHEMA,
+      JSONSchemer::Draft6::SCHEMA,
+      JSONSchemer::Draft4::SCHEMA,
+      JSONSchemer::OpenAPI31::SCHEMA,
+      JSONSchemer::OpenAPI31::Meta::BASE,
+      JSONSchemer::OpenAPI31::Document::SCHEMA,
+      JSONSchemer::OpenAPI30::Document::SCHEMA
+    ].each do |meta_schema|
+      id = meta_schema.key?('$id') ? meta_schema.fetch('$id') : meta_schema.fetch('id')
+      assert_equal(meta_schema, JSON.parse(Net::HTTP.get(URI(id))))
+    end
+  end
 end
