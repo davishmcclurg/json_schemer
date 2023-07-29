@@ -106,6 +106,27 @@ JSONSchemer.schema({ '$id' => '#invalid' }).validate_schema.to_a
 #      "root_schema"=>{...meta schema},
 #      "type"=>"pattern",
 #      "error"=>"string at `/$id` does not match pattern: ^[^#]*#?$"}]
+
+# subschemas
+
+schema = {
+  'type' => 'integer',
+  '$defs' => {
+    'foo' => {
+      'type' => 'string'
+    }
+  }
+}
+schemer = JSONSchemer.schema(schema)
+
+schemer.ref('#/$defs/foo').validate(1).to_a
+# => [{"data"=>1,
+#      "data_pointer"=>"",
+#      "schema"=>{"type"=>"string"},
+#      "schema_pointer"=>"/$defs/foo",
+#      "root_schema"=>{"type"=>"integer", "$defs"=>{"foo"=>{"type"=>"string"}}},
+#      "type"=>"string",
+#      "error"=>"instance at root is not a string"}]
 ```
 
 ## Options

@@ -103,6 +103,10 @@ module JSONSchemer
       meta_schema.validate(value)
     end
 
+    def ref(value)
+      resolve_ref(URI.join(base_uri, value))
+    end
+
     def validate_instance(instance, instance_location, keyword_location, context)
       context.dynamic_scope.push(self)
       original_adjacent_results = context.adjacent_results

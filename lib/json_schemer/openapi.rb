@@ -30,7 +30,7 @@ module JSONSchemer
     end
 
     def ref(value)
-      @schema.resolve_ref(URI.join(@schema.base_uri, value))
+      @schema.ref(value)
     end
 
     def schema(name)

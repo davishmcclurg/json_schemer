@@ -374,4 +374,36 @@ class JSONSchemerTest < Minitest::Test
     refute(schemer.valid?({ 2 => 'tow' }))
     refute(schemer.valid?({ '2' => 'tow' }))
   end
+
+  def test_schema_ref
+    schemer = JSONSchemer.schema({
+      'type' => 'integer',
+      '$defs' => {
+        'foo' => {
+          'type' => 'object',
+          'required' => ['x', 'y'],
+          'properties' => {
+            'x' => {
+              'type' => 'string'
+            },
+            'y' => {
+              'type' => 'integer'
+            }
+          }
+        }
+      }
+    })
+
+    assert(schemer.valid?(1))
+    refute(schemer.valid?('1'))
+
+    subschemer = schemer.ref('#/$defs/foo')
+
+    refute(subschemer.valid?(1))
+    assert_equal(
+      [["/x", "/$defs/foo/properties/x", "string"], ["", "/$defs/foo", "required"]],
+      subschemer.validate({ 'x' => 1 }).map { |error| error.values_at('data_pointer', 'schema_pointer', 'type') }
+    )
+    assert(subschemer.valid?({ 'x' => '1', 'y' => 1 }))
+  end
 end
