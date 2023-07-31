@@ -119,36 +119,52 @@ Benchmark.ips do |x|
 
     # json_schemer
 
-    x.report("json_schemer, uninitialized, #{name}, valid") do
+    x.report("json_schemer, uninitialized, #{name}, valid, basic") do
       JSONSchemer.schema(schema).validate(valid, :output_format => 'basic').fetch('annotations')
     end
 
-    x.report("json_schemer, uninitialized, #{name}, invalid") do
+    x.report("json_schemer, uninitialized, #{name}, invalid, basic") do
       JSONSchemer.schema(schema).validate(invalid, :output_format => 'basic').fetch('errors')
     end
 
-    x.report("json_schemer, initialized, #{name}, valid") do
+    x.report("json_schemer, initialized, #{name}, valid, basic") do
       initialized_json_schemer.validate(valid, :output_format => 'basic').fetch('annotations')
     end
 
-    x.report("json_schemer, initialized, #{name}, invalid") do
+    x.report("json_schemer, initialized, #{name}, invalid, basic") do
       initialized_json_schemer.validate(invalid, :output_format => 'basic').fetch('errors')
     end
 
-    x.report("json_schemer, uninitialized, #{name}, valid, to_a") do
+    x.report("json_schemer, uninitialized, #{name}, valid, basic, to_a") do
       JSONSchemer.schema(schema).validate(valid, :output_format => 'basic').fetch('annotations').to_a
     end
 
-    x.report("json_schemer, uninitialized, #{name}, invalid, to_a") do
+    x.report("json_schemer, uninitialized, #{name}, invalid, basic, to_a") do
       JSONSchemer.schema(schema).validate(invalid, :output_format => 'basic').fetch('errors').to_a
     end
 
-    x.report("json_schemer, initialized, #{name}, valid, to_a") do
+    x.report("json_schemer, initialized, #{name}, valid, basic, to_a") do
       initialized_json_schemer.validate(valid, :output_format => 'basic').fetch('annotations').to_a
     end
 
-    x.report("json_schemer, initialized, #{name}, invalid, to_a") do
+    x.report("json_schemer, initialized, #{name}, invalid, basic, to_a") do
       initialized_json_schemer.validate(invalid, :output_format => 'basic').fetch('errors').to_a
+    end
+
+    x.report("json_schemer, uninitialized, #{name}, valid, classic, to_a") do
+      JSONSchemer.schema(schema).validate(valid).to_a
+    end
+
+    x.report("json_schemer, uninitialized, #{name}, invalid, classic, to_a") do
+      JSONSchemer.schema(schema).validate(invalid).to_a
+    end
+
+    x.report("json_schemer, initialized, #{name}, valid, classic, to_a") do
+      initialized_json_schemer.validate(valid).to_a
+    end
+
+    x.report("json_schemer, initialized, #{name}, invalid, classic, to_a") do
+      initialized_json_schemer.validate(invalid).to_a
     end
 
     # json_validation
