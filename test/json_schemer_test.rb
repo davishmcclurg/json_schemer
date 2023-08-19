@@ -425,4 +425,110 @@ class JSONSchemerTest < Minitest::Test
       assert_equal(meta_schema, JSON.parse(Net::HTTP.get(URI(id))))
     end
   end
+
+  def test_bundle
+    schema = {
+      'allOf' => [
+        { '$ref' => 'one' },
+        { '$ref' => 'two' },
+        { '$ref' => '#four' },
+        { '$ref' => '#/$defs/four' },
+        { '$ref' => 'five#/$defs/digit' },
+        { '$ref' => 'six#plus' },
+        { '$ref' => 'seven' }
+      ],
+      '$defs' => {
+        'four' => {
+          '$anchor' => 'four',
+          'maxLength' => 1
+        }
+      }
+    }
+    refs = {
+      URI('json-schemer://schema/one') => {
+        'type' => 'string'
+      },
+      URI('json-schemer://schema/two') => {
+        '$ref' => 'three'
+      },
+      URI('json-schemer://schema/three') => {
+        'minLength' => 1
+      },
+      URI('json-schemer://schema/five') => {
+        '$defs' => {
+          'digit' => {
+            'pattern' => '^\d*$'
+          }
+        }
+      },
+      URI('json-schemer://schema/six') => {
+        '$defs' => {
+          '?' => {
+            '$anchor' => 'plus',
+            'pattern' => '^[6-9]*$'
+          }
+        }
+      },
+      URI('json-schemer://schema/seven') => {
+        '$id' => 'different',
+        'enum' => ['6', '7']
+      }
+    }
+    schemer = JSONSchemer.schema(schema, :ref_resolver => refs.to_proc)
+    assert(schemer.valid?('6'))
+    refute(schemer.valid?(''))
+    refute(schemer.valid?('22'))
+    refute(schemer.valid?('x'))
+    refute(schemer.valid?('5'))
+    refute(schemer.valid?('8'))
+    assert(schemer.valid?('7'))
+
+    compound_document = schemer.bundle
+
+    assert_equal(
+      [
+        'four',
+        'json-schemer://schema/one',
+        'json-schemer://schema/two',
+        'json-schemer://schema/three',
+        'json-schemer://schema/five',
+        'json-schemer://schema/six',
+        'json-schemer://schema/seven'
+      ].sort,
+      compound_document.fetch('$defs').keys.sort
+    )
+
+    bundle = JSONSchemer.schema(compound_document)
+    assert(bundle.valid?('6'))
+    refute(bundle.valid?(''))
+    refute(bundle.valid?('22'))
+    refute(bundle.valid?('x'))
+    refute(bundle.valid?('5'))
+    refute(bundle.valid?('8'))
+    assert(bundle.valid?('7'))
+  end
+
+  def test_bundle_exclusive_ref
+    schema = {
+      '$schema' => 'http://json-schema.org/draft-07/schema#',
+      '$ref' => 'external',
+      'allOf' => [true]
+    }
+    refs = {
+      URI('json-schemer://schema/external') => {
+        'const' => 'yah'
+      }
+    }
+    schemer = JSONSchemer.schema(schema, :ref_resolver => refs.to_proc)
+    assert(schemer.valid?('yah'))
+    refute(schemer.valid?('nah'))
+
+    compound_document = schemer.bundle
+
+    assert_equal([true, { '$ref' => 'external' }], compound_document.fetch('allOf'))
+
+    bundle = JSONSchemer.schema(schemer.bundle)
+    assert(bundle.valid?('yah'))
+    refute(bundle.valid?('nah'))
+  end
 end

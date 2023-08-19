@@ -127,6 +127,33 @@ schemer.ref('#/$defs/foo').validate(1).to_a
 #      "root_schema"=>{"type"=>"integer", "$defs"=>{"foo"=>{"type"=>"string"}}},
 #      "type"=>"string",
 #      "error"=>"instance at root is not a string"}]
+
+# schema bundling (https://json-schema.org/draft/2020-12/json-schema-core.html#section-9.3)
+
+schema = {
+  '$id' => 'http://example.com/schema',
+  'allOf' => [
+    { '$ref' => 'schema/one' },
+    { '$ref' => 'schema/two' }
+  ]
+}
+refs = {
+  URI('http://example.com/schema/one') => {
+    'type' => 'integer'
+  },
+  URI('http://example.com/schema/two') => {
+    'minimum' => 11
+  }
+}
+schemer = JSONSchemer.schema(schema, :ref_resolver => refs.to_proc)
+
+schemer.bundle
+# => {"$id"=>"http://example.com/schema",
+#     "allOf"=>[{"$ref"=>"schema/one"}, {"$ref"=>"schema/two"}],
+#     "$schema"=>"https://json-schema.org/draft/2020-12/schema",
+#     "$defs"=>
+#      {"http://example.com/schema/one"=>{"type"=>"integer", "$id"=>"http://example.com/schema/one", "$schema"=>"https://json-schema.org/draft/2020-12/schema"},
+#       "http://example.com/schema/two"=>{"minimum"=>11, "$id"=>"http://example.com/schema/two", "$schema"=>"https://json-schema.org/draft/2020-12/schema"}}}
 ```
 
 ## Options

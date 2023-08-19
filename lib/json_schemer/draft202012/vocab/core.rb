@@ -55,8 +55,12 @@ module JSONSchemer
             false
           end
 
+          def ref_uri
+            @ref_uri ||= URI.join(schema.base_uri, value)
+          end
+
           def ref_schema
-            @ref_schema ||= root.resolve_ref(URI.join(schema.base_uri, value))
+            @ref_schema ||= root.resolve_ref(ref_uri)
           end
 
           def validate(instance, instance_location, keyword_location, context)

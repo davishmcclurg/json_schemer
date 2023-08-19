@@ -207,6 +207,55 @@ module JSONSchemer
       regexp_resolver.call(pattern) || raise(InvalidRegexpResolution, pattern)
     end
 
+    def bundle
+      return value unless value.is_a?(Hash)
+
+      id_keyword = meta_schema.id_keyword
+      defs_keyword = meta_schema.defs_keyword
+
+      compound_document = value.dup
+      compound_document[id_keyword] = base_uri.to_s
+      compound_document['$schema'] = meta_schema.base_uri.to_s
+      embedded_resources = compound_document[defs_keyword] = (compound_document[defs_keyword]&.dup || {})
+
+      if compound_document.key?('$ref') && meta_schema.keywords.fetch('$ref').exclusive?
+        compound_document['allOf'] = (compound_document['allOf']&.dup || [])
+        compound_document['allOf'] << { '$ref' => compound_document.delete('$ref') }
+      end
+
+      values = [self]
+      while value = values.shift
+        case value
+        when Schema
+          values << value.parsed
+        when Keyword
+          if value.respond_to?(:ref_uri) && value.respond_to?(:ref_schema)
+            ref_uri = value.ref_uri.dup
+            ref_uri.fragment = nil
+            ref_id = ref_uri.to_s
+            ref_schema = value.ref_schema.root
+
+            next if ref_schema == root || embedded_resources.key?(ref_id)
+
+            embedded_resource = ref_schema.value.dup
+            embedded_resource[id_keyword] = ref_id
+            embedded_resource['$schema'] = ref_schema.meta_schema.base_uri.to_s
+            embedded_resources[ref_id] = embedded_resource
+
+            values << ref_schema
+          else
+            values << value.parsed
+          end
+        when Hash
+          values.concat(value.values)
+        when Array
+          values.concat(value)
+        end
+      end
+
+      compound_document
+    end
+
     def absolute_keyword_location
       # using `equal?` because `URI::Generic#==` is slow
       @absolute_keyword_location ||= if !parent || (!parent.schema.base_uri.equal?(base_uri) && (base_uri.fragment.nil? || base_uri.fragment.empty?))
@@ -231,7 +280,11 @@ module JSONSchemer
     end
 
     def id_keyword
-      @id_keyword ||= (parsed['$schema']&.parsed == Draft4::BASE_URI.to_s ? 'id' : '$id')
+      @id_keyword ||= (keywords.key?('$id') ? '$id' : 'id')
+    end
+
+    def defs_keyword
+      @defs_keyword ||= (keywords.key?('$defs') ? '$defs' : 'definitions')
     end
 
     def resources

@@ -66,35 +66,57 @@ class JSONSchemaTestSuiteTest < Minitest::Test
             :regexp_resolver => 'ecma'
           )
 
+          bundled_schema = schemer.bundle
+          # only resolve refs for custom meta schemas (for fetching `$schema` itself)
+          bundled_ref_resolver = proc do |uri|
+            # :nocov:
+            raise if JSONSchemer::META_SCHEMA_CALLABLES_BY_BASE_URI_STR.key?(bundled_schema.fetch('$schema'))
+            # :nocov:
+            REF_RESOLVER.call(uri)
+          end
+          bundled_schemer = JSONSchemer::Schema.new(
+            bundled_schema,
+            :meta_schema => meta_schema,
+            :format => file.start_with?("JSON-Schema-Test-Suite/tests/#{draft}/optional/"),
+            :ref_resolver => bundled_ref_resolver,
+            :regexp_resolver => 'ecma'
+          )
+
           assert(schemer.valid_schema?)
           assert(JSONSchemer.valid_schema?(schema, :meta_schema => meta_schema, :ref_resolver => REF_RESOLVER))
+          assert(bundled_schemer.valid_schema?)
+          assert(JSONSchemer.valid_schema?(bundled_schema, :meta_schema => meta_schema, :ref_resolver => bundled_ref_resolver))
 
           tests.map do |test|
             data, valid = test.values_at('data', 'valid')
 
+            message = JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
+
             data = JSON.parse(JSON.generate(data), :symbolize_names => true) if rand < 0.5
 
-            assert_equal(
-              valid,
-              schemer.valid?(data),
-              JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
-            )
-
-            assert_equal(
-              valid,
-              schemer.validate(data, :output_format => 'basic').fetch('valid'),
-              JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
-            )
+            assert_equal(valid, schemer.valid?(data), message)
+            assert_equal(valid, schemer.validate(data, :output_format => 'basic').fetch('valid'), message)
+            assert_equal(valid, bundled_schemer.valid?(data), message)
 
             output_schemers&.each do |output_format, output_schemer|
               output = OutputHelper.as_json!(schemer.validate(data, :output_format => output_format))
               assert(output_schemer.valid?(output))
             end
 
-            schemer.validate(data, :output_format => 'classic').map { |result| result.delete('error'); result }
+            errors = schemer.validate(data, :output_format => 'classic').to_a
+            bundled_errors = bundled_schemer.validate(data, :output_format => 'classic').to_a
+
+            assert_equal(
+              errors.map { |error| error.slice('data', 'data_pointer', 'type', 'error', 'details') },
+              bundled_errors.map { |error| error.slice('data', 'data_pointer', 'type', 'error', 'details') }
+            )
+
+            errors.each { |error| error.delete('error') }
+
+            errors
           rescue
             # :nocov:
-            puts JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
+            puts message
             raise
             # :nocov:
           end
