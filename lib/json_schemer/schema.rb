@@ -329,6 +329,10 @@ module JSONSchemer
 
         if value.key?('$ref') && keywords.fetch('$ref').exclusive?
           @parsed['$ref'] = keywords.fetch('$ref').new(value.fetch('$ref'), self, '$ref')
+          defs_keyword = meta_schema.defs_keyword
+          if value.key?(defs_keyword) && keywords.key?(defs_keyword)
+            @parsed[defs_keyword] = keywords.fetch(defs_keyword).new(value.fetch(defs_keyword), self, defs_keyword)
+          end
         else
           keyword_order = meta_schema.keyword_order
           last = keywords.size
