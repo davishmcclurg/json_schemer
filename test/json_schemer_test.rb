@@ -275,7 +275,7 @@ class JSONSchemerTest < Minitest::Test
 
   def test_draft7_additional_items_error
     schemer = JSONSchemer.schema({ 'items' => [true], 'additionalItems' => false }, :meta_schema => JSONSchemer.draft7, :output_format => 'verbose')
-    assert_equal('array items at root do not match `additionalItems` schema', OutputHelper.as_json!(schemer.validate([1, 2])).dig('errors', 1, 'error'))
+    assert_equal('array items at root do not match `additionalItems` schema', schemer.validate([1, 2], :resolve_enumerators => true).dig('errors', 1, 'error'))
   end
 
   def test_inspect

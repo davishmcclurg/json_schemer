@@ -12,17 +12,3 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "json_schemer"
 
 require "minitest/autorun"
-
-module OutputHelper
-  def self.as_json!(output)
-    if output.is_a?(Hash)
-      output['errors'] = as_json!(output.fetch('errors')) if output.key?('errors')
-      output['annotations'] = as_json!(output.fetch('annotations')) if output.key?('annotations')
-      output
-    elsif output.is_a?(Enumerator)
-      output.map { |suboutput| as_json!(suboutput) }
-    else
-      output
-    end
-  end
-end

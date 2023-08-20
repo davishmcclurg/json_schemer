@@ -83,7 +83,7 @@ class OutputFormatTest < Minitest::Test
           }
         ]
       },
-      OutputHelper.as_json!(schemer.validate(instance, :output_format => 'basic'))
+      schemer.validate(instance, :output_format => 'basic', :resolve_enumerators => true)
     )
 
     assert_equal(
@@ -127,7 +127,7 @@ class OutputFormatTest < Minitest::Test
           }
         ]
       },
-      OutputHelper.as_json!(schemer.validate(instance, :output_format => 'detailed'))
+      schemer.validate(instance, :output_format => 'detailed', :resolve_enumerators => true)
     )
   end
 
@@ -246,7 +246,7 @@ class OutputFormatTest < Minitest::Test
           }
         ]
       },
-      OutputHelper.as_json!(schemer.validate(instance, :output_format => 'basic'))
+      schemer.validate(instance, :output_format => 'basic', :resolve_enumerators => true)
     )
 
     assert_equal(
@@ -273,7 +273,7 @@ class OutputFormatTest < Minitest::Test
           }
         ]
       },
-      OutputHelper.as_json!(schemer.validate(instance, :output_format => 'detailed'))
+      schemer.validate(instance, :output_format => 'detailed', :resolve_enumerators => true)
     )
   end
 end

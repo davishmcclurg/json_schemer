@@ -99,7 +99,7 @@ class JSONSchemaTestSuiteTest < Minitest::Test
             assert_equal(valid, bundled_schemer.valid?(data), message)
 
             output_schemers&.each do |output_format, output_schemer|
-              output = OutputHelper.as_json!(schemer.validate(data, :output_format => output_format))
+              output = schemer.validate(data, :output_format => output_format, :resolve_enumerators => true)
               assert(output_schemer.valid?(output))
             end
 
@@ -158,7 +158,7 @@ class JSONSchemaTestSuiteTest < Minitest::Test
                 :regexp_resolver => 'ecma'
               )
 
-              output = OutputHelper.as_json!(schemer.validate(data, :output_format => output_format))
+              output = schemer.validate(data, :output_format => output_format, :resolve_enumerators => true)
 
               assert(
                 output_schemer.valid?(output),
