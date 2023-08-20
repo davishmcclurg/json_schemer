@@ -13,7 +13,12 @@ module JSONSchemer
     include Format::JSONPointer
 
     DEFAULT_SCHEMA = Draft202012::BASE_URI.to_s.freeze
+    SCHEMA_KEYWORD_CLASS = Draft202012::Vocab::Core::Schema
+    VOCABULARY_KEYWORD_CLASS = Draft202012::Vocab::Core::Vocabulary
+    ID_KEYWORD_CLASS = Draft202012::Vocab::Core::Id
     UNKNOWN_KEYWORD_CLASS = Draft202012::Vocab::Core::UnknownKeyword
+    NOT_KEYWORD_CLASS = Draft202012::Vocab::Applicator::Not
+    PROPERTIES_KEYWORD_CLASS = Draft202012::Vocab::Applicator::Properties
     DEFAULT_BASE_URI = URI('json-schemer://schema').freeze
     DEFAULT_FORMATS = {}.freeze
     DEFAULT_KEYWORDS = {}.freeze
@@ -313,19 +318,19 @@ module JSONSchemer
       @parsed = {}
 
       if value.is_a?(Hash) && value.key?('$schema')
-        @parsed['$schema'] = Draft202012::Vocab::Core::Schema.new(value.fetch('$schema'), self, '$schema')
+        @parsed['$schema'] = SCHEMA_KEYWORD_CLASS.new(value.fetch('$schema'), self, '$schema')
       elsif root == self && !meta_schema
-        Draft202012::Vocab::Core::Schema.new(DEFAULT_SCHEMA, self, '$schema')
+        SCHEMA_KEYWORD_CLASS.new(DEFAULT_SCHEMA, self, '$schema')
       end
 
       if value.is_a?(Hash) && value.key?('$vocabulary')
-        @parsed['$vocabulary'] = Draft202012::Vocab::Core::Vocabulary.new(value.fetch('$vocabulary'), self, '$vocabulary')
+        @parsed['$vocabulary'] = VOCABULARY_KEYWORD_CLASS.new(value.fetch('$vocabulary'), self, '$vocabulary')
       elsif vocabulary
-        Draft202012::Vocab::Core::Vocabulary.new(vocabulary, self, '$vocabulary')
+        VOCABULARY_KEYWORD_CLASS.new(vocabulary, self, '$vocabulary')
       end
 
       if root == self && (!value.is_a?(Hash) || !value.key?(meta_schema.id_keyword))
-        Draft202012::Vocab::Core::Id.new(base_uri, self, meta_schema.id_keyword)
+        ID_KEYWORD_CLASS.new(base_uri, self, meta_schema.id_keyword)
       end
 
       if value.is_a?(Hash)

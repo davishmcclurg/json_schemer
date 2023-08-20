@@ -133,12 +133,12 @@ module JSONSchemer
 
       results = [[self, true]]
       while (result, valid = results.pop)
-        next if result.source.is_a?(Draft202012::Vocab::Applicator::Not)
+        next if result.source.is_a?(Schema::NOT_KEYWORD_CLASS)
 
         valid &&= result.valid
         result.nested&.each { |nested_result| results << [nested_result, valid] }
 
-        if result.source.is_a?(Draft202012::Vocab::Applicator::Properties) && result.instance.is_a?(Hash)
+        if result.source.is_a?(Schema::PROPERTIES_KEYWORD_CLASS) && result.instance.is_a?(Hash)
           result.source.parsed.each do |property, schema|
             next if result.instance.key?(property) || !schema.parsed.key?('default')
             default = schema.parsed.fetch('default')
