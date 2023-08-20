@@ -19764,6 +19764,36 @@
       [
 
       ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "a",
+          "data_pointer": "",
+          "schema": {
+            "$anchor": "detached",
+            "type": "integer"
+          },
+          "schema_pointer": "/$defs/detached",
+          "root_schema": {
+            "$id": "http://localhost:1234/draft2019-09/detached-ref.json",
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "$defs": {
+              "foo": {
+                "$ref": "#detached"
+              },
+              "detached": {
+                "$anchor": "detached",
+                "type": "integer"
+              }
+            }
+          },
+          "type": "integer"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/required.json": [

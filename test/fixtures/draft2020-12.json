@@ -5223,6 +5223,36 @@
       [
 
       ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "a",
+          "data_pointer": "",
+          "schema": {
+            "$dynamicAnchor": "detached",
+            "type": "integer"
+          },
+          "schema_pointer": "/$defs/detached",
+          "root_schema": {
+            "$id": "http://localhost:1234/draft2020-12/detached-dynamicref.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "foo": {
+                "$dynamicRef": "#detached"
+              },
+              "detached": {
+                "$dynamicAnchor": "detached",
+                "type": "integer"
+              }
+            }
+          },
+          "type": "integer"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2020-12/enum.json": [
@@ -19210,6 +19240,36 @@
       ],
       [
 
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "a",
+          "data_pointer": "",
+          "schema": {
+            "$anchor": "detached",
+            "type": "integer"
+          },
+          "schema_pointer": "/$defs/detached",
+          "root_schema": {
+            "$id": "http://localhost:1234/draft2020-12/detached-ref.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "foo": {
+                "$ref": "#detached"
+              },
+              "detached": {
+                "$anchor": "detached",
+                "type": "integer"
+              }
+            }
+          },
+          "type": "integer"
+        }
       ]
     ]
   ],

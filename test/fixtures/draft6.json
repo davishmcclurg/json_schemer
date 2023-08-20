@@ -11911,6 +11911,36 @@
       [
 
       ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "a",
+          "data_pointer": "",
+          "schema": {
+            "$id": "#detached",
+            "type": "integer"
+          },
+          "schema_pointer": "/definitions/detached",
+          "root_schema": {
+            "$id": "http://localhost:1234/draft6/detached-ref.json",
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "definitions": {
+              "foo": {
+                "$ref": "#detached"
+              },
+              "detached": {
+                "$id": "#detached",
+                "type": "integer"
+              }
+            }
+          },
+          "type": "integer"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft6/required.json": [
