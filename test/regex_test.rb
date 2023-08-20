@@ -63,11 +63,12 @@ class RegexTest < Minitest::Test
   end
 
   def test_it_raises_for_invalid_regexp_resolution
-    schema = JSONSchemer.schema(
-      { 'pattern' => 'whatever' },
-      :regexp_resolver => proc { |pattern| nil }
-    )
-    assert_raises(JSONSchemer::InvalidRegexpResolution) { schema.valid?('value') }
+    assert_raises(JSONSchemer::InvalidRegexpResolution) do
+      JSONSchemer.schema(
+        { 'pattern' => 'whatever' },
+        :regexp_resolver => proc { |pattern| nil }
+      )
+    end
   end
 
   def test_cached_regexp_resolver

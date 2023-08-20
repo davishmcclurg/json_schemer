@@ -4,55 +4,121 @@ class JSONSchemaTestSuiteTest < Minitest::Test
   INCOMPATIBLE_FILES = if RUBY_ENGINE == 'truffleruby'
     # :nocov:
     Set[
-      'JSON-Schema-Test-Suite/tests/draft4/optional/ecmascript-regex.json',
+      'JSON-Schema-Test-Suite/tests/draft2020-12/optional/ecmascript-regex.json',
+      'JSON-Schema-Test-Suite/tests/draft2019-09/optional/ecmascript-regex.json',
+      'JSON-Schema-Test-Suite/tests/draft7/optional/ecmascript-regex.json',
       'JSON-Schema-Test-Suite/tests/draft6/optional/ecmascript-regex.json',
-      'JSON-Schema-Test-Suite/tests/draft7/optional/ecmascript-regex.json'
+      'JSON-Schema-Test-Suite/tests/draft4/optional/ecmascript-regex.json'
     ]
     # :nocov:
   else
     Set[]
   end
 
-  def test_json_schema_test_suite
-    ref_resolver = JSONSchemer::CachedResolver.new do |uri|
-      if uri.host == 'localhost'
-        path = Pathname.new(__dir__).join('..', 'JSON-Schema-Test-Suite', 'remotes', uri.path.gsub(/\A\//, ''))
-        JSON.parse(path.read)
-      else
-        JSONSchemer::SCHEMA_CLASS_BY_META_SCHEMA.fetch("#{uri}#").meta_schema
-      end
+  OUTPUT_DRAFTS = {
+    'draft2020-12' => JSONSchemer.draft202012,
+    'draft2019-09' => JSONSchemer.draft201909
+  }
+  DRAFTS = OUTPUT_DRAFTS.merge(
+    'draft7' => JSONSchemer.draft7,
+    'draft6' => JSONSchemer.draft6,
+    'draft4' => JSONSchemer.draft4
+  )
+
+  OUTPUT_SCHEMAS = OUTPUT_DRAFTS.each_with_object({}) do |(draft, _meta_schema), out|
+    out[draft] = JSON.parse(Pathname.new(__dir__).join('..', 'JSON-Schema-Test-Suite', 'output-tests', draft, 'output-schema.json').read)
+  end
+  OUTPUT_SCHEMAS_BY_BASE_URI = OUTPUT_SCHEMAS.each_value.each_with_object({}) do |output_schema, out|
+    out[URI(output_schema.fetch('$id'))] = output_schema
+  end
+  OUTPUT_SCHEMERS_BY_DRAFT_AND_OUTPUT_FORMAT = OUTPUT_SCHEMAS.transform_values do |output_schema|
+    output_schema = output_schema.dup
+    output_schema.delete('anyOf')
+    %w[flag basic detailed verbose].each_with_object({}) do |output_format, out|
+      out[output_format] = JSONSchemer.schema(output_schema.merge('$ref' => "#/$defs/#{output_format}"), :regexp_resolver => 'ecma')
     end
+  end
 
-    JSONSchemer::SCHEMA_CLASS_BY_META_SCHEMA.values.uniq.each do |schema_class|
-      files = Dir["JSON-Schema-Test-Suite/tests/#{schema_class.draft_name}/**/*.json"]
-      fixture = Pathname.new(__dir__).join('fixtures', "#{schema_class.draft_name}.json")
+  REF_RESOLVER = JSONSchemer::CachedResolver.new do |uri|
+    if uri.host == 'localhost'
+      path = Pathname.new(__dir__).join('..', 'JSON-Schema-Test-Suite', 'remotes', uri.path.gsub(/\A\//, ''))
+      JSON.parse(path.read)
+    else
+      JSON.parse(Net::HTTP.get(uri))
+    end
+  end
 
-      assert(JSONSchemer.valid_schema?(schema_class.meta_schema))
+  def test_json_schema_test_suite
+    DRAFTS.each do |draft, meta_schema|
+      output_schemers = OUTPUT_SCHEMERS_BY_DRAFT_AND_OUTPUT_FORMAT[draft]
 
-      output = files.each_with_object({}) do |file, file_output|
-        next if file == 'JSON-Schema-Test-Suite/tests/draft7/optional/cross-draft.json'
-
-        definitions = JSON.parse(File.read(file))
-
-        file_output[file] = definitions.map do |defn|
+      output = Dir["JSON-Schema-Test-Suite/tests/#{draft}/**/*.json"].each_with_object({}) do |file, file_output|
+        file_output[file] = JSON.parse(File.read(file)).map do |defn|
           tests, schema = defn.values_at('tests', 'schema')
 
-          schemer = schema_class.new(schema, ref_resolver: ref_resolver, regexp_resolver: 'ecma')
+          schema = JSON.parse(JSON.generate(schema), :symbolize_names => true) if rand < 0.5
+
+          schemer = JSONSchemer::Schema.new(
+            schema,
+            :meta_schema => meta_schema,
+            :format => file.start_with?("JSON-Schema-Test-Suite/tests/#{draft}/optional/"),
+            :ref_resolver => REF_RESOLVER,
+            :regexp_resolver => 'ecma'
+          )
+
+          bundled_schema = schemer.bundle
+          # only resolve refs for custom meta schemas (for fetching `$schema` itself)
+          bundled_ref_resolver = proc do |uri|
+            # :nocov:
+            raise if JSONSchemer::META_SCHEMA_CALLABLES_BY_BASE_URI_STR.key?(bundled_schema.fetch('$schema'))
+            # :nocov:
+            REF_RESOLVER.call(uri)
+          end
+          bundled_schemer = JSONSchemer::Schema.new(
+            bundled_schema,
+            :meta_schema => meta_schema,
+            :format => file.start_with?("JSON-Schema-Test-Suite/tests/#{draft}/optional/"),
+            :ref_resolver => bundled_ref_resolver,
+            :regexp_resolver => 'ecma'
+          )
+
           assert(schemer.valid_schema?)
-          assert(JSONSchemer.valid_schema?(schema, default_schema_class: schema_class))
+          assert(JSONSchemer.valid_schema?(schema, :meta_schema => meta_schema, :ref_resolver => REF_RESOLVER))
+          assert(bundled_schemer.valid_schema?)
+          assert(JSONSchemer.valid_schema?(bundled_schema, :meta_schema => meta_schema, :ref_resolver => bundled_ref_resolver))
 
           tests.map do |test|
             data, valid = test.values_at('data', 'valid')
 
-            errors = schemer.validate(data).to_a
+            message = JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
 
-            if valid
-              assert_empty(errors, "file: #{file}\nschema: #{JSON.pretty_generate(schema)}\ntest: #{JSON.pretty_generate(test)}")
-            else
-              refute_empty(errors, "file: #{file}\nschema: #{JSON.pretty_generate(schema)}\ntest: #{JSON.pretty_generate(test)}")
+            data = JSON.parse(JSON.generate(data), :symbolize_names => true) if rand < 0.5
+
+            assert_equal(valid, schemer.valid?(data), message)
+            assert_equal(valid, schemer.validate(data, :output_format => 'basic').fetch('valid'), message)
+            assert_equal(valid, bundled_schemer.valid?(data), message)
+
+            output_schemers&.each do |output_format, output_schemer|
+              output = schemer.validate(data, :output_format => output_format, :resolve_enumerators => true)
+              assert(output_schemer.valid?(output))
             end
 
+            errors = schemer.validate(data, :output_format => 'classic').to_a
+            bundled_errors = bundled_schemer.validate(data, :output_format => 'classic').to_a
+
+            assert_equal(
+              errors.map { |error| error.slice('data', 'data_pointer', 'type', 'error', 'details') },
+              bundled_errors.map { |error| error.slice('data', 'data_pointer', 'type', 'error', 'details') }
+            )
+
+            errors.each { |error| error.delete('error') }
+
             errors
+          rescue
+            # :nocov:
+            puts message
+            raise
+            # :nocov:
           end
         end
       rescue JSON::ParserError => e
@@ -61,6 +127,7 @@ class JSONSchemaTestSuiteTest < Minitest::Test
         # :nocov:
       end
 
+      fixture = Pathname.new(__dir__).join('fixtures', "#{draft}.json")
       # :nocov:
       if ENV['WRITE_FIXTURES'] == 'true'
         fixture.write("#{JSON.pretty_generate(output)}\n")
@@ -70,6 +137,49 @@ class JSONSchemaTestSuiteTest < Minitest::Test
         assert_equal(output, fixture_json)
       end
       # :nocov:
+    end
+  end
+
+  def test_json_schema_test_suite_output
+    OUTPUT_DRAFTS.each do |draft, _meta_schema|
+      Dir["JSON-Schema-Test-Suite/output-tests/#{draft}/content/**/*.json"].each do |file|
+        JSON.parse(File.read(file)).each do |defn|
+          tests, schema = defn.values_at('tests', 'schema')
+
+          schemer = JSONSchemer.schema(schema, :regexp_resolver => 'ecma')
+
+          tests.each do |test|
+            data, output = test.values_at('data', 'output')
+
+            output.each do |output_format, output_schema|
+              output_schemer = JSONSchemer.schema(
+                output_schema,
+                :ref_resolver => OUTPUT_SCHEMAS_BY_BASE_URI.to_proc,
+                :regexp_resolver => 'ecma'
+              )
+
+              output = schemer.validate(data, :output_format => output_format, :resolve_enumerators => true)
+
+              assert(
+                output_schemer.valid?(output),
+                JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
+              )
+            end
+          rescue
+            # :nocov:
+            puts JSON.pretty_generate('file' => file, 'description' => defn.fetch('description'), 'schema' => schema, 'test' => test)
+            raise
+            # :nocov:
+          end
+        end
+      end
+    end
+  end
+
+  def test_meta_schemas
+    JSONSchemer::META_SCHEMA_CALLABLES_BY_BASE_URI_STR.transform_values(&:call).each_value do |schemer|
+      assert(schemer.valid_schema?)
+      assert(JSONSchemer.valid_schema?(schemer.value))
     end
   end
 end

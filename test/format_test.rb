@@ -23,11 +23,20 @@ class FormatTest < Minitest::Test
     refute(schemer.valid?(1))
   end
 
-  def test_it_raises_for_unknown_supported_format
-    schemer = JSONSchemer.schema({ 'format' => 'unknown' })
-    schemer.stub(:supported_format?, true) do
-      assert_raises(JSONSchemer::UnknownFormat) { schemer.valid?('') }
-    end
+  def test_format_assertion_raises_unknown_format
+    meta = {
+      '$vocabulary' => {
+        'https://json-schema.org/draft/2020-12/vocab/format-assertion' => true
+      }
+    }
+    schemer = JSONSchemer.schema(
+      {
+        '$schema' => 'http://example.com',
+        'format' => 'unknown'
+      },
+      :ref_resolver => proc { meta }
+    )
+    assert_raises(JSONSchemer::UnknownFormat) { schemer.validate('anything') }
   end
 
   def test_it_validates_spaces_in_uri_format

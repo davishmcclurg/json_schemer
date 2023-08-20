@@ -1,18 +1,58 @@
 # frozen_string_literal: true
 module JSONSchemer
   module Format
+    include Duration
     include Email
     include Hostname
+    include JSONPointer
     include URITemplate
 
-    JSON_POINTER_REGEX_STRING = '(\/([^~\/]|~[01])*)*'
-    JSON_POINTER_REGEX = /\A#{JSON_POINTER_REGEX_STRING}\z/.freeze
-    RELATIVE_JSON_POINTER_REGEX = /\A(0|[1-9]\d*)(#|#{JSON_POINTER_REGEX_STRING})?\z/.freeze
     DATE_TIME_OFFSET_REGEX = /(Z|[\+\-]([01][0-9]|2[0-3]):[0-5][0-9])\z/i.freeze
     HOUR_24_REGEX = /T24/.freeze
     LEAP_SECOND_REGEX = /T\d{2}:\d{2}:6/.freeze
     IP_REGEX = /\A[\h:.]+\z/.freeze
     INVALID_QUERY_REGEX = /\s/.freeze
+    IRI_ESCAPE_REGEX = /[^[:ascii:]]/
+    UUID_REGEX = /\A\h{8}-\h{4}-\h{4}-[89AB]\h{3}-\h{12}\z/i
+    NIL_UUID = '00000000-0000-0000-0000-000000000000'
+    ASCII_8BIT_TO_PERCENT_ENCODED = 256.times.each_with_object({}) do |byte, out|
+      out[-byte.chr] = -sprintf('%%%02X', byte)
+    end.freeze
+
+    class << self
+      def percent_encode(data, regexp)
+        data = data.dup
+        data.force_encoding(Encoding::ASCII_8BIT)
+        data.gsub!(regexp, ASCII_8BIT_TO_PERCENT_ENCODED)
+        data.force_encoding(Encoding::US_ASCII)
+      end
+
+      def decode_content_encoding(data, content_encoding)
+        case content_encoding
+        when 'base64'
+          begin
+            [true, Base64.strict_decode64(data)]
+          rescue
+            [false, nil]
+          end
+        else
+          raise UnknownContentEncoding, content_encoding
+        end
+      end
+
+      def parse_content_media_type(data, content_media_type)
+        case content_media_type
+        when 'application/json'
+          begin
+            [true, JSON.parse(data)]
+          rescue
+            [false, nil]
+          end
+        else
+          raise UnknownContentMediaType, content_media_type
+        end
+      end
+    end
 
     def valid_spec_format?(data, format)
       case format
@@ -50,16 +90,13 @@ module JSONSchemer
         valid_relative_json_pointer?(data)
       when 'regex'
         valid_regex?(data)
+      when 'duration'
+        valid_duration?(data)
+      when 'uuid'
+        valid_uuid?(data)
       else
         raise UnknownFormat, format
       end
-    end
-
-    def valid_json?(data)
-      JSON.parse(data)
-      true
-    rescue JSON::ParserError
-      false
     end
 
     def valid_date_time?(data)
@@ -99,28 +136,17 @@ module JSONSchemer
     end
 
     def iri_escape(data)
-      data.gsub(/[^[:ascii:]]/) do |match|
-        us = match
-        tmp = +''
-        us.each_byte do |uc|
-          tmp << sprintf('%%%02X', uc)
-        end
-        tmp
-      end.force_encoding(Encoding::US_ASCII)
-    end
-
-    def valid_json_pointer?(data)
-      JSON_POINTER_REGEX.match?(data)
-    end
-
-    def valid_relative_json_pointer?(data)
-      RELATIVE_JSON_POINTER_REGEX.match?(data)
+      Format.percent_encode(data, IRI_ESCAPE_REGEX)
     end
 
     def valid_regex?(data)
       !!EcmaRegexp.ruby_equivalent(data)
     rescue InvalidEcmaRegexp
       false
+    end
+
+    def valid_uuid?(data)
+      UUID_REGEX.match?(data) || NIL_UUID == data
     end
   end
 end

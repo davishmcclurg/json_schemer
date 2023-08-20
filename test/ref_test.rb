@@ -22,7 +22,8 @@ class RefTest < Minitest::Test
         'schema' => root['definitions']['bar'],
         'schema_pointer' => '/definitions/bar',
         'root_schema' => root,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at root is not a string'
       },
       errors.first
     )
@@ -53,10 +54,47 @@ class RefTest < Minitest::Test
         'schema' => root['allOf'].first['if'],
         'schema_pointer' => '/allOf/0/if',
         'root_schema' => root,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at `/a/x` is not a string'
       },
       errors.first
     )
+  end
+
+  def test_can_json_pointer_refer_to_subschemas_inside_unknown_arrays
+    root = {
+      'unknown' => [{ 'type' => 'string' }],
+      'properties' => {
+        'a' => {
+          'properties' => {
+            'x' => { '$ref' => '#/unknown/0' }
+          }
+        }
+      }
+    }
+    schema = JSONSchemer.schema(root)
+    errors = schema.validate({ 'a' => { 'x' => 1 } }).to_a
+    assert_equal(
+      {
+        'data' => 1,
+        'data_pointer' => '/a/x',
+        'schema' => root['unknown'].first,
+        'schema_pointer' => '/unknown/0',
+        'root_schema' => root,
+        'type' => 'string',
+        'error' => 'value at `/a/x` is not a string'
+      },
+      errors.first
+    )
+  end
+
+  def test_invalid_ref_pointer
+    root = {
+      '$ref' => '#/unknown/beyond',
+      'unknown' => 'notahash'
+    }
+    schema = JSONSchemer.schema(root)
+    assert_raises(JSONSchemer::InvalidRefPointer) { schema.validate({}) }
   end
 
   def test_can_refer_to_subschemas_in_hash_with_remote_pointer
@@ -90,7 +128,8 @@ class RefTest < Minitest::Test
         'schema' => ref_schema['definitions']['bar'],
         'schema_pointer' => '/definitions/bar',
         'root_schema' => ref_schema,
-        'type' => 'string'
+        'type' => 'string',
+        'error' => 'value at `/a/x` is not a string'
       },
       errors.first
     )
@@ -132,7 +171,8 @@ class RefTest < Minitest::Test
         'schema' => ref_schema['definitions']['uuid'],
         'schema_pointer' => '/definitions/uuid',
         'root_schema' => ref_schema,
-        'type' => 'pattern'
+        'type' => 'pattern',
+        'error' => 'string at `/a/x` does not match pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
       },
       errors.first
     )
@@ -201,7 +241,7 @@ class RefTest < Minitest::Test
   end
 
   def test_net_http_ref_resolver
-    schemer = JSONSchemer.schema({ '$ref' => 'http://json-schema.org/draft-07/schema#' }, :ref_resolver => 'net/http')
+    schemer = JSONSchemer.schema({ '$ref' => 'https://json-schema.org/draft/2020-12/schema' }, :ref_resolver => 'net/http')
     assert(schemer.valid?({ 'type' => 'string' }))
     refute(schemer.valid?({ 'type' => 1 }))
   end
@@ -319,9 +359,24 @@ class RefTest < Minitest::Test
     }
     schema = JSONSchemer.schema(
       { '$ref' => 'relative' },
-      :ref_resolver => proc { |uri| refs[uri.to_s] }
+      :ref_resolver => proc { |uri| refs[uri.path.delete_prefix('/')] }
     )
     assert(schema.valid?({ 'bar' => 1 }))
     refute(schema.valid?({ 'bar' => '1' }))
+  end
+
+  def test_exclusive_ref_supports_definitions
+    schema = JSONSchemer.schema({
+      '$schema' => 'http://json-schema.org/draft-07/schema#',
+      '$ref' => '#yah',
+      'definitions' => {
+        'yah' => {
+          '$id' => '#yah',
+          'type' => 'integer'
+        }
+      }
+    })
+    assert(schema.valid?(1))
+    refute(schema.valid?('1'))
   end
 end

@@ -86,17 +86,6 @@ class JSONSchemerTest < Minitest::Test
     refute(schema.valid?('1'))
   end
 
-  def test_it_checks_for_symbol_keys
-    assert_raises(JSONSchemer::InvalidSymbolKey) { JSONSchemer.schema({ :type => 'integer' }) }
-    schema = JSONSchemer.schema(
-      { '$ref' => 'http://example.com' },
-      :ref_resolver => proc do |uri|
-        { :type => 'integer' }
-      end
-    )
-    assert_raises(JSONSchemer::InvalidSymbolKey) { schema.valid?(1) }
-  end
-
   def test_it_returns_nested_errors
     root = {
       'type' => 'object',
@@ -140,20 +129,23 @@ class JSONSchemerTest < Minitest::Test
       }
     }
     schema = JSONSchemer.schema(root)
-    assert_equal(
+    assert_includes(
+      schema.validate({ 'numberOfModules' => 32 }).to_a,
       {
         'data' => 32,
         'data_pointer' => '/numberOfModules',
         'schema' => {
-          'type' => 'integer',
-          'maximum' => 37,
-          'minimum' => 25
+          'not' => {
+            'type' => 'integer',
+            'maximum' => 37,
+            'minimum' => 25
+          }
         },
-        'schema_pointer' => '/properties/numberOfModules/allOf/1/not',
+        'schema_pointer' => '/properties/numberOfModules/allOf/1',
         'root_schema' => root,
-        'type' => 'not'
-      },
-      schema.validate({ 'numberOfModules' => 32 }).first
+        'type' => 'not',
+        'error' => 'value at `/numberOfModules` matches `not` schema'
+      }
     )
     assert_equal(
       {
@@ -164,7 +156,8 @@ class JSONSchemerTest < Minitest::Test
         },
         'schema_pointer' => '/properties/numberOfModules/anyOf/0',
         'root_schema' => root,
-        'type' => 'integer'
+        'type' => 'integer',
+        'error' => 'value at `/numberOfModules` is not an integer'
       },
       schema.validate({ 'numberOfModules' => true }).first
     )
@@ -175,7 +168,8 @@ class JSONSchemerTest < Minitest::Test
         'schema' => root.fetch('properties').fetch('numberOfModules'),
         'schema_pointer' => '/properties/numberOfModules',
         'root_schema' => root,
-        'type' => 'oneOf'
+        'type' => 'oneOf',
+        'error' => 'value at `/numberOfModules` does not match exactly one `oneOf` schema'
       },
       schema.validate({ 'numberOfModules' => 8 }).first
     )
@@ -209,7 +203,8 @@ class JSONSchemerTest < Minitest::Test
 
     schema = JSONSchemer.schema({ 'two' => true }, **options)
     assert_equal([], schema.validate(2).to_a)
-    assert_equal(['error1', 'error2'], schema.validate(3).to_a)
+    errors = schema.validate(3).map { |error| error.fetch('type') }
+    assert_equal(['error1', 'error2'], errors)
     refute(schema.valid?(3))
   end
 
@@ -242,11 +237,51 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_it_raises_for_unsupported_content_encoding
-    assert_raises(NotImplementedError) { JSONSchemer.schema({ 'contentEncoding' => '7bit' }).valid?('') }
+    assert_raises(JSONSchemer::UnknownContentEncoding) { JSONSchemer.schema({ 'contentEncoding' => '7bit' }).valid?('') }
   end
 
   def test_it_raises_for_unsupported_content_media_type
-    assert_raises(NotImplementedError) { JSONSchemer.schema({ 'contentMediaType' => 'application/xml' }).valid?('') }
+    assert_raises(JSONSchemer::UnknownContentMediaType) { JSONSchemer.schema({ 'contentMediaType' => 'application/xml' }).valid?('') }
+  end
+
+  def test_it_raises_for_required_unknown_vocabulary
+    assert_raises(JSONSchemer::UnknownVocabulary) { JSONSchemer.schema({}, :vocabulary => { 'unknown' => true }) }
+  end
+
+  def test_it_raises_for_unknown_output_format
+    assert_raises(JSONSchemer::UnknownOutputFormat) { JSONSchemer.schema({}, :output_format => 'unknown').validate(1) }
+    assert_raises(JSONSchemer::UnknownOutputFormat) { JSONSchemer.schema({}).validate(1, :output_format => 'unknown') }
+  end
+
+  def test_it_raises_for_unsupported_meta_schema
+    assert_raises(JSONSchemer::UnsupportedMetaSchema) { JSONSchemer.schema({}, :meta_schema => 'unsupported') }
+  end
+
+  def test_string_meta_schema
+    assert_equal(JSONSchemer.draft6, JSONSchemer.schema({}, :meta_schema => JSONSchemer::Draft6::BASE_URI.to_s).meta_schema)
+  end
+
+  def test_default_meta_schema
+    assert_equal(JSONSchemer.draft202012, JSONSchemer::Schema.new({}).meta_schema)
+  end
+
+  def test_draft4_default_id
+    assert_equal(JSONSchemer::Schema::DEFAULT_BASE_URI, JSONSchemer.schema(true, :meta_schema => JSONSchemer::Draft4::BASE_URI.to_s).base_uri)
+  end
+
+  def test_it_ignores_content_schema_without_content_media_type
+    assert(JSONSchemer.schema({ 'contentSchema' => false }).valid?(1))
+  end
+
+  def test_draft7_additional_items_error
+    schemer = JSONSchemer.schema({ 'items' => [true], 'additionalItems' => false }, :meta_schema => JSONSchemer.draft7, :output_format => 'verbose')
+    assert_equal('array items at root do not match `additionalItems` schema', schemer.validate([1, 2], :resolve_enumerators => true).dig('errors', 1, 'error'))
+  end
+
+  def test_inspect
+    output = JSONSchemer.openapi31_document.inspect
+    assert_includes(output, 'JSONSchemer::Schema')
+    assert_includes(output, '@value=')
   end
 
   def test_it_allows_validating_schemas
@@ -261,37 +296,239 @@ class JSONSchemerTest < Minitest::Test
       'data_pointer' => '/$ref',
       'schema' => { 'type' => 'string', 'format' => 'uri-reference' },
       'schema_pointer' => '/properties/$ref',
-      'root_schema' => JSONSchemer::DEFAULT_SCHEMA_CLASS.meta_schema,
-      'type' => 'format'
+      'root_schema' => JSONSchemer::Draft7::SCHEMA,
+      'type' => 'format',
+      'error' => 'value at `/$ref` does not match format: uri-reference'
     }
     required_error = {
       'data' => { 'exclusiveMaximum' => true },
       'data_pointer' => '/properties/x',
-      'schema' => { 'required' => ['maximum'] },
-      'schema_pointer' => '/dependencies/exclusiveMaximum',
-      'root_schema' => JSONSchemer::Schema::Draft4.meta_schema,
-      'type' => 'required',
-      'details' => { 'missing_keys' => ['maximum'] }
+      'schema' => JSONSchemer::Draft4::SCHEMA,
+      'schema_pointer' => '',
+      'root_schema' => JSONSchemer::Draft4::SCHEMA,
+      'type' => 'dependencies',
+      'details' => { 'missing_keys' => ['maximum'] },
+      'error' => 'object at `/properties/x` either does not match applicable `dependencies` schemas or is missing required `dependencies` properties'
     }
 
-    assert(JSONSchemer.valid_schema?(valid_draft7_schema))
-    refute(JSONSchemer.valid_schema?(invalid_draft7_schema))
-    assert(JSONSchemer.schema(valid_draft7_schema).valid_schema?)
-    refute(JSONSchemer.schema(invalid_draft7_schema).valid_schema?)
+    draft7_meta_schema = JSONSchemer.draft7
+    draft4_meta_schema = JSONSchemer.draft4
 
-    assert_empty(JSONSchemer.validate_schema(valid_draft7_schema).to_a)
-    assert_equal([format_error], JSONSchemer.validate_schema(invalid_draft7_schema).to_a)
-    assert_empty(JSONSchemer.schema(valid_draft7_schema).validate_schema.to_a)
-    assert_equal([format_error], JSONSchemer.schema(invalid_draft7_schema).validate_schema.to_a)
+    assert(JSONSchemer.valid_schema?(valid_draft7_schema, :meta_schema => draft7_meta_schema))
+    refute(JSONSchemer.valid_schema?(invalid_draft7_schema, :meta_schema => draft7_meta_schema))
+    assert(JSONSchemer.schema(valid_draft7_schema, :meta_schema => draft7_meta_schema).valid_schema?)
+    refute(JSONSchemer.schema(invalid_draft7_schema, :meta_schema => draft7_meta_schema).valid_schema?)
 
-    assert(JSONSchemer.valid_schema?(valid_draft4_schema, default_schema_class: JSONSchemer::Schema::Draft4))
-    refute(JSONSchemer.valid_schema?(invalid_draft4_schema, default_schema_class: JSONSchemer::Schema::Draft4))
+    assert_empty(JSONSchemer.validate_schema(valid_draft7_schema, :meta_schema => draft7_meta_schema).to_a)
+    assert_equal([format_error], JSONSchemer.validate_schema(invalid_draft7_schema, :meta_schema => draft7_meta_schema).to_a)
+    assert_empty(JSONSchemer.schema(valid_draft7_schema, :meta_schema => draft7_meta_schema).validate_schema.to_a)
+    assert_equal([format_error], JSONSchemer.schema(invalid_draft7_schema, :meta_schema => draft7_meta_schema).validate_schema.to_a)
+
+    assert(JSONSchemer.valid_schema?(valid_draft4_schema, :meta_schema => draft4_meta_schema))
+    refute(JSONSchemer.valid_schema?(invalid_draft4_schema, :meta_schema => draft4_meta_schema))
     assert(JSONSchemer::valid_schema?(valid_detected_draft4_schema))
     refute(JSONSchemer::valid_schema?(invalid_detected_draft4_schema))
 
-    assert_empty(JSONSchemer.validate_schema(valid_draft7_schema, default_schema_class: JSONSchemer::Schema::Draft4).to_a)
-    assert_equal([required_error], JSONSchemer.validate_schema(invalid_draft4_schema, default_schema_class: JSONSchemer::Schema::Draft4).to_a)
+    assert_empty(JSONSchemer.validate_schema(valid_draft7_schema, :meta_schema => draft4_meta_schema).to_a)
+    assert_equal([required_error], JSONSchemer.validate_schema(invalid_draft4_schema, :meta_schema => draft4_meta_schema).to_a)
     assert_empty(JSONSchemer.validate_schema(valid_detected_draft4_schema).to_a)
     assert_equal([required_error], JSONSchemer.validate_schema(invalid_detected_draft4_schema).to_a)
+  end
+
+  def test_non_string_keys
+    schemer = JSONSchemer.schema({
+      properties: {
+        'title' => {
+          type: 'string'
+        },
+        :description => {
+          'type' => 'string'
+        }
+      }
+    })
+    assert(schemer.valid?({ title: 'some title' }))
+    assert(schemer.valid?({ 'title' => 'some title' }))
+    refute(schemer.valid?({ title: :sometitle }))
+    refute(schemer.valid?({ 'title' => :sometitle }))
+    assert(schemer.valid?({ description: 'some description' }))
+    assert(schemer.valid?({ 'description' => 'some description' }))
+    refute(schemer.valid?({ description: :somedescription }))
+    refute(schemer.valid?({ 'description' => :somedescription }))
+
+    schemer = JSONSchemer.schema({
+      'properties' => {
+        '1' => {
+          'const' => 'one'
+        },
+        2 => {
+          :const => 'two'
+        }
+      }
+    })
+    assert(schemer.valid?({ 1 => 'one' }))
+    assert(schemer.valid?({ '1' => 'one' }))
+    refute(schemer.valid?({ 1 => 'neo' }))
+    refute(schemer.valid?({ '1' => 'neo' }))
+    assert(schemer.valid?({ 2 => 'two' }))
+    assert(schemer.valid?({ '2' => 'two' }))
+    refute(schemer.valid?({ 2 => 'tow' }))
+    refute(schemer.valid?({ '2' => 'tow' }))
+  end
+
+  def test_schema_ref
+    schemer = JSONSchemer.schema({
+      'type' => 'integer',
+      '$defs' => {
+        'foo' => {
+          'type' => 'object',
+          'required' => ['x', 'y'],
+          'properties' => {
+            'x' => {
+              'type' => 'string'
+            },
+            'y' => {
+              'type' => 'integer'
+            }
+          }
+        }
+      }
+    })
+
+    assert(schemer.valid?(1))
+    refute(schemer.valid?('1'))
+
+    subschemer = schemer.ref('#/$defs/foo')
+
+    refute(subschemer.valid?(1))
+    assert_equal(
+      [["/x", "/$defs/foo/properties/x", "string"], ["", "/$defs/foo", "required"]],
+      subschemer.validate({ 'x' => 1 }).map { |error| error.values_at('data_pointer', 'schema_pointer', 'type') }
+    )
+    assert(subschemer.valid?({ 'x' => '1', 'y' => 1 }))
+  end
+
+  def test_published_meta_schemas
+    [
+      JSONSchemer::Draft202012::SCHEMA,
+      *JSONSchemer::Draft202012::Meta::SCHEMAS.values,
+      JSONSchemer::Draft201909::SCHEMA,
+      *JSONSchemer::Draft201909::Meta::SCHEMAS.values,
+      JSONSchemer::Draft7::SCHEMA,
+      JSONSchemer::Draft6::SCHEMA,
+      JSONSchemer::Draft4::SCHEMA,
+      JSONSchemer::OpenAPI31::SCHEMA,
+      JSONSchemer::OpenAPI31::Meta::BASE,
+      JSONSchemer::OpenAPI31::Document::SCHEMA,
+      JSONSchemer::OpenAPI30::Document::SCHEMA
+    ].each do |meta_schema|
+      id = meta_schema.key?('$id') ? meta_schema.fetch('$id') : meta_schema.fetch('id')
+      assert_equal(meta_schema, JSON.parse(Net::HTTP.get(URI(id))))
+    end
+  end
+
+  def test_bundle
+    schema = {
+      'allOf' => [
+        { '$ref' => 'one' },
+        { '$ref' => 'two' },
+        { '$ref' => '#four' },
+        { '$ref' => '#/$defs/four' },
+        { '$ref' => 'five#/$defs/digit' },
+        { '$ref' => 'six#plus' },
+        { '$ref' => 'seven' }
+      ],
+      '$defs' => {
+        'four' => {
+          '$anchor' => 'four',
+          'maxLength' => 1
+        }
+      }
+    }
+    refs = {
+      URI('json-schemer://schema/one') => {
+        'type' => 'string'
+      },
+      URI('json-schemer://schema/two') => {
+        '$ref' => 'three'
+      },
+      URI('json-schemer://schema/three') => {
+        'minLength' => 1
+      },
+      URI('json-schemer://schema/five') => {
+        '$defs' => {
+          'digit' => {
+            'pattern' => '^\d*$'
+          }
+        }
+      },
+      URI('json-schemer://schema/six') => {
+        '$defs' => {
+          '?' => {
+            '$anchor' => 'plus',
+            'pattern' => '^[6-9]*$'
+          }
+        }
+      },
+      URI('json-schemer://schema/seven') => {
+        '$id' => 'different',
+        'enum' => ['6', '7']
+      }
+    }
+    schemer = JSONSchemer.schema(schema, :ref_resolver => refs.to_proc)
+    assert(schemer.valid?('6'))
+    refute(schemer.valid?(''))
+    refute(schemer.valid?('22'))
+    refute(schemer.valid?('x'))
+    refute(schemer.valid?('5'))
+    refute(schemer.valid?('8'))
+    assert(schemer.valid?('7'))
+
+    compound_document = schemer.bundle
+
+    assert_equal(
+      [
+        'four',
+        'json-schemer://schema/one',
+        'json-schemer://schema/two',
+        'json-schemer://schema/three',
+        'json-schemer://schema/five',
+        'json-schemer://schema/six',
+        'json-schemer://schema/seven'
+      ].sort,
+      compound_document.fetch('$defs').keys.sort
+    )
+
+    bundle = JSONSchemer.schema(compound_document)
+    assert(bundle.valid?('6'))
+    refute(bundle.valid?(''))
+    refute(bundle.valid?('22'))
+    refute(bundle.valid?('x'))
+    refute(bundle.valid?('5'))
+    refute(bundle.valid?('8'))
+    assert(bundle.valid?('7'))
+  end
+
+  def test_bundle_exclusive_ref
+    schema = {
+      '$schema' => 'http://json-schema.org/draft-07/schema#',
+      '$ref' => 'external',
+      'allOf' => [true]
+    }
+    refs = {
+      URI('json-schemer://schema/external') => {
+        'const' => 'yah'
+      }
+    }
+    schemer = JSONSchemer.schema(schema, :ref_resolver => refs.to_proc)
+    assert(schemer.valid?('yah'))
+    refute(schemer.valid?('nah'))
+
+    compound_document = schemer.bundle
+
+    assert_equal([true, { '$ref' => 'external' }], compound_document.fetch('allOf'))
+
+    bundle = JSONSchemer.schema(schemer.bundle)
+    assert(bundle.valid?('yah'))
+    refute(bundle.valid?('nah'))
   end
 end

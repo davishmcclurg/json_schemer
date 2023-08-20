@@ -1,0 +1,94 @@
+# frozen_string_literal: true
+module JSONSchemer
+  module Draft202012
+    module Vocab
+      module Unevaluated
+        class UnevaluatedItems < Keyword
+          def error(formatted_instance_location:, **)
+            "array items at #{formatted_instance_location} do not match `unevaluatedItems` schema"
+          end
+
+          def parse
+            subschema(value)
+          end
+
+          def validate(instance, instance_location, keyword_location, context)
+            return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Array)
+
+            unevaluated_items = instance.size.times.to_set
+
+            context.adjacent_results.each_value do |adjacent_result|
+              collect_unevaluated_items(adjacent_result, instance_location, unevaluated_items)
+            end
+
+            nested = unevaluated_items.map do |index|
+              parsed.validate_instance(instance.fetch(index), join_location(instance_location, index.to_s), keyword_location, context)
+            end
+
+            result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => nested.any?)
+          end
+
+        private
+
+          def collect_unevaluated_items(result, instance_location, unevaluated_items)
+            return unless result.valid && result.instance_location == instance_location
+            case result.source
+            when Applicator::PrefixItems
+              unevaluated_items.subtract(0..result.annotation)
+            when Applicator::Items, UnevaluatedItems
+              unevaluated_items.clear if result.annotation
+            when Applicator::Contains
+              unevaluated_items.subtract(result.annotation)
+            end
+            result.nested&.each do |subresult|
+              collect_unevaluated_items(subresult, instance_location, unevaluated_items)
+            end
+          end
+        end
+
+        class UnevaluatedProperties < Keyword
+          def error(formatted_instance_location:, **)
+            "object properties at #{formatted_instance_location} do not match `unevaluatedProperties` schema"
+          end
+
+          def parse
+            subschema(value)
+          end
+
+          def validate(instance, instance_location, keyword_location, context)
+            return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Hash)
+
+            evaluated_keys = Set[]
+
+            context.adjacent_results.each_value do |adjacent_result|
+              collect_evaluated_keys(adjacent_result, instance_location, evaluated_keys)
+            end
+
+            evaluated = instance.reject do |key, _value|
+              evaluated_keys.include?(key)
+            end
+
+            nested = evaluated.map do |key, value|
+              parsed.validate_instance(value, join_location(instance_location, key), keyword_location, context)
+            end
+
+            result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => evaluated.keys)
+          end
+
+        private
+
+          def collect_evaluated_keys(result, instance_location, evaluated_keys)
+            return unless result.valid && result.instance_location == instance_location
+            case result.source
+            when Applicator::Properties, Applicator::PatternProperties, Applicator::AdditionalProperties, UnevaluatedProperties
+              evaluated_keys.merge(result.annotation)
+            end
+            result.nested&.each do |subresult|
+              collect_evaluated_keys(subresult, instance_location, evaluated_keys)
+            end
+          end
+        end
+      end
+    end
+  end
+end

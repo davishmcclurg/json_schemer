@@ -2006,11 +2006,13 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo"
-            ]
+            "dependencies": {
+              "bar": [
+                "foo"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/bar",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "bar": [
@@ -2018,7 +2020,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "foo"
@@ -2054,12 +2056,14 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo",
-              "bar"
-            ]
+            "dependencies": {
+              "quux": [
+                "foo",
+                "bar"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/quux",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "quux": [
@@ -2068,7 +2072,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "bar"
@@ -2084,12 +2088,14 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo",
-              "bar"
-            ]
+            "dependencies": {
+              "quux": [
+                "foo",
+                "bar"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/quux",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "quux": [
@@ -2098,7 +2104,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "foo"
@@ -2113,12 +2119,14 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo",
-              "bar"
-            ]
+            "dependencies": {
+              "quux": [
+                "foo",
+                "bar"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/quux",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "quux": [
@@ -2127,7 +2135,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "foo",
@@ -2261,11 +2269,24 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo\rbar"
-            ]
+            "dependencies": {
+              "foo\nbar": [
+                "foo\rbar"
+              ],
+              "foo\tbar": {
+                "minProperties": 4
+              },
+              "foo'bar": {
+                "required": [
+                  "foo\"bar"
+                ]
+              },
+              "foo\"bar": [
+                "foo'bar"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/foo\nbar",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "foo\nbar": [
@@ -2284,7 +2305,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "foo\rbar"
@@ -2369,11 +2390,24 @@
           },
           "data_pointer": "",
           "schema": {
-            "required": [
-              "foo'bar"
-            ]
+            "dependencies": {
+              "foo\nbar": [
+                "foo\rbar"
+              ],
+              "foo\tbar": {
+                "minProperties": 4
+              },
+              "foo'bar": {
+                "required": [
+                  "foo\"bar"
+                ]
+              },
+              "foo\"bar": [
+                "foo'bar"
+              ]
+            }
           },
-          "schema_pointer": "/dependencies/foo\"bar",
+          "schema_pointer": "",
           "root_schema": {
             "dependencies": {
               "foo\nbar": [
@@ -2392,7 +2426,7 @@
               ]
             }
           },
-          "type": "required",
+          "type": "dependencies",
           "details": {
             "missing_keys": [
               "foo'bar"
@@ -4303,6 +4337,20 @@
             "multipleOf": 0.123456789
           },
           "type": "integer"
+        },
+        {
+          "data": 1.0e+308,
+          "data_pointer": "",
+          "schema": {
+            "type": "integer",
+            "multipleOf": 0.123456789
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "type": "integer",
+            "multipleOf": 0.123456789
+          },
+          "type": "multipleOf"
         }
       ]
     ],
@@ -4322,9 +4370,11 @@
           "data": 1,
           "data_pointer": "",
           "schema": {
-            "type": "integer"
+            "not": {
+              "type": "integer"
+            }
           },
-          "schema_pointer": "/not",
+          "schema_pointer": "",
           "root_schema": {
             "not": {
               "type": "integer"
@@ -4343,12 +4393,14 @@
           "data": 1,
           "data_pointer": "",
           "schema": {
-            "type": [
-              "integer",
-              "boolean"
-            ]
+            "not": {
+              "type": [
+                "integer",
+                "boolean"
+              ]
+            }
           },
-          "schema_pointer": "/not",
+          "schema_pointer": "",
           "root_schema": {
             "not": {
               "type": [
@@ -4365,12 +4417,14 @@
           "data": true,
           "data_pointer": "",
           "schema": {
-            "type": [
-              "integer",
-              "boolean"
-            ]
+            "not": {
+              "type": [
+                "integer",
+                "boolean"
+              ]
+            }
           },
-          "schema_pointer": "/not",
+          "schema_pointer": "",
           "root_schema": {
             "not": {
               "type": [
@@ -4397,14 +4451,16 @@
           },
           "data_pointer": "",
           "schema": {
-            "type": "object",
-            "properties": {
-              "foo": {
-                "type": "string"
+            "not": {
+              "type": "object",
+              "properties": {
+                "foo": {
+                  "type": "string"
+                }
               }
             }
           },
-          "schema_pointer": "/not",
+          "schema_pointer": "",
           "root_schema": {
             "not": {
               "type": "object",
@@ -4425,8 +4481,10 @@
           "data": 1,
           "data_pointer": "/foo",
           "schema": {
+            "not": {
+            }
           },
-          "schema_pointer": "/properties/foo/not",
+          "schema_pointer": "/properties/foo",
           "root_schema": {
             "properties": {
               "foo": {
@@ -8176,7 +8234,7 @@
           "schema": {
             "type": "integer"
           },
-          "schema_pointer": "/definitions/percent%25field",
+          "schema_pointer": "/definitions/percent%field",
           "root_schema": {
             "definitions": {
               "tilde~field": {
@@ -8682,7 +8740,7 @@
           "schema": {
             "type": "number"
           },
-          "schema_pointer": "/definitions/foo%22bar",
+          "schema_pointer": "/definitions/foo\"bar",
           "root_schema": {
             "properties": {
               "foo\"bar": {

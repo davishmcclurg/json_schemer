@@ -1,6 +1,6 @@
 # JSONSchemer
 
-JSON Schema validator. Supports drafts 4, 6, and 7.
+JSON Schema validator. Supports drafts 4, 6, 7, 2019-09, 2020-12, OpenAPI 3.0, and OpenAPI 3.1.
 
 ## Installation
 
@@ -50,7 +50,8 @@ schemer.validate({ 'abc' => 10 }).to_a
 #      "schema"=>{"type"=>"integer", "minimum"=>11},
 #      "schema_pointer"=>"/properties/abc",
 #      "root_schema"=>{"type"=>"object", "properties"=>{"abc"=>{"type"=>"integer", "minimum"=>11}}},
-#      "type"=>"minimum"}]
+#      "type"=>"minimum",
+#      "error"=>"number at `/abc` is less than: 11"}]
 
 # default property values
 
@@ -82,27 +83,77 @@ schemer = JSONSchemer.schema(schema)
 
 # schema validation
 
-JSONSchemer.valid_schema?({ '$id' => '#valid' })
+JSONSchemer.valid_schema?({ '$id' => 'valid' })
 # => true
 
-JSONSchemer.validate_schema({ '$id' => nil }).to_a
-# => [{"data"=>nil,
+JSONSchemer.validate_schema({ '$id' => '#invalid' }).to_a
+# => [{"data"=>"#invalid",
 #      "data_pointer"=>"/$id",
-#      "schema"=>{"type"=>"string", "format"=>"uri-reference"},
+#      "schema"=>{"$ref"=>"#/$defs/uriReferenceString", "$comment"=>"Non-empty fragments not allowed.", "pattern"=>"^[^#]*#?$"},
 #      "schema_pointer"=>"/properties/$id",
 #      "root_schema"=>{...meta schema},
-#      "type"=>"string"}]
+#      "type"=>"pattern",
+#      "error"=>"string at `/$id` does not match pattern: ^[^#]*#?$"}]
 
-JSONSchemer.schema({ '$id' => '#valid' }).valid_schema?
+JSONSchemer.schema({ '$id' => 'valid' }).valid_schema?
 # => true
 
-JSONSchemer.schema({ '$id' => nil }).validate_schema.to_a
-# => [{"data"=>nil,
+JSONSchemer.schema({ '$id' => '#invalid' }).validate_schema.to_a
+# => [{"data"=>"#invalid",
 #      "data_pointer"=>"/$id",
-#      "schema"=>{"type"=>"string", "format"=>"uri-reference"},
+#      "schema"=>{"$ref"=>"#/$defs/uriReferenceString", "$comment"=>"Non-empty fragments not allowed.", "pattern"=>"^[^#]*#?$"},
 #      "schema_pointer"=>"/properties/$id",
 #      "root_schema"=>{...meta schema},
-#      "type"=>"string"}]
+#      "type"=>"pattern",
+#      "error"=>"string at `/$id` does not match pattern: ^[^#]*#?$"}]
+
+# subschemas
+
+schema = {
+  'type' => 'integer',
+  '$defs' => {
+    'foo' => {
+      'type' => 'string'
+    }
+  }
+}
+schemer = JSONSchemer.schema(schema)
+
+schemer.ref('#/$defs/foo').validate(1).to_a
+# => [{"data"=>1,
+#      "data_pointer"=>"",
+#      "schema"=>{"type"=>"string"},
+#      "schema_pointer"=>"/$defs/foo",
+#      "root_schema"=>{"type"=>"integer", "$defs"=>{"foo"=>{"type"=>"string"}}},
+#      "type"=>"string",
+#      "error"=>"instance at root is not a string"}]
+
+# schema bundling (https://json-schema.org/draft/2020-12/json-schema-core.html#section-9.3)
+
+schema = {
+  '$id' => 'http://example.com/schema',
+  'allOf' => [
+    { '$ref' => 'schema/one' },
+    { '$ref' => 'schema/two' }
+  ]
+}
+refs = {
+  URI('http://example.com/schema/one') => {
+    'type' => 'integer'
+  },
+  URI('http://example.com/schema/two') => {
+    'minimum' => 11
+  }
+}
+schemer = JSONSchemer.schema(schema, :ref_resolver => refs.to_proc)
+
+schemer.bundle
+# => {"$id"=>"http://example.com/schema",
+#     "allOf"=>[{"$ref"=>"schema/one"}, {"$ref"=>"schema/two"}],
+#     "$schema"=>"https://json-schema.org/draft/2020-12/schema",
+#     "$defs"=>
+#      {"http://example.com/schema/one"=>{"type"=>"integer", "$id"=>"http://example.com/schema/one", "$schema"=>"https://json-schema.org/draft/2020-12/schema"},
+#       "http://example.com/schema/two"=>{"minimum"=>11, "$id"=>"http://example.com/schema/two", "$schema"=>"https://json-schema.org/draft/2020-12/schema"}}}
 ```
 
 ## Options
@@ -111,7 +162,20 @@ JSONSchemer.schema({ '$id' => nil }).validate_schema.to_a
 JSONSchemer.schema(
   schema,
 
-  # validate `format` (https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-7)
+  # meta schema to use for vocabularies (keyword behavior) and schema validation
+  # String/JSONSchemer::Schema
+  # 'https://json-schema.org/draft/2020-12/schema': JSONSchemer.draft202012
+  # 'https://json-schema.org/draft/2019-09/schema': JSONSchemer.draft201909
+  # 'http://json-schema.org/draft-07/schema#': JSONSchemer.draft7
+  # 'http://json-schema.org/draft-06/schema#': JSONSchemer.draft6
+  # 'http://json-schema.org/draft-04/schema#': JSONSchemer.draft4
+  # 'http://json-schema.org/schema#': JSONSchemer.draft4
+  # 'https://spec.openapis.org/oas/3.1/dialect/base': JSONSchemer.openapi31
+  # 'json-schemer://openapi30/schema': JSONSchemer.openapi30
+  # default: JSONSchemer.draft202012
+  meta_schema: 'https://json-schema.org/draft/2020-12/schema',
+
+  # validate `format` (https://json-schema.org/draft/2020-12/json-schema-validation.html#section-7)
   # true/false
   # default: true
   format: true,
@@ -147,8 +211,67 @@ JSONSchemer.schema(
   # default: 'ruby'
   regexp_resolver: proc do |pattern|
     RE2::Regexp.new(pattern)
-  end
+  end,
+
+  # output formatting (https://json-schema.org/draft/2020-12/json-schema-core.html#section-12)
+  # 'classic'/'flag'/'basic'/'detailed'/'verbose'
+  # default: 'classic'
+  output_format: 'basic',
+
+  # validate `readOnly`/`writeOnly` keywords (https://spec.openapis.org/oas/v3.0.3#fixed-fields-19)
+  # 'read'/'write'/nil
+  # default: nil
+  access_mode: 'read'
 )
+```
+
+## OpenAPI
+
+```ruby
+document = JSONSchemer.openapi({
+  'openapi' => '3.1.0',
+  'info' => {
+    'title' => 'example'
+  },
+  'components' => {
+    'schemas' => {
+      'example' => {
+        'type' => 'integer'
+      }
+    }
+  }
+})
+
+# document validation using meta schema
+
+document.valid?
+# => false
+
+document.validate.to_a
+# => [{"data"=>{"title"=>"example"},
+#      "data_pointer"=>"/info",
+#      "schema"=>{...info schema},
+#      "schema_pointer"=>"/$defs/info",
+#      "root_schema"=>{...meta schema},
+#      "type"=>"required",
+#      "details"=>{"missing_keys"=>["version"]}},
+#     ...]
+
+# data validation using schema by name (in `components/schemas`)
+
+document.schema('example').valid?(1)
+# => true
+
+document.schema('example').valid?('one')
+# => false
+
+# data validation using schema by ref
+
+document.ref('#/components/schemas/example').valid?(1)
+# => true
+
+document.ref('#/components/schemas/example').valid?('one')
+# => false
 ```
 
 ## CLI
