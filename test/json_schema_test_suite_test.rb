@@ -1,7 +1,8 @@
 require 'test_helper'
 
 class JSONSchemaTestSuiteTest < Minitest::Test
-  INCOMPATIBLE_FILES = if RUBY_ENGINE == 'truffleruby'
+  # https://github.com/flori/json/pull/483
+  INCOMPATIBLE_FILES = if RUBY_ENGINE == 'truffleruby' && Gem::Version.new(JSON::VERSION) < '2.6.3'
     # :nocov:
     Set[
       'JSON-Schema-Test-Suite/tests/draft2020-12/optional/ecmascript-regex.json',
