@@ -46,7 +46,8 @@ module JSONSchemer
             property_name = value.fetch('propertyName')
             mapping = value['mapping'] || {}
 
-            return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Hash) && instance.key?(property_name)
+            return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Hash)
+            return result(instance, instance_location, keyword_location, false) unless instance.key?(property_name)
 
             property = instance.fetch(property_name)
             ref = mapping.fetch(property, property)

@@ -205,7 +205,7 @@ class OpenAPITest < Minitest::Test
     assert_equal([['enum', '/components/schemas/Cat/allOf/1/properties/huntingSkill']], schemer.validate(invalid_hunting_skill).map { |error| error.values_at('type', 'schema_pointer') })
     assert_equal([['required', '/components/schemas/Dog/allOf/1']], schemer.validate(missing_pack_size).map { |error| error.values_at('type', 'schema_pointer') })
     assert_equal([['format', '/components/schemas/Dog/allOf/1/properties/packSize']], schemer.validate(invalid_pack_size).map { |error| error.values_at('type', 'schema_pointer') })
-    assert_equal([['required', '/components/schemas/Pet']], schemer.validate(missing_pet_type).map { |error| error.values_at('type', 'schema_pointer') })
+    assert_equal([['required', '/components/schemas/Pet'], ['discriminator', '/components/schemas/Pet']], schemer.validate(missing_pet_type).map { |error| error.values_at('type', 'schema_pointer') })
     assert_equal([['required', '/components/schemas/Pet'], ['required', '/components/schemas/Cat/allOf/1']], schemer.validate(missing_name).map { |error| error.values_at('type', 'schema_pointer') })
     assert_raises(JSONSchemer::UnknownRef) { schemer.validate(invalid_pet_type) }
   end
@@ -404,7 +404,7 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?(CAT))
     assert(schemer.valid?(MISTY))
     assert_equal(['/components/schemas/Cat/allOf/1/properties/name'], schemer.validate(INVALID_CAT).map { |error| error.fetch('schema_pointer') })
-    assert_equal([['required', '/components/schemas/Pet']], schemer.validate({}).map { |error| error.values_at('type', 'schema_pointer') })
+    assert_equal([['required', '/components/schemas/Pet'], ['discriminator', '/components/schemas/Pet']], schemer.validate({}).map { |error| error.values_at('type', 'schema_pointer') })
   end
 
   def test_all_of_discriminator_with_non_discriminator_ref
@@ -444,7 +444,7 @@ class OpenAPITest < Minitest::Test
     refute(schemer.valid?(CAT))
     assert(schemer.valid?(CAT.merge('other' => 'y')))
     assert_equal(['/components/schemas/Other', '/components/schemas/Cat/allOf/2/properties/name'], schemer.validate(INVALID_CAT).map { |error| error.fetch('schema_pointer') })
-    assert_equal([['required', '/components/schemas/Pet'], ['required', '/components/schemas/Other']], schemer.validate({}).map { |error| error.values_at('type', 'schema_pointer') })
+    assert_equal([['required', '/components/schemas/Pet'], ['discriminator', '/components/schemas/Pet'], ['required', '/components/schemas/Other']], schemer.validate({}).map { |error| error.values_at('type', 'schema_pointer') })
   end
 
   def test_any_of_discriminator_without_matching_schema
@@ -597,7 +597,7 @@ class OpenAPITest < Minitest::Test
   def test_discriminator_non_object_and_missing_property_name
     schemer = JSONSchemer.schema({ 'discriminator' => { 'propertyName' => 'x' } }, :meta_schema => JSONSchemer.openapi31)
     assert(schemer.valid?(1))
-    assert(schemer.valid?({ 'y' => 'z' }))
+    refute(schemer.valid?({ 'y' => 'z' }))
   end
 
   def test_openapi31_formats

@@ -2,6 +2,10 @@
 
 ## [2.1.0] - XXXX-XX-XX
 
+### Bug Fixes
+
+- Require discriminator `propertyName` property
+
 [2.1.0]: https://github.com/davishmcclurg/json_schemer/releases/tag/v2.1.0
 
 ## [2.0.0] - 2023-08-20
