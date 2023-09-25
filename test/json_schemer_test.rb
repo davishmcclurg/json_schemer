@@ -380,6 +380,12 @@ class JSONSchemerTest < Minitest::Test
       'type' => 'integer',
       '$defs' => {
         'foo' => {
+          '$id' => 'subschemer',
+          '$defs' => {
+            'bar' => {
+              'required' => ['z']
+            }
+          },
           'type' => 'object',
           'required' => ['x', 'y'],
           'properties' => {
@@ -401,10 +407,20 @@ class JSONSchemerTest < Minitest::Test
 
     refute(subschemer.valid?(1))
     assert_equal(
-      [["/x", "/$defs/foo/properties/x", "string"], ["", "/$defs/foo", "required"]],
+      [['/x', '/$defs/foo/properties/x', 'string'], ['', '/$defs/foo', 'required']],
       subschemer.validate({ 'x' => 1 }).map { |error| error.values_at('data_pointer', 'schema_pointer', 'type') }
     )
     assert(subschemer.valid?({ 'x' => '1', 'y' => 1 }))
+
+    subsubschemer = subschemer.ref('#/$defs/bar')
+    refute(subsubschemer.valid?({ 'x' => 1 }))
+    assert_equal(
+      [['', '/$defs/foo/$defs/bar', 'required']],
+      subsubschemer.validate({ 'x' => 1 }).map { |error| error.values_at('data_pointer', 'schema_pointer', 'type') }
+    )
+
+    assert_equal(subschemer, subschemer.ref('#'))
+    assert_equal(subschemer, subsubschemer.ref('#'))
   end
 
   def test_published_meta_schemas

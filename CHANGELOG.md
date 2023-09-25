@@ -5,6 +5,7 @@
 ### Bug Fixes
 
 - Require discriminator `propertyName` property
+- Support `Schema#ref` in subschemas
 
 [2.1.0]: https://github.com/davishmcclurg/json_schemer/releases/tag/v2.1.0
 

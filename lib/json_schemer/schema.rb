@@ -113,7 +113,7 @@ module JSONSchemer
     end
 
     def ref(value)
-      resolve_ref(URI.join(base_uri, value))
+      root.resolve_ref(URI.join(base_uri, value))
     end
 
     def validate_instance(instance, instance_location, keyword_location, context)
