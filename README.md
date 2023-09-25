@@ -126,7 +126,7 @@ schemer.ref('#/$defs/foo').validate(1).to_a
 #      "schema_pointer"=>"/$defs/foo",
 #      "root_schema"=>{"type"=>"integer", "$defs"=>{"foo"=>{"type"=>"string"}}},
 #      "type"=>"string",
-#      "error"=>"instance at root is not a string"}]
+#      "error"=>"value at root is not a string"}]
 
 # schema bundling (https://json-schema.org/draft/2020-12/json-schema-core.html#section-9.3)
 

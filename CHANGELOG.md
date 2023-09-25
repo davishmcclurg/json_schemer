@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0] - XXXX-XX-XX
+## [2.0.0] - 2023-08-20
 
 For 2.0.0, much of the codebase was rewritten to simplify support for the two new JSON Schema draft versions (2019-09 and 2020-12). The major change is moving each keyword into its own class and organizing them into vocabularies. [Output formats](https://json-schema.org/draft/2020-12/json-schema-core.html#section-12) and [annotations](https://json-schema.org/draft/2020-12/json-schema-core.html#section-7.7) from the new drafts are also supported. The known breaking changes are listed below, but there may be others that haven't been identified.
 
