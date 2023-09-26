@@ -4,6 +4,7 @@
 
 ### Bug Fixes
 
+- Limit anyOf/oneOf discriminator to listed refs
 - Require discriminator `propertyName` property
 - Support `Schema#ref` in subschemas
 
