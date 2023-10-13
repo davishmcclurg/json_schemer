@@ -8,11 +8,7 @@ module JSONSchemer
   private
 
     def result(instance, instance_location, keyword_location, valid, nested = nil, type: nil, annotation: nil, details: nil, ignore_nested: false)
-      if valid
-        Result.new(self, instance, instance_location, keyword_location, valid, nested, type, annotation, details, ignore_nested, 'annotations')
-      else
-        Result.new(self, instance, instance_location, keyword_location, valid, nested, type, annotation, details, ignore_nested, 'errors')
-      end
+      Result.new(self, instance, instance_location, keyword_location, valid, nested, type, annotation, details, ignore_nested, valid ? 'annotations' : 'errors')
     end
 
     def escaped_keyword
