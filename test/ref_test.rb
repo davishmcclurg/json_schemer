@@ -379,4 +379,20 @@ class RefTest < Minitest::Test
     assert(schema.valid?(1))
     refute(schema.valid?('1'))
   end
+
+  def test_exclusive_ref_supports_definitions_with_id_and_json_pointer
+    schema = JSONSchemer.schema({
+      '$schema' => 'http://json-schema.org/draft-07/schema#',
+      '$id' => 'https://example.com/schema',
+      '$ref' => '#/definitions/yah',
+      'definitions' => {
+        'yah' => {
+          '$id' => '#yah',
+          'type' => 'integer'
+        }
+      }
+    })
+    assert(schema.valid?(1))
+    refute(schema.valid?('1'))
+  end
 end
