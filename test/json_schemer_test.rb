@@ -422,7 +422,7 @@ class JSONSchemerTest < Minitest::Test
       JSONSchemer::OpenAPI30::Document::SCHEMA
     ].each do |meta_schema|
       id = meta_schema.key?('$id') ? meta_schema.fetch('$id') : meta_schema.fetch('id')
-      assert_equal(meta_schema, JSON.parse(Net::HTTP.get(URI(id))))
+      assert_equal(meta_schema, JSON.parse(fetch(id)))
     end
   end
 
