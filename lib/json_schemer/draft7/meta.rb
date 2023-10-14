@@ -2,6 +2,9 @@
 module JSONSchemer
   module Draft7
     BASE_URI = URI('http://json-schema.org/draft-07/schema#')
+    FORMATS = Draft201909::FORMATS.dup
+    FORMATS.delete('duration')
+    FORMATS.delete('uuid')
     SCHEMA = {
       '$schema' => 'http://json-schema.org/draft-07/schema#',
       '$id' => 'http://json-schema.org/draft-07/schema#',

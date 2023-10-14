@@ -1,11 +1,71 @@
 # frozen_string_literal: true
 module JSONSchemer
   module Format
-    include Duration
-    include Email
-    include Hostname
-    include JSONPointer
-    include URITemplate
+    # https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-01#section-7.3
+    DATE_TIME = proc do |instance, _format|
+      !instance.is_a?(String) || valid_date_time?(instance)
+    end
+    DATE = proc do |instance, _format|
+      !instance.is_a?(String) || valid_date_time?("#{instance}T04:05:06.123456789+07:00")
+    end
+    TIME = proc do |instance, _format|
+      !instance.is_a?(String) || valid_date_time?("2001-02-03T#{instance}")
+    end
+    DURATION = proc do |instance, _format|
+      !instance.is_a?(String) || valid_duration?(instance)
+    end
+    # https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-01#section-7.3.2
+    EMAIL = proc do |instance, _format|
+      !instance.is_a?(String) || instance.ascii_only? && valid_email?(instance)
+    end
+    IDN_EMAIL = proc do |instance, _format|
+      !instance.is_a?(String) || valid_email?(instance)
+    end
+    # https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-01#section-7.3.3
+    HOSTNAME = proc do |instance, _format|
+      !instance.is_a?(String) || instance.ascii_only? && valid_hostname?(instance)
+    end
+    IDN_HOSTNAME = proc do |instance, _format|
+      !instance.is_a?(String) || valid_hostname?(instance)
+    end
+    # https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-01#section-7.3.4
+    IPV4 = proc do |instance, _format|
+      !instance.is_a?(String) || valid_ip?(instance, Socket::AF_INET)
+    end
+    IPV6 = proc do |instance, _format|
+      !instance.is_a?(String) || valid_ip?(instance, Socket::AF_INET6)
+    end
+    # https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-01#section-7.3.5
+    URI = proc do |instance, _format|
+      !instance.is_a?(String) || valid_uri?(instance)
+    end
+    URI_REFERENCE = proc do |instance, _format|
+      !instance.is_a?(String) || valid_uri_reference?(instance)
+    end
+    IRI = proc do |instance, _format|
+      !instance.is_a?(String) || valid_uri?(iri_escape(instance))
+    end
+    IRI_REFERENCE = proc do |instance, _format|
+      !instance.is_a?(String) || valid_uri_reference?(iri_escape(instance))
+    end
+    UUID = proc do |instance, _format|
+      !instance.is_a?(String) || valid_uuid?(instance)
+    end
+    # https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-01#section-7.3.6
+    URI_TEMPLATE = proc do |instance, _format|
+      !instance.is_a?(String) || valid_uri_template?(instance)
+    end
+    # https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-01#section-7.3.7
+    JSON_POINTER = proc do |instance, _format|
+      !instance.is_a?(String) || valid_json_pointer?(instance)
+    end
+    RELATIVE_JSON_POINTER = proc do |instance, _format|
+      !instance.is_a?(String) || valid_relative_json_pointer?(instance)
+    end
+    # https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-01#section-7.3.8
+    REGEX = proc do |instance, _format|
+      !instance.is_a?(String) || valid_regex?(instance)
+    end
 
     DATE_TIME_OFFSET_REGEX = /(Z|[\+\-]([01][0-9]|2[0-3]):[0-5][0-9])\z/i.freeze
     HOUR_24_REGEX = /T24/.freeze
@@ -20,6 +80,12 @@ module JSONSchemer
     end.freeze
 
     class << self
+      include Duration
+      include Email
+      include Hostname
+      include JSONPointer
+      include URITemplate
+
       def percent_encode(data, regexp)
         data = data.dup
         data.force_encoding(Encoding::ASCII_8BIT)
@@ -52,101 +118,56 @@ module JSONSchemer
           raise UnknownContentMediaType, content_media_type
         end
       end
-    end
 
-    def valid_spec_format?(data, format)
-      case format
-      when 'date-time'
-        valid_date_time?(data)
-      when 'date'
-        valid_date_time?("#{data}T04:05:06.123456789+07:00")
-      when 'time'
-        valid_date_time?("2001-02-03T#{data}")
-      when 'email'
-        data.ascii_only? && valid_email?(data)
-      when 'idn-email'
-        valid_email?(data)
-      when 'hostname'
-        data.ascii_only? && valid_hostname?(data)
-      when 'idn-hostname'
-        valid_hostname?(data)
-      when 'ipv4'
-        valid_ip?(data, Socket::AF_INET)
-      when 'ipv6'
-        valid_ip?(data, Socket::AF_INET6)
-      when 'uri'
-        valid_uri?(data)
-      when 'uri-reference'
-        valid_uri_reference?(data)
-      when 'iri'
-        valid_uri?(iri_escape(data))
-      when 'iri-reference'
-        valid_uri_reference?(iri_escape(data))
-      when 'uri-template'
-        valid_uri_template?(data)
-      when 'json-pointer'
-        valid_json_pointer?(data)
-      when 'relative-json-pointer'
-        valid_relative_json_pointer?(data)
-      when 'regex'
-        valid_regex?(data)
-      when 'duration'
-        valid_duration?(data)
-      when 'uuid'
-        valid_uuid?(data)
-      else
-        raise UnknownFormat, format
+      def valid_date_time?(data)
+        return false if HOUR_24_REGEX.match?(data)
+        datetime = DateTime.rfc3339(data)
+        return false if LEAP_SECOND_REGEX.match?(data) && datetime.new_offset.strftime('%H:%M') != '23:59'
+        DATE_TIME_OFFSET_REGEX.match?(data)
+      rescue ArgumentError
+        false
       end
-    end
 
-    def valid_date_time?(data)
-      return false if HOUR_24_REGEX.match?(data)
-      datetime = DateTime.rfc3339(data)
-      return false if LEAP_SECOND_REGEX.match?(data) && datetime.new_offset.strftime('%H:%M') != '23:59'
-      DATE_TIME_OFFSET_REGEX.match?(data)
-    rescue ArgumentError
-      false
-    end
+      def valid_ip?(data, family)
+        IPAddr.new(data, family)
+        IP_REGEX.match?(data)
+      rescue IPAddr::Error
+        false
+      end
 
-    def valid_ip?(data, family)
-      IPAddr.new(data, family)
-      IP_REGEX.match?(data)
-    rescue IPAddr::Error
-      false
-    end
+      def parse_uri_scheme(data)
+        scheme, _userinfo, _host, _port, _registry, _path, opaque, query, _fragment = ::URI::RFC3986_PARSER.split(data)
+        # ::URI::RFC3986_PARSER.parse allows spaces in these and I don't think it should
+        raise ::URI::InvalidURIError if INVALID_QUERY_REGEX.match?(query) || INVALID_QUERY_REGEX.match?(opaque)
+        scheme
+      end
 
-    def parse_uri_scheme(data)
-      scheme, _userinfo, _host, _port, _registry, _path, opaque, query, _fragment = URI::RFC3986_PARSER.split(data)
-      # URI::RFC3986_PARSER.parse allows spaces in these and I don't think it should
-      raise URI::InvalidURIError if INVALID_QUERY_REGEX.match?(query) || INVALID_QUERY_REGEX.match?(opaque)
-      scheme
-    end
+      def valid_uri?(data)
+        !!parse_uri_scheme(data)
+      rescue ::URI::InvalidURIError
+        false
+      end
 
-    def valid_uri?(data)
-      !!parse_uri_scheme(data)
-    rescue URI::InvalidURIError
-      false
-    end
+      def valid_uri_reference?(data)
+        parse_uri_scheme(data)
+        true
+      rescue ::URI::InvalidURIError
+        false
+      end
 
-    def valid_uri_reference?(data)
-      parse_uri_scheme(data)
-      true
-    rescue URI::InvalidURIError
-      false
-    end
+      def iri_escape(data)
+        Format.percent_encode(data, IRI_ESCAPE_REGEX)
+      end
 
-    def iri_escape(data)
-      Format.percent_encode(data, IRI_ESCAPE_REGEX)
-    end
+      def valid_regex?(data)
+        !!EcmaRegexp.ruby_equivalent(data)
+      rescue InvalidEcmaRegexp
+        false
+      end
 
-    def valid_regex?(data)
-      !!EcmaRegexp.ruby_equivalent(data)
-    rescue InvalidEcmaRegexp
-      false
-    end
-
-    def valid_uuid?(data)
-      UUID_REGEX.match?(data) || NIL_UUID == data
+      def valid_uuid?(data)
+        UUID_REGEX.match?(data) || NIL_UUID == data
+      end
     end
   end
 end

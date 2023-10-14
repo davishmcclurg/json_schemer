@@ -10,7 +10,6 @@ module JSONSchemer
     end
 
     include Output
-    include Format::JSONPointer
 
     DEFAULT_SCHEMA = Draft202012::BASE_URI.to_s.freeze
     SCHEMA_KEYWORD_CLASS = Draft202012::Vocab::Core::Schema
@@ -160,7 +159,7 @@ module JSONSchemer
 
     def resolve_ref(uri)
       pointer = ''
-      if valid_json_pointer?(uri.fragment)
+      if Format.valid_json_pointer?(uri.fragment)
         pointer = URI.decode_www_form_component(uri.fragment)
         uri.fragment = nil
       end
@@ -285,6 +284,14 @@ module JSONSchemer
         "#{parent.schema_pointer}/#{escaped_keyword}"
       else
         parent.schema_pointer
+      end
+    end
+
+    def fetch_format(format, *args, &block)
+      if meta_schema == self
+        formats.fetch(format, *args, &block)
+      else
+        formats.fetch(format) { meta_schema.fetch_format(format, *args, &block) }
       end
     end
 

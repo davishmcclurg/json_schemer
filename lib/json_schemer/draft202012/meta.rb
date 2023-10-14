@@ -2,6 +2,27 @@
 module JSONSchemer
   module Draft202012
     BASE_URI = URI('https://json-schema.org/draft/2020-12/schema')
+    FORMATS = {
+      'date-time' => Format::DATE_TIME,
+      'date' => Format::DATE,
+      'time' => Format::TIME,
+      'duration' => Format::DURATION,
+      'email' => Format::EMAIL,
+      'idn-email' => Format::IDN_EMAIL,
+      'hostname' => Format::HOSTNAME,
+      'idn-hostname' => Format::IDN_HOSTNAME,
+      'ipv4' => Format::IPV4,
+      'ipv6' => Format::IPV6,
+      'uri' => Format::URI,
+      'uri-reference' => Format::URI_REFERENCE,
+      'iri' => Format::IRI,
+      'iri-reference' => Format::IRI_REFERENCE,
+      'uuid' => Format::UUID,
+      'uri-template' => Format::URI_TEMPLATE,
+      'json-pointer' => Format::JSON_POINTER,
+      'relative-json-pointer' => Format::RELATIVE_JSON_POINTER,
+      'regex' => Format::REGEX
+    }
     SCHEMA = {
       '$schema' => 'https://json-schema.org/draft/2020-12/schema',
       '$id' => 'https://json-schema.org/draft/2020-12/schema',

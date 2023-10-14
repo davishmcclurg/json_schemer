@@ -2,6 +2,15 @@
 module JSONSchemer
   module Draft6
     BASE_URI = URI('http://json-schema.org/draft-06/schema#')
+    FORMATS = Draft7::FORMATS.dup
+    FORMATS.delete('date')
+    FORMATS.delete('time')
+    FORMATS.delete('idn-email')
+    FORMATS.delete('idn-hostname')
+    FORMATS.delete('iri')
+    FORMATS.delete('iri-reference')
+    FORMATS.delete('relative-json-pointer')
+    FORMATS.delete('regex')
     SCHEMA = {
       '$schema' => 'http://json-schema.org/draft-06/schema#',
       '$id' => 'http://json-schema.org/draft-06/schema#',

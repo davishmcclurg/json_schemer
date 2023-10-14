@@ -2,6 +2,10 @@
 module JSONSchemer
   module Draft4
     BASE_URI = URI('http://json-schema.org/draft-04/schema#')
+    FORMATS = Draft6::FORMATS.dup
+    FORMATS.delete('uri-reference')
+    FORMATS.delete('uri-template')
+    FORMATS.delete('json-pointer')
     SCHEMA = {
       'id' => 'http://json-schema.org/draft-04/schema#',
       '$schema' => 'http://json-schema.org/draft-04/schema#',
