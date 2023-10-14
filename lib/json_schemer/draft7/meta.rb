@@ -5,6 +5,8 @@ module JSONSchemer
     FORMATS = Draft201909::FORMATS.dup
     FORMATS.delete('duration')
     FORMATS.delete('uuid')
+    CONTENT_ENCODINGS = Draft201909::CONTENT_ENCODINGS
+    CONTENT_MEDIA_TYPES = Draft201909::CONTENT_MEDIA_TYPES
     SCHEMA = {
       '$schema' => 'http://json-schema.org/draft-07/schema#',
       '$id' => 'http://json-schema.org/draft-07/schema#',

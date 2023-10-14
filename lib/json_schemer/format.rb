@@ -93,32 +93,6 @@ module JSONSchemer
         data.force_encoding(Encoding::US_ASCII)
       end
 
-      def decode_content_encoding(data, content_encoding)
-        case content_encoding
-        when 'base64'
-          begin
-            [true, Base64.strict_decode64(data)]
-          rescue
-            [false, nil]
-          end
-        else
-          raise UnknownContentEncoding, content_encoding
-        end
-      end
-
-      def parse_content_media_type(data, content_media_type)
-        case content_media_type
-        when 'application/json'
-          begin
-            [true, JSON.parse(data)]
-          rescue
-            [false, nil]
-          end
-        else
-          raise UnknownContentMediaType, content_media_type
-        end
-      end
-
       def valid_date_time?(data)
         return false if HOUR_24_REGEX.match?(data)
         datetime = DateTime.rfc3339(data)
