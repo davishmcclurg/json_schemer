@@ -180,6 +180,15 @@ JSONSchemer.schema(
   # default: true
   format: true,
 
+  # custom formats
+  formats: {
+    'int32' => proc do |instance, _format|
+      instance.is_a?(Integer) && instance.bit_length <= 32
+    end,
+    # disable specific format
+    'email' => false
+  },
+
   # custom content encodings
   # only `base64` is available by default
   content_encodings: {
