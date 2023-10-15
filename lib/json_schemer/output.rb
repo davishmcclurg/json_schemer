@@ -5,6 +5,11 @@ module JSONSchemer
 
     attr_reader :keyword, :schema
 
+    def x_error
+      return @x_error if defined?(@x_error)
+      @x_error = schema.parsed['x-error']&.message(error_key)
+    end
+
   private
 
     def result(instance, instance_location, keyword_location, valid, nested = nil, type: nil, annotation: nil, details: nil, ignore_nested: false)

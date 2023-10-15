@@ -225,6 +225,116 @@ JSONSchemer.schema(
 )
 ```
 
+## Custom Error Messages
+
+Error messages can be customized using the `x-error` keyword and/or [I18n](https://github.com/ruby-i18n/i18n) translations. `x-error` takes precedence if both are defined.
+
+### `x-error` Keyword
+
+```ruby
+# override all errors for a schema
+schemer = JSONSchemer.schema({
+  'type' => 'string',
+  'x-error' => 'custom error for schema and all keywords'
+})
+
+schemer.validate(1).map { _1.fetch('error') }
+# => ["custom error for schema and all keywords"]
+
+schemer.validate(1, :output_format => 'basic').fetch('error')
+# => "custom error for schema and all keywords"
+
+# keyword-specific errors
+schemer = JSONSchemer.schema({
+  'type' => 'string',
+  'minLength' => 10,
+  'x-error' => {
+    'type' => 'custom error for `type` keyword',
+    # special `^` keyword for schema-level error
+    '^' => 'custom error for schema',
+    # same behavior as when `x-error` is a string
+    '*' => 'fallback error for schema and all keywords'
+  }
+})
+
+schemer.validate(1).map { _1.fetch('error') }
+# => ["custom error for `type` keyword"]
+
+schemer.validate('1').map { _1.fetch('error') }
+# => ["custom error for schema and all keywords"]
+
+schemer.validate(1, :output_format => 'basic').fetch('error')
+# => "custom error for schema"
+```
+
+### I18n
+
+When the [I18n gem](https://github.com/ruby-i18n/i18n) is loaded, custom error messages are looked up under the `json_schemer` key. It may be necessary to restart your application after adding the root key because the existence check is cached for performance reasons.
+
+Translation keys are looked up in this order:
+
+1. `$LOCALE.json_schemer.errors.$ABSOLUTE_KEYWORD_LOCATION`
+2. `$LOCALE.json_schemer.errors.$SCHEMA_ID.$KEYWORD_LOCATION`
+3. `$LOCALE.json_schemer.errors.$KEYWORD_LOCATION`
+4. `$LOCALE.json_schemer.errors.$SCHEMA_ID.$KEYWORD`
+5. `$LOCALE.json_schemer.errors.$SCHEMA_ID.*`
+6. `$LOCALE.json_schemer.errors.$META_SCHEMA_ID.$KEYWORD`
+7. `$LOCALE.json_schemer.errors.$META_SCHEMA_ID.*`
+8. `$LOCALE.json_schemer.errors.$KEYWORD`
+9. `$LOCALE.json_schemer.errors.*`
+
+For example, this validation:
+
+```ruby
+I18n.locale = :en                                         # $LOCALE=en
+
+schemer = JSONSchemer.schema({
+  '$id' => 'https://example.com/schema',                  # $SCHEMA_ID=https://example.com/schema
+  '$schema' => 'http://json-schema.org/draft-07/schema#', # $META_SCHEMA_ID=http://json-schema.org/draft-07/schema#
+  'properties' => {
+    'abc' => {
+      'type' => 'integer'                                 # $KEYWORD=type
+    }                                                     # $KEYWORD_LOCATION=#/properties/abc/type
+  }                                                       # $ABSOLUTE_KEYWORD_LOCATION=https://example.com/schema#/properties/abc/type
+})
+
+schemer.validate({ 'abc' => 'not-an-integer' }).to_a
+```
+
+looks up custom error messages using these keys (in order):
+
+1. `en.json_schemer.errors.'https://example.com/schema#/properties/abc/type'`
+2. `en.json_schemer.errors.'https://example.com/schema'.'#/properties/abc/type'`
+3. `en.json_schemer.errors.'#/properties/abc/type'`
+4. `en.json_schemer.errors.'https://example.com/schema'.type`
+5. `en.json_schemer.errors.'https://example.com/schema'.*`
+6. `en.json_schemer.errors.'http://json-schema.org/draft-07/schema#'.type`
+7. `en.json_schemer.errors.'http://json-schema.org/draft-07/schema#'.*`
+8. `en.json_schemer.errors.type`
+9. `en.json_schemer.errors.*`
+
+Example translations file:
+
+```yaml
+en:
+  json_schemer:
+    errors:
+      'https://example.com/schema#/properties/abc/type': custom error for absolute keyword location
+      'https://example.com/schema':
+        '#/properties/abc/type': custom error for keyword location, nested under schema $id
+        'type': custom error for `type` keyword, nested under schema $id
+        '^': custom error for schema, nested under schema $id
+        '*': fallback error for schema and all keywords, nested under schema $id
+      '#/properties/abc/type': custom error for keyword location
+      'http://json-schema.org/draft-07/schema#':
+        'type': custom error for `type` keyword, nested under meta-schema $id ($schema)
+        '^': custom error for schema, nested under meta-schema $id
+        '*': fallback error for schema and all keywords, nested under meta-schema $id ($schema)
+      'type': custom error for `type` keyword
+      '^': custom error for schema
+      '*': fallback error for schema and all keywords
+```
+
 ## OpenAPI
 
 ```ruby

@@ -119,6 +119,12 @@ module JSONSchemer
 
         class Comment < Keyword; end
 
+        class XError < Keyword
+          def message(error_key)
+            value.is_a?(Hash) ? (value[error_key] || value[CATCHALL]) : value
+          end
+        end
+
         class UnknownKeyword < Keyword
           def parse
             if value.is_a?(Hash)
