@@ -336,28 +336,27 @@ module JSONSchemer
         VOCABULARY_KEYWORD_CLASS.new(vocabulary, self, '$vocabulary')
       end
 
-      if root == self && (!value.is_a?(Hash) || !value.key?(meta_schema.id_keyword))
+      keywords = meta_schema.keywords
+      exclusive_ref = value.is_a?(Hash) && value.key?('$ref') && keywords.fetch('$ref').exclusive?
+
+      if root == self && (!value.is_a?(Hash) || !value.key?(meta_schema.id_keyword) || exclusive_ref)
         ID_KEYWORD_CLASS.new(base_uri, self, meta_schema.id_keyword)
       end
 
-      if value.is_a?(Hash)
-        keywords = meta_schema.keywords
+      if exclusive_ref
+        @parsed['$ref'] = keywords.fetch('$ref').new(value.fetch('$ref'), self, '$ref')
+        defs_keyword = meta_schema.defs_keyword
+        if value.key?(defs_keyword) && keywords.key?(defs_keyword)
+          @parsed[defs_keyword] = keywords.fetch(defs_keyword).new(value.fetch(defs_keyword), self, defs_keyword)
+        end
+      elsif value.is_a?(Hash)
+        keyword_order = meta_schema.keyword_order
+        last = keywords.size
 
-        if value.key?('$ref') && keywords.fetch('$ref').exclusive?
-          @parsed['$ref'] = keywords.fetch('$ref').new(value.fetch('$ref'), self, '$ref')
-          defs_keyword = meta_schema.defs_keyword
-          if value.key?(defs_keyword) && keywords.key?(defs_keyword)
-            @parsed[defs_keyword] = keywords.fetch(defs_keyword).new(value.fetch(defs_keyword), self, defs_keyword)
-          end
-        else
-          keyword_order = meta_schema.keyword_order
-          last = keywords.size
-
-          value.sort do |(keyword_a, _value_a), (keyword_b, _value_b)|
-            keyword_order.fetch(keyword_a, last) <=> keyword_order.fetch(keyword_b, last)
-          end.each do |keyword, value|
-            @parsed[keyword] ||= keywords.fetch(keyword, UNKNOWN_KEYWORD_CLASS).new(value, self, keyword)
-          end
+        value.sort do |(keyword_a, _value_a), (keyword_b, _value_b)|
+          keyword_order.fetch(keyword_a, last) <=> keyword_order.fetch(keyword_b, last)
+        end.each do |keyword, value|
+          @parsed[keyword] ||= keywords.fetch(keyword, UNKNOWN_KEYWORD_CLASS).new(value, self, keyword)
         end
       end
 
