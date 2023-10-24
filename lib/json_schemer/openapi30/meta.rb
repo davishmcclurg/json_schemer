@@ -5,7 +5,8 @@ module JSONSchemer
     # https://spec.openapis.org/oas/v3.0.3#data-types
     FORMATS = OpenAPI31::FORMATS.merge(
       'byte' => proc { |instance, _value| Format.decode_content_encoding(instance, 'base64').first },
-      'binary' => proc { |instance, _value| instance.is_a?(String) && instance.encoding == Encoding::ASCII_8BIT }
+      'binary' => proc { |instance, _value| instance.is_a?(String) && instance.encoding == Encoding::ASCII_8BIT },
+      'date' => Format::DATE
     )
     SCHEMA = {
       'id' => 'json-schemer://openapi30/schema',

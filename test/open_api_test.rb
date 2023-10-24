@@ -735,7 +735,9 @@ class OpenAPITest < Minitest::Test
         'd' => { 'format' => 'double' },
         'e' => { 'format' => 'password' },
         'f' => { 'format' => 'byte' },
-        'g' => { 'format' => 'binary' }
+        'g' => { 'format' => 'binary' },
+        'h' => { 'format' => 'date' },
+        'i' => { 'format' => 'date-time' }
       }
     }
 
@@ -756,6 +758,10 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'f' => 'IQ==' }))
     refute(schemer.valid?({ 'g' => '!' }))
     assert(schemer.valid?({ 'g' => '!'.b }))
+    refute(schemer.valid?({ 'h' => '2001-02-03T04:05:06.123456789+07:00' }))
+    assert(schemer.valid?({ 'h' => '2001-02-03' }))
+    refute(schemer.valid?({ 'i' => '2001-02-03' }))
+    assert(schemer.valid?({ 'i' => '2001-02-03T04:05:06.123456789+07:00' }))
   end
 
   def test_unsupported_openapi_version
