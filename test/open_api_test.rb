@@ -707,7 +707,9 @@ class OpenAPITest < Minitest::Test
         'b' => { 'format' => 'int64' },
         'c' => { 'format' => 'float' },
         'd' => { 'format' => 'double' },
-        'e' => { 'format' => 'password' }
+        'e' => { 'format' => 'password' },
+        'date' => { 'format' => 'date' },
+        'date-time' => { 'format' => 'date-time' }
       }
     }
 
@@ -724,6 +726,8 @@ class OpenAPITest < Minitest::Test
     refute(schemer.valid?({ 'd' => 2 }))
     assert(schemer.valid?({ 'e' => 2 }))
     assert(schemer.valid?({ 'e' => 'anything' }))
+    assert(schemer.valid?({ 'date' => '2023-10-24' }))
+    assert(schemer.valid?({ 'date-time' => '2023-10-24T21:12:18+02:00' }))  
   end
 
   def test_openapi30_formats
@@ -735,7 +739,9 @@ class OpenAPITest < Minitest::Test
         'd' => { 'format' => 'double' },
         'e' => { 'format' => 'password' },
         'f' => { 'format' => 'byte' },
-        'g' => { 'format' => 'binary' }
+        'g' => { 'format' => 'binary' },
+        'date' => { 'format' => 'date' },
+        'date-time' => { 'format' => 'date-time' }
       }
     }
 
@@ -756,6 +762,8 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'f' => 'IQ==' }))
     refute(schemer.valid?({ 'g' => '!' }))
     assert(schemer.valid?({ 'g' => '!'.b }))
+    refute(schemer.valid?({ 'date' => '2023.10.24' }))
+    refute(schemer.valid?({ 'date-time' => '2023-10-24:21:12:18' }))  
   end
 
   def test_unsupported_openapi_version
