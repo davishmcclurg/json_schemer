@@ -238,11 +238,24 @@ schemer = JSONSchemer.schema({
   'x-error' => 'custom error for schema and all keywords'
 })
 
-schemer.validate(1).map { _1.fetch('error') }
-# => ["custom error for schema and all keywords"]
+schemer.validate(1).first
+# => {"data"=>1,
+#     "data_pointer"=>"",
+#     "schema"=>{"type"=>"string", "x-error"=>"custom error for schema and all keywords"},
+#     "schema_pointer"=>"",
+#     "root_schema"=>{"type"=>"string", "x-error"=>"custom error for schema and all keywords"},
+#     "type"=>"string",
+#     "error"=>"custom error for schema and all keywords",
+#     "x-error"=>true}
 
-schemer.validate(1, :output_format => 'basic').fetch('error')
-# => "custom error for schema and all keywords"
+schemer.validate(1, :output_format => 'basic')
+# => {"valid"=>false,
+#     "keywordLocation"=>"",
+#     "absoluteKeywordLocation"=>"json-schemer://schema#",
+#     "instanceLocation"=>"",
+#     "error"=>"custom error for schema and all keywords",
+#     "x-error"=>true,
+#     "errors"=>#<Enumerator: ...>}
 
 # keyword-specific errors
 schemer = JSONSchemer.schema({
@@ -265,6 +278,28 @@ schemer.validate('1').map { _1.fetch('error') }
 
 schemer.validate(1, :output_format => 'basic').fetch('error')
 # => "custom error for schema"
+
+# variable interpolation (instance/instanceLocation/keywordLocation/absoluteKeywordLocation)
+schemer = JSONSchemer.schema({
+  '$id' => 'https://example.com/schema',
+  'properties' => {
+    'abc' => {
+      'type' => 'string',
+      'x-error' => <<~ERROR
+        instance: %{instance}
+        instance location: %{instanceLocation}
+        keyword location: %{keywordLocation}
+        absolute keyword location: %{absoluteKeywordLocation}
+      ERROR
+    }
+  }
+})
+
+puts schemer.validate({ 'abc' => 1 }).first.fetch('error')
+# instance: 1
+# instance location: /abc
+# keyword location: /properties/abc/type
+# absolute keyword location: https://example.com/schema#/properties/abc/type
 ```
 
 ### I18n
@@ -282,36 +317,6 @@ Translation keys are looked up in this order:
 7. `$LOCALE.json_schemer.errors.$META_SCHEMA_ID.*`
 8. `$LOCALE.json_schemer.errors.$KEYWORD`
 9. `$LOCALE.json_schemer.errors.*`
-
-For example, this validation:
-
-```ruby
-I18n.locale = :en                                         # $LOCALE=en
-
-schemer = JSONSchemer.schema({
-  '$id' => 'https://example.com/schema',                  # $SCHEMA_ID=https://example.com/schema
-  '$schema' => 'http://json-schema.org/draft-07/schema#', # $META_SCHEMA_ID=http://json-schema.org/draft-07/schema#
-  'properties' => {
-    'abc' => {
-      'type' => 'integer'                                 # $KEYWORD=type
-    }                                                     # $KEYWORD_LOCATION=#/properties/abc/type
-  }                                                       # $ABSOLUTE_KEYWORD_LOCATION=https://example.com/schema#/properties/abc/type
-})
-
-schemer.validate({ 'abc' => 'not-an-integer' }).to_a
-```
-
-looks up custom error messages using these keys (in order):
-
-1. `en.json_schemer.errors.'https://example.com/schema#/properties/abc/type'`
-2. `en.json_schemer.errors.'https://example.com/schema'.'#/properties/abc/type'`
-3. `en.json_schemer.errors.'#/properties/abc/type'`
-4. `en.json_schemer.errors.'https://example.com/schema'.type`
-5. `en.json_schemer.errors.'https://example.com/schema'.*`
-6. `en.json_schemer.errors.'http://json-schema.org/draft-07/schema#'.type`
-7. `en.json_schemer.errors.'http://json-schema.org/draft-07/schema#'.*`
-8. `en.json_schemer.errors.type`
-9. `en.json_schemer.errors.*`
 
 Example translations file:
 
@@ -332,8 +337,53 @@ en:
         '*': fallback error for schema and all keywords, nested under meta-schema $id ($schema)
       'type': custom error for `type` keyword
       '^': custom error for schema
-      '*': fallback error for schema and all keywords
+      # variable interpolation (instance/instanceLocation/keywordLocation/absoluteKeywordLocation)
+      '*': |
+        fallback error for schema and all keywords
+        instance: %{instance}
+        instance location: %{instanceLocation}
+        keyword location: %{keywordLocation}
+        absolute keyword location: %{absoluteKeywordLocation}
 ```
+
+And output:
+
+```ruby
+require 'i18n'
+I18n.locale = :en                                         # $LOCALE=en
+
+schemer = JSONSchemer.schema({
+  '$id' => 'https://example.com/schema',                  # $SCHEMA_ID=https://example.com/schema
+  '$schema' => 'http://json-schema.org/draft-07/schema#', # $META_SCHEMA_ID=http://json-schema.org/draft-07/schema#
+  'properties' => {
+    'abc' => {
+      'type' => 'integer'                                 # $KEYWORD=type
+    }                                                     # $KEYWORD_LOCATION=#/properties/abc/type
+  }                                                       # $ABSOLUTE_KEYWORD_LOCATION=https://example.com/schema#/properties/abc/type
+})
+
+schemer.validate({ 'abc' => 'not-an-integer' }).first
+# => {"data"=>"not-an-integer",
+#     "data_pointer"=>"/abc",
+#     "schema"=>{"type"=>"integer"},
+#     "schema_pointer"=>"/properties/abc",
+#     "root_schema"=>{"$id"=>"https://example.com/schema", "$schema"=>"http://json-schema.org/draft-07/schema#", "properties"=>{"abc"=>{"type"=>"integer"}}},
+#     "type"=>"integer",
+#     "error"=>"custom error for absolute keyword location",
+#     "i18n"=>true
+```
+
+In the example above, custom error messsages are looked up using the following keys (in order until one is found):
+
+1. `en.json_schemer.errors.'https://example.com/schema#/properties/abc/type'`
+2. `en.json_schemer.errors.'https://example.com/schema'.'#/properties/abc/type'`
+3. `en.json_schemer.errors.'#/properties/abc/type'`
+4. `en.json_schemer.errors.'https://example.com/schema'.type`
+5. `en.json_schemer.errors.'https://example.com/schema'.*`
+6. `en.json_schemer.errors.'http://json-schema.org/draft-07/schema#'.type`
+7. `en.json_schemer.errors.'http://json-schema.org/draft-07/schema#'.*`
+8. `en.json_schemer.errors.type`
+9. `en.json_schemer.errors.*`
 
 ## OpenAPI
 

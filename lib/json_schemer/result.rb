@@ -38,11 +38,18 @@ module JSONSchemer
           '%{keywordLocation}' => Location.resolve(keyword_location),
           '%{absoluteKeywordLocation}' => source.absolute_keyword_location
         )
+        @x_error = true
       else
         resolved_instance_location = Location.resolve(instance_location)
         formatted_instance_location = resolved_instance_location.empty? ? 'root' : "`#{resolved_instance_location}`"
         @error = source.error(:formatted_instance_location => formatted_instance_location, :details => details)
-        @error = i18n(@error) if i18n?
+        if i18n?
+          begin
+            @error = i18n!
+            @i18n = true
+          rescue I18n::MissingTranslationData
+          end
+        end
       end
       @error
     end
@@ -52,28 +59,25 @@ module JSONSchemer
       @@i18n = defined?(I18n) && I18n.exists?(I18N_SCOPE)
     end
 
-    def i18n(default)
+    def i18n!
       base_uri_str = source.schema.base_uri.to_s
       meta_schema_base_uri_str = source.schema.meta_schema.base_uri.to_s
       resolved_keyword_location = Location.resolve(keyword_location)
       error_key = source.error_key
-      keys = [
-        "#{base_uri_str}#{I18N_SEPARATOR}##{resolved_keyword_location}",
-        "##{resolved_keyword_location}",
-        "#{base_uri_str}#{I18N_SEPARATOR}#{error_key}",
-        "#{base_uri_str}#{I18N_SEPARATOR}#{CATCHALL}",
-        "#{meta_schema_base_uri_str}#{I18N_SEPARATOR}#{error_key}",
-        "#{meta_schema_base_uri_str}#{I18N_SEPARATOR}#{CATCHALL}",
-        error_key,
-        CATCHALL
-      ]
-      keys.map!(&:to_sym)
-      keys << @error
-      @error = I18n.t(
+      I18n.translate!(
         source.absolute_keyword_location,
-        :scope => I18N_ERRORS_SCOPE,
-        :default => keys,
+        :default => [
+          "#{base_uri_str}#{I18N_SEPARATOR}##{resolved_keyword_location}",
+          "##{resolved_keyword_location}",
+          "#{base_uri_str}#{I18N_SEPARATOR}#{error_key}",
+          "#{base_uri_str}#{I18N_SEPARATOR}#{CATCHALL}",
+          "#{meta_schema_base_uri_str}#{I18N_SEPARATOR}#{error_key}",
+          "#{meta_schema_base_uri_str}#{I18N_SEPARATOR}#{CATCHALL}",
+          error_key,
+          CATCHALL
+        ].map!(&:to_sym),
         :separator => I18N_SEPARATOR,
+        :scope => I18N_ERRORS_SCOPE,
         :instance => instance,
         :instanceLocation => Location.resolve(instance_location),
         :keywordLocation => resolved_keyword_location,
@@ -88,8 +92,13 @@ module JSONSchemer
         'absoluteKeywordLocation' => source.absolute_keyword_location,
         'instanceLocation' => Location.resolve(instance_location)
       }
-      out['error'] = error unless valid
-      out['annotation'] = annotation if valid && annotation
+      if valid
+        out['annotation'] = annotation if annotation
+      else
+        out['error'] = error
+        out['x-error'] = true if @x_error
+        out['i18n'] = true if @i18n
+      end
       out
     end
 
@@ -104,6 +113,8 @@ module JSONSchemer
         'type' => type || CLASSIC_ERROR_TYPES[source.class]
       }
       out['error'] = error
+      out['x-error'] = true if @x_error
+      out['i18n'] = true if @i18n
       out['details'] = details if details
       out
     end

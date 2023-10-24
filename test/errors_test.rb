@@ -36,6 +36,14 @@ class ErrorsTest < Minitest::Test
 
     assert_equal('schema error', JSONSchemer.schema(schema).validate(data, :output_format => 'basic').fetch('error'))
     assert_equal('oneOf error', JSONSchemer.schema(schema).validate(data, :output_format => 'detailed').fetch('error'))
+
+    assert_equal(true, JSONSchemer.schema(schema).validate(data, :output_format => 'basic').fetch('x-error'))
+    assert_equal(true, JSONSchemer.schema(schema).validate(data, :output_format => 'detailed').fetch('x-error'))
+    assert_equal([true, true], JSONSchemer.schema(schema).validate(data).map { |error| error.fetch('x-error') })
+
+    refute(JSONSchemer.schema(schema).validate(data, :output_format => 'basic').key?('i18n'))
+    refute(JSONSchemer.schema(schema).validate(data, :output_format => 'detailed').key?('i18n'))
+    assert_equal([false, false], JSONSchemer.schema(schema).validate(data).map { |error| error.key?('i18n') })
   end
 
   def test_x_error_override
@@ -153,7 +161,7 @@ class ErrorsTest < Minitest::Test
       },
       '^' => 'H',
       'type' => '8',
-      '*' => 'I/9',
+      '*' => 'I/9: %{instance} `%{instanceLocation}` %{keywordLocation} %{absoluteKeywordLocation}',
 
       'https://example.com/differentschema#/properties/yah/type' => '?',
       'https://example.com/differentschema' => {
@@ -163,8 +171,11 @@ class ErrorsTest < Minitest::Test
       },
       '?' => '?'
     }
-    assert_equal('A', i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
-    assert_equal('1', i18n(errors) { schemer.validate(data).first.fetch('error') })
+
+    i18n(errors) do
+      assert_equal('A', schemer.validate(data, :output_format => 'basic').fetch('error'))
+      assert_equal('1', schemer.validate(data).first.fetch('error'))
+    end
 
     errors.delete('https://example.com/schema#')
     assert_equal('B', i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
@@ -191,8 +202,10 @@ class ErrorsTest < Minitest::Test
     assert_equal('E/5', i18n(errors) { schemer.validate(data).first.fetch('error') })
 
     errors.fetch('https://example.com/schema').delete('*')
-    assert_equal('F', i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
-    assert_equal('6', i18n(errors) { schemer.validate(data).first.fetch('error') })
+    i18n(errors) do
+      assert_equal('F', schemer.validate(data, :output_format => 'basic').fetch('error'))
+      assert_equal('6', schemer.validate(data).first.fetch('error'))
+    end
 
     errors.fetch('https://json-schema.org/draft/2019-09/schema').delete('^')
     assert_equal('G/7', i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
@@ -201,18 +214,34 @@ class ErrorsTest < Minitest::Test
     assert_equal('G/7', i18n(errors) { schemer.validate(data).first.fetch('error') })
 
     errors.fetch('https://json-schema.org/draft/2019-09/schema').delete('*')
-    assert_equal('H', i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
-    assert_equal('8', i18n(errors) { schemer.validate(data).first.fetch('error') })
+    i18n(errors) do
+      assert_equal('H', schemer.validate(data, :output_format => 'basic').fetch('error'))
+      assert_equal('8', schemer.validate(data).first.fetch('error'))
+    end
 
     errors.delete('^')
-    assert_equal('I/9', i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
+    assert_equal('I/9: {"yah"=>1} ``  https://example.com/schema#', i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
 
     errors.delete('type')
-    assert_equal('I/9', i18n(errors) { schemer.validate(data).first.fetch('error') })
+    assert_equal('I/9: 1 `/yah` /properties/yah/type https://example.com/schema#/properties/yah/type', i18n(errors) { schemer.validate(data).first.fetch('error') })
+
+    i18n(errors) do
+      assert_equal(true, schemer.validate(data).first.fetch('i18n'))
+      refute(schemer.validate(data).first.key?('x-error'))
+      assert_equal(true, schemer.validate(data, :output_format => 'basic').fetch('i18n'))
+      refute(schemer.validate(data, :output_format => 'basic').key?('x-error'))
+    end
 
     errors.delete('*')
-    assert_equal('value at root does not match schema', i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
-    assert_equal('value at `/yah` is not a string', i18n(errors) { schemer.validate(data).first.fetch('error') })
+    i18n(errors) do
+      assert_equal('value at root does not match schema', schemer.validate(data, :output_format => 'basic').fetch('error'))
+      assert_equal('value at `/yah` is not a string', schemer.validate(data).first.fetch('error'))
+
+      refute(schemer.validate(data).first.key?('i18n'))
+      refute(schemer.validate(data).first.key?('x-error'))
+      refute(schemer.validate(data, :output_format => 'basic').key?('i18n'))
+      refute(schemer.validate(data, :output_format => 'basic').key?('x-error'))
+    end
   end
 
 private
