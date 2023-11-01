@@ -68,8 +68,9 @@ module JSONSchemer
     end
 
     DATE_TIME_OFFSET_REGEX = /(Z|[\+\-]([01][0-9]|2[0-3]):[0-5][0-9])\z/i.freeze
-    HOUR_24_REGEX = /T24/.freeze
-    LEAP_SECOND_REGEX = /T\d{2}:\d{2}:6/.freeze
+    DATE_TIME_SEPARATOR_CHARACTER_CLASS = '[Tt\s]'
+    HOUR_24_REGEX = /#{DATE_TIME_SEPARATOR_CHARACTER_CLASS}24:/.freeze
+    LEAP_SECOND_REGEX = /#{DATE_TIME_SEPARATOR_CHARACTER_CLASS}\d{2}:\d{2}:6/.freeze
     IP_REGEX = /\A[\h:.]+\z/.freeze
     INVALID_QUERY_REGEX = /\s/.freeze
     IRI_ESCAPE_REGEX = /[^[:ascii:]]/
