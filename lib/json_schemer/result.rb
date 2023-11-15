@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 module JSONSchemer
-  Result = Struct.new(:source, :instance, :instance_location, :keyword_location, :valid, :nested, :type, :annotation, :details, :ignore_nested, :nested_key) do
-    CLASSIC_ERROR_TYPES = Hash.new do |hash, klass|
-      hash[klass] = klass.name.rpartition('::').last.sub(/\A[[:alpha:]]/, &:downcase)
-    end
+  CATCHALL = '*'
+  I18N_SEPARATOR = "\x1F" # unit separator
+  I18N_SCOPE = 'json_schemer'
+  I18N_ERRORS_SCOPE = "#{I18N_SCOPE}#{I18N_SEPARATOR}errors"
+  X_ERROR_REGEX = /%\{(instance|instanceLocation|keywordLocation|absoluteKeywordLocation)\}/
+  CLASSIC_ERROR_TYPES = Hash.new do |hash, klass|
+    hash[klass] = klass.name.rpartition('::').last.sub(/\A[[:alpha:]]/, &:downcase)
+  end
 
+  Result = Struct.new(:source, :instance, :instance_location, :keyword_location, :valid, :nested, :type, :annotation, :details, :ignore_nested, :nested_key) do
     def output(output_format)
       case output_format
       when 'classic'
@@ -24,10 +29,59 @@ module JSONSchemer
 
     def error
       return @error if defined?(@error)
-      resolved_instance_location = Location.resolve(instance_location)
-      @error = source.error(
-        :formatted_instance_location => resolved_instance_location.empty? ? 'root' : "`#{resolved_instance_location}`",
-        :details => details
+      if source.x_error
+        # not using sprintf because it warns: "too many arguments for format string"
+        @error = source.x_error.gsub(
+          X_ERROR_REGEX,
+          '%{instance}' => instance,
+          '%{instanceLocation}' => Location.resolve(instance_location),
+          '%{keywordLocation}' => Location.resolve(keyword_location),
+          '%{absoluteKeywordLocation}' => source.absolute_keyword_location
+        )
+        @x_error = true
+      else
+        resolved_instance_location = Location.resolve(instance_location)
+        formatted_instance_location = resolved_instance_location.empty? ? 'root' : "`#{resolved_instance_location}`"
+        @error = source.error(:formatted_instance_location => formatted_instance_location, :details => details)
+        if i18n?
+          begin
+            @error = i18n!
+            @i18n = true
+          rescue I18n::MissingTranslationData
+          end
+        end
+      end
+      @error
+    end
+
+    def i18n?
+      return @@i18n if defined?(@@i18n)
+      @@i18n = defined?(I18n) && I18n.exists?(I18N_SCOPE)
+    end
+
+    def i18n!
+      base_uri_str = source.schema.base_uri.to_s
+      meta_schema_base_uri_str = source.schema.meta_schema.base_uri.to_s
+      resolved_keyword_location = Location.resolve(keyword_location)
+      error_key = source.error_key
+      I18n.translate!(
+        source.absolute_keyword_location,
+        :default => [
+          "#{base_uri_str}#{I18N_SEPARATOR}##{resolved_keyword_location}",
+          "##{resolved_keyword_location}",
+          "#{base_uri_str}#{I18N_SEPARATOR}#{error_key}",
+          "#{base_uri_str}#{I18N_SEPARATOR}#{CATCHALL}",
+          "#{meta_schema_base_uri_str}#{I18N_SEPARATOR}#{error_key}",
+          "#{meta_schema_base_uri_str}#{I18N_SEPARATOR}#{CATCHALL}",
+          error_key,
+          CATCHALL
+        ].map!(&:to_sym),
+        :separator => I18N_SEPARATOR,
+        :scope => I18N_ERRORS_SCOPE,
+        :instance => instance,
+        :instanceLocation => Location.resolve(instance_location),
+        :keywordLocation => resolved_keyword_location,
+        :absoluteKeywordLocation => source.absolute_keyword_location
       )
     end
 
@@ -38,8 +92,13 @@ module JSONSchemer
         'absoluteKeywordLocation' => source.absolute_keyword_location,
         'instanceLocation' => Location.resolve(instance_location)
       }
-      out['error'] = error unless valid
-      out['annotation'] = annotation if valid && annotation
+      if valid
+        out['annotation'] = annotation if annotation
+      else
+        out['error'] = error
+        out['x-error'] = true if @x_error
+        out['i18n'] = true if @i18n
+      end
       out
     end
 
@@ -54,6 +113,8 @@ module JSONSchemer
         'type' => type || CLASSIC_ERROR_TYPES[source.class]
       }
       out['error'] = error
+      out['x-error'] = true if @x_error
+      out['i18n'] = true if @i18n
       out['details'] = details if details
       out
     end

@@ -295,6 +295,10 @@ module JSONSchemer
       end
     end
 
+    def error_key
+      '^'
+    end
+
     def fetch_format(format, *args, &block)
       if meta_schema == self
         formats.fetch(format, *args, &block)

@@ -26,6 +26,10 @@ module JSONSchemer
       @schema_pointer ||= "#{parent.schema_pointer}/#{escaped_keyword}"
     end
 
+    def error_key
+      keyword
+    end
+
   private
 
     def parse

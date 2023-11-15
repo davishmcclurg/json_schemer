@@ -16,7 +16,9 @@ module JSONSchemer
         '$defs' => Core::Defs,
         'definitions' => Core::Defs,
         # https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-01#section-8.3
-        '$comment' => Core::Comment
+        '$comment' => Core::Comment,
+        # https://github.com/orgs/json-schema-org/discussions/329
+        'x-error' => Core::XError
       }
       # https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-01#section-10
       APPLICATOR = {
