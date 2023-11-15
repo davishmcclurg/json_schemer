@@ -1494,9 +1494,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -1573,9 +1570,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -1652,9 +1646,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -3277,9 +3268,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/validation": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -3415,9 +3403,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/validation": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -6353,9 +6338,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6433,9 +6415,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6513,9 +6492,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6593,9 +6569,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6673,9 +6646,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6753,9 +6723,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6833,9 +6800,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -11697,9 +11661,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/validation": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -17691,9 +17652,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/validation": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -18495,9 +18453,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [

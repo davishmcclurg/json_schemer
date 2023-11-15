@@ -91,9 +91,6 @@ module JSONSchemer
       CORE = {
         '$schema' => 'https://json-schema.org/draft/2020-12/schema',
         '$id' => 'https://json-schema.org/draft/2020-12/meta/core',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2020-12/vocab/core' => true
-        },
         '$dynamicAnchor' => 'meta',
         'title' => 'Core vocabulary meta-schema',
         'type' => ['object', 'boolean'],
@@ -141,9 +138,6 @@ module JSONSchemer
       APPLICATOR = {
         '$schema' => 'https://json-schema.org/draft/2020-12/schema',
         '$id' => 'https://json-schema.org/draft/2020-12/meta/applicator',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2020-12/vocab/applicator' => true
-        },
         '$dynamicAnchor' => 'meta',
         'title' => 'Applicator vocabulary meta-schema',
         'type' => ['object', 'boolean'],
@@ -188,9 +182,6 @@ module JSONSchemer
       UNEVALUATED = {
         '$schema' => 'https://json-schema.org/draft/2020-12/schema',
         '$id' => 'https://json-schema.org/draft/2020-12/meta/unevaluated',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2020-12/vocab/unevaluated' => true
-        },
         '$dynamicAnchor' => 'meta',
         'title' => 'Unevaluated applicator vocabulary meta-schema',
         'type' => ['object', 'boolean'],
@@ -202,9 +193,6 @@ module JSONSchemer
       VALIDATION = {
         '$schema' => 'https://json-schema.org/draft/2020-12/schema',
         '$id' => 'https://json-schema.org/draft/2020-12/meta/validation',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2020-12/vocab/validation' => true
-        },
         '$dynamicAnchor' => 'meta',
         'title' => 'Validation vocabulary meta-schema',
         'type' => ['object', 'boolean'],
@@ -299,9 +287,6 @@ module JSONSchemer
       META_DATA = {
         '$schema' => 'https://json-schema.org/draft/2020-12/schema',
         '$id' => 'https://json-schema.org/draft/2020-12/meta/meta-data',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2020-12/vocab/meta-data' => true
-        },
         '$dynamicAnchor' => 'meta',
         'title' => 'Meta-data vocabulary meta-schema',
         'type' => ['object', 'boolean'],
@@ -334,9 +319,6 @@ module JSONSchemer
       FORMAT_ANNOTATION = {
         '$schema' => 'https://json-schema.org/draft/2020-12/schema',
         '$id' => 'https://json-schema.org/draft/2020-12/meta/format-annotation',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2020-12/vocab/format-annotation' => true
-        },
         '$dynamicAnchor' => 'meta',
         'title' => 'Format vocabulary meta-schema for annotation results',
         'type' => ['object', 'boolean'],
@@ -347,9 +329,6 @@ module JSONSchemer
       FORMAT_ASSERTION = {
         '$schema' => 'https://json-schema.org/draft/2020-12/schema',
         '$id' => 'https://json-schema.org/draft/2020-12/meta/format-assertion',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2020-12/vocab/format-assertion' => true
-        },
         '$dynamicAnchor' => 'meta',
         'title' => 'Format vocabulary meta-schema for assertion results',
         'type' => ['object', 'boolean'],
@@ -360,9 +339,6 @@ module JSONSchemer
       CONTENT = {
         '$schema' => 'https://json-schema.org/draft/2020-12/schema',
         '$id' => 'https://json-schema.org/draft/2020-12/meta/content',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2020-12/vocab/content' => true
-        },
         '$dynamicAnchor' => 'meta',
         'title' => 'Content vocabulary meta-schema',
         'type' => ['object', 'boolean'],
