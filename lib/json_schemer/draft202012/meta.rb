@@ -23,6 +23,12 @@ module JSONSchemer
       'relative-json-pointer' => Format::RELATIVE_JSON_POINTER,
       'regex' => Format::REGEX
     }
+    CONTENT_ENCODINGS = {
+      'base64' => ContentEncoding::BASE64
+    }
+    CONTENT_MEDIA_TYPES = {
+      'application/json' => ContentMediaType::JSON
+    }
     SCHEMA = {
       '$schema' => 'https://json-schema.org/draft/2020-12/schema',
       '$id' => 'https://json-schema.org/draft/2020-12/schema',

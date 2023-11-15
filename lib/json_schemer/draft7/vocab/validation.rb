@@ -35,7 +35,7 @@ module JSONSchemer
           end
         end
 
-        class ContentEncoding < Keyword
+        class ContentEncoding < Draft202012::Vocab::Content::ContentEncoding
           def error(formatted_instance_location:, **)
             "string at #{formatted_instance_location} could not be decoded using encoding: #{value}"
           end
@@ -43,13 +43,13 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, _context)
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(String)
 
-            valid, annotation = Format.decode_content_encoding(instance, value)
+            valid, annotation = parsed.call(instance)
 
             result(instance, instance_location, keyword_location, valid, :annotation => annotation)
           end
         end
 
-        class ContentMediaType < Keyword
+        class ContentMediaType < Draft202012::Vocab::Content::ContentMediaType
           def error(formatted_instance_location:, **)
             "string at #{formatted_instance_location} could not be parsed using media type: #{value}"
           end
@@ -58,7 +58,7 @@ module JSONSchemer
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(String)
 
             decoded_instance = context.adjacent_results[ContentEncoding]&.annotation || instance
-            valid, annotation = Format.parse_content_media_type(decoded_instance, value)
+            valid, annotation = parsed.call(decoded_instance)
 
             result(instance, instance_location, keyword_location, valid, :annotation => annotation)
           end

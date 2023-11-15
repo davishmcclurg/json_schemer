@@ -20,6 +20,7 @@ require 'json_schemer/format/json_pointer'
 require 'json_schemer/format/uri_template'
 require 'json_schemer/format/email'
 require 'json_schemer/format'
+require 'json_schemer/content'
 require 'json_schemer/errors'
 require 'json_schemer/cached_resolver'
 require 'json_schemer/ecma_regexp'
@@ -146,6 +147,8 @@ module JSONSchemer
         Draft202012::SCHEMA,
         :base_uri => Draft202012::BASE_URI,
         :formats => Draft202012::FORMATS,
+        :content_encodings => Draft202012::CONTENT_ENCODINGS,
+        :content_media_types => Draft202012::CONTENT_MEDIA_TYPES,
         :ref_resolver => Draft202012::Meta::SCHEMAS.to_proc,
         :regexp_resolver => 'ecma'
       )
@@ -156,6 +159,8 @@ module JSONSchemer
         Draft201909::SCHEMA,
         :base_uri => Draft201909::BASE_URI,
         :formats => Draft201909::FORMATS,
+        :content_encodings => Draft201909::CONTENT_ENCODINGS,
+        :content_media_types => Draft201909::CONTENT_MEDIA_TYPES,
         :ref_resolver => Draft201909::Meta::SCHEMAS.to_proc,
         :regexp_resolver => 'ecma'
       )
@@ -167,6 +172,8 @@ module JSONSchemer
         :vocabulary => { 'json-schemer://draft7' => true },
         :base_uri => Draft7::BASE_URI,
         :formats => Draft7::FORMATS,
+        :content_encodings => Draft7::CONTENT_ENCODINGS,
+        :content_media_types => Draft7::CONTENT_MEDIA_TYPES,
         :regexp_resolver => 'ecma'
       )
     end
@@ -177,6 +184,8 @@ module JSONSchemer
         :vocabulary => { 'json-schemer://draft6' => true },
         :base_uri => Draft6::BASE_URI,
         :formats => Draft6::FORMATS,
+        :content_encodings => Draft6::CONTENT_ENCODINGS,
+        :content_media_types => Draft6::CONTENT_MEDIA_TYPES,
         :regexp_resolver => 'ecma'
       )
     end
@@ -187,6 +196,8 @@ module JSONSchemer
         :vocabulary => { 'json-schemer://draft4' => true },
         :base_uri => Draft4::BASE_URI,
         :formats => Draft4::FORMATS,
+        :content_encodings => Draft4::CONTENT_ENCODINGS,
+        :content_media_types => Draft4::CONTENT_MEDIA_TYPES,
         :regexp_resolver => 'ecma'
       )
     end

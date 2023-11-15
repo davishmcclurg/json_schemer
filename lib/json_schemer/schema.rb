@@ -20,6 +20,8 @@ module JSONSchemer
     PROPERTIES_KEYWORD_CLASS = Draft202012::Vocab::Applicator::Properties
     DEFAULT_BASE_URI = URI('json-schemer://schema').freeze
     DEFAULT_FORMATS = {}.freeze
+    DEFAULT_CONTENT_ENCODINGS = {}.freeze
+    DEFAULT_CONTENT_MEDIA_TYPES = {}.freeze
     DEFAULT_KEYWORDS = {}.freeze
     DEFAULT_BEFORE_PROPERTY_VALIDATION = [].freeze
     DEFAULT_AFTER_PROPERTY_VALIDATION = [].freeze
@@ -41,7 +43,7 @@ module JSONSchemer
 
     attr_accessor :base_uri, :meta_schema, :keywords, :keyword_order
     attr_reader :value, :parent, :root, :parsed
-    attr_reader :vocabulary, :format, :formats, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults, :property_default_resolver
+    attr_reader :vocabulary, :format, :formats, :content_encodings, :content_media_types, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults, :property_default_resolver
 
     def initialize(
       value,
@@ -53,6 +55,8 @@ module JSONSchemer
       vocabulary: nil,
       format: true,
       formats: DEFAULT_FORMATS,
+      content_encodings: DEFAULT_CONTENT_ENCODINGS,
+      content_media_types: DEFAULT_CONTENT_MEDIA_TYPES,
       keywords: DEFAULT_KEYWORDS,
       before_property_validation: DEFAULT_BEFORE_PROPERTY_VALIDATION,
       after_property_validation: DEFAULT_AFTER_PROPERTY_VALIDATION,
@@ -74,6 +78,8 @@ module JSONSchemer
       @vocabulary = vocabulary
       @format = format
       @formats = formats
+      @content_encodings = content_encodings
+      @content_media_types = content_media_types
       @custom_keywords = keywords
       @before_property_validation = Array(before_property_validation)
       @after_property_validation = Array(after_property_validation)
@@ -182,6 +188,8 @@ module JSONSchemer
           :meta_schema => meta_schema,
           :format => format,
           :formats => formats,
+          :content_encodings => content_encodings,
+          :content_media_types => content_media_types,
           :keywords => custom_keywords,
           :before_property_validation => before_property_validation,
           :after_property_validation => after_property_validation,
@@ -292,6 +300,22 @@ module JSONSchemer
         formats.fetch(format, *args, &block)
       else
         formats.fetch(format) { meta_schema.fetch_format(format, *args, &block) }
+      end
+    end
+
+    def fetch_content_encoding(content_encoding, *args, &block)
+      if meta_schema == self
+        content_encodings.fetch(content_encoding, *args, &block)
+      else
+        content_encodings.fetch(content_encoding) { meta_schema.fetch_content_encoding(content_encoding, *args, &block) }
+      end
+    end
+
+    def fetch_content_media_type(content_media_type, *args, &block)
+      if meta_schema == self
+        content_media_types.fetch(content_media_type, *args, &block)
+      else
+        content_media_types.fetch(content_media_type) { meta_schema.fetch_content_media_type(content_media_type, *args, &block) }
       end
     end
 

@@ -180,6 +180,37 @@ JSONSchemer.schema(
   # default: true
   format: true,
 
+  # custom formats
+  formats: {
+    'int32' => proc do |instance, _format|
+      instance.is_a?(Integer) && instance.bit_length <= 32
+    end,
+    # disable specific format
+    'email' => false
+  },
+
+  # custom content encodings
+  # only `base64` is available by default
+  content_encodings: {
+    # return [success, annotation] tuple
+    'urlsafe_base64' => proc do |instance|
+      [true, Base64.urlsafe_decode64(instance)]
+    rescue
+      [false, nil]
+    end
+  },
+
+  # custom content media types
+  # only `application/json` is available by default
+  content_media_types: {
+    # return [success, annotation] tuple
+    'text/csv' => proc do |instance|
+      [true, CSV.parse(instance)]
+    rescue
+      [false, nil]
+    end
+  },
+
   # insert default property values during validation
   # true/false
   # default: false

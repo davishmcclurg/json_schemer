@@ -11,6 +11,8 @@ module JSONSchemer
     FORMATS.delete('iri-reference')
     FORMATS.delete('relative-json-pointer')
     FORMATS.delete('regex')
+    CONTENT_ENCODINGS = Draft7::CONTENT_ENCODINGS
+    CONTENT_MEDIA_TYPES = Draft7::CONTENT_MEDIA_TYPES
     SCHEMA = {
       '$schema' => 'http://json-schema.org/draft-06/schema#',
       '$id' => 'http://json-schema.org/draft-06/schema#',

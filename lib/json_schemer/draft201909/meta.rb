@@ -3,6 +3,8 @@ module JSONSchemer
   module Draft201909
     BASE_URI = URI('https://json-schema.org/draft/2019-09/schema')
     FORMATS = Draft202012::FORMATS
+    CONTENT_ENCODINGS = Draft202012::CONTENT_ENCODINGS
+    CONTENT_MEDIA_TYPES = Draft202012::CONTENT_MEDIA_TYPES
     SCHEMA = {
       '$schema' => 'https://json-schema.org/draft/2019-09/schema',
       '$id' => 'https://json-schema.org/draft/2019-09/schema',
