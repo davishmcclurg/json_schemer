@@ -4,9 +4,16 @@
 
 ### Bug Fixes
 
-- Limit anyOf/oneOf discriminator to listed refs
-- Require discriminator `propertyName` property
-- Support `Schema#ref` in subschemas
+- Limit anyOf/oneOf discriminator to listed refs: https://github.com/davishmcclurg/json_schemer/pull/145
+- Require discriminator `propertyName` property: https://github.com/davishmcclurg/json_schemer/pull/145
+- Support `Schema#ref` in subschemas: https://github.com/davishmcclurg/json_schemer/pull/145
+- Resolve JSON pointer refs using correct base URI: https://github.com/davishmcclurg/json_schemer/pull/147
+- `date` format in OpenAPI 3.0: https://github.com/davishmcclurg/json_schemer/commit/69fe7a815ecf0cfb1c40ac402bf46a789c05e972
+
+### Features
+
+- Custom error messages with `x-error` keyword and I18n: https://github.com/davishmcclurg/json_schemer/pull/149
+- Custom content encodings and media types: https://github.com/davishmcclurg/json_schemer/pull/148
 
 [2.1.0]: https://github.com/davishmcclurg/json_schemer/releases/tag/v2.1.0
 
