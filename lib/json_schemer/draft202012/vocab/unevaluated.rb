@@ -18,7 +18,7 @@ module JSONSchemer
             unevaluated_items = instance.size.times.to_set
 
             context.adjacent_results.each_value do |adjacent_result|
-              collect_unevaluated_items(adjacent_result, instance_location, unevaluated_items)
+              collect_unevaluated_items(adjacent_result, unevaluated_items)
             end
 
             nested = unevaluated_items.map do |index|
@@ -30,8 +30,7 @@ module JSONSchemer
 
         private
 
-          def collect_unevaluated_items(result, instance_location, unevaluated_items)
-            return unless result.valid && result.instance_location == instance_location
+          def collect_unevaluated_items(result, unevaluated_items)
             case result.source
             when Applicator::PrefixItems
               unevaluated_items.subtract(0..result.annotation)
@@ -41,7 +40,9 @@ module JSONSchemer
               unevaluated_items.subtract(result.annotation)
             end
             result.nested&.each do |subresult|
-              collect_unevaluated_items(subresult, instance_location, unevaluated_items)
+              if subresult.valid && subresult.instance_location == result.instance_location
+                collect_unevaluated_items(subresult, unevaluated_items)
+              end
             end
           end
         end
@@ -61,7 +62,7 @@ module JSONSchemer
             evaluated_keys = Set[]
 
             context.adjacent_results.each_value do |adjacent_result|
-              collect_evaluated_keys(adjacent_result, instance_location, evaluated_keys)
+              collect_evaluated_keys(adjacent_result, evaluated_keys)
             end
 
             evaluated = instance.reject do |key, _value|
@@ -77,14 +78,15 @@ module JSONSchemer
 
         private
 
-          def collect_evaluated_keys(result, instance_location, evaluated_keys)
-            return unless result.valid && result.instance_location == instance_location
+          def collect_evaluated_keys(result, evaluated_keys)
             case result.source
             when Applicator::Properties, Applicator::PatternProperties, Applicator::AdditionalProperties, UnevaluatedProperties
               evaluated_keys.merge(result.annotation)
             end
             result.nested&.each do |subresult|
-              collect_evaluated_keys(subresult, instance_location, evaluated_keys)
+              if subresult.valid && subresult.instance_location == result.instance_location
+                collect_evaluated_keys(subresult, evaluated_keys)
+              end
             end
           end
         end

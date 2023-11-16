@@ -324,6 +324,74 @@ class JSONSchemerTest < Minitest::Test
     assert_equal('array items at root do not match `additionalItems` schema', schemer.validate([1, 2], :resolve_enumerators => true).dig('errors', 1, 'error'))
   end
 
+  def test_unevaluated_items_errors
+    schemer = JSONSchemer.schema({
+      'prefixItems' => [
+        { 'type' => 'integer' }
+      ],
+      'unevaluatedItems' => false
+    })
+    assert_equal(['/prefixItems/0'], schemer.validate(['invalid']).map { |error| error.fetch('schema_pointer') })
+    assert_equal(['/unevaluatedItems'], schemer.validate([1, 'unevaluated']).map { |error| error.fetch('schema_pointer') })
+    assert_equal(['/prefixItems/0', '/unevaluatedItems'], schemer.validate(['invalid', 'unevaluated']).map { |error| error.fetch('schema_pointer') })
+  end
+
+  def test_unevaluated_properties_errors
+    schemer = JSONSchemer.schema({
+      'properties' => {
+        'foo' => {
+          'type' => 'integer'
+        }
+      },
+      'unevaluatedProperties' => false
+    })
+    assert_equal(['/properties/foo'], schemer.validate({ 'foo' => 'invalid' }).map { |error| error.fetch('schema_pointer') })
+    assert_equal(['/unevaluatedProperties'], schemer.validate({ 'bar' => 'unevaluated' }).map { |error| error.fetch('schema_pointer') })
+    assert_equal(['/unevaluatedProperties'], schemer.validate({ 'foo' => 1, 'bar' => 'unevaluated' }).map { |error| error.fetch('schema_pointer') })
+    assert_equal(['/properties/foo', '/unevaluatedProperties'], schemer.validate({ 'foo' => 'invalid', 'bar' => '?' }).map { |error| error.fetch('schema_pointer') })
+
+    schemer = JSONSchemer.schema({
+      'properties' => {
+        'foo' => {
+          'type' => 'integer'
+        },
+        'bar' => {
+          'type' => 'string'
+        }
+      },
+      'unevaluatedProperties' => false
+    })
+    assert_equal(['/properties/foo'], schemer.validate({ 'foo' => 'invalid', 'bar' => 'valid' }).map { |error| error.fetch('schema_pointer') })
+    assert_equal(['/properties/bar'], schemer.validate({ 'foo' => 1, 'bar' => 1 }).map { |error| error.fetch('schema_pointer') })
+  end
+
+  # https://github.com/json-schema-org/json-schema-spec/issues/1172#issuecomment-1062540587
+  def test_unevaluated_properties_inconsistent_errors
+    all_of = [
+      {
+        'properties' => {
+          'foo' => true
+        }
+      },
+      false
+    ]
+    schemer1 = JSONSchemer.schema({
+      'allOf' => all_of,
+      'unevaluatedProperties' => false
+    })
+    schemer2 = JSONSchemer.schema({
+      'allOf' => [
+        { 'allOf' => all_of }
+      ],
+      'unevaluatedProperties' => false
+    })
+    instance = {
+      'foo' => true
+    }
+    assert_equal(['/allOf/1'], schemer1.validate(instance).map { |error| error.fetch('schema_pointer') })
+    assert_equal(['/allOf/0/allOf/1', '/unevaluatedProperties'], schemer2.validate(instance).map { |error| error.fetch('schema_pointer') })
+  end
+
   def test_inspect
     output = JSONSchemer.openapi31_document.inspect
     assert_includes(output, 'JSONSchemer::Schema')
