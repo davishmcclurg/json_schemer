@@ -175,7 +175,9 @@ private
 
   def exe(*args, **kwargs)
     Open3.capture3('bundle', 'exec', 'json_schemer', *args, **kwargs).tap do |_stdout, stderr, _status|
+      # :nocov:
       stderr.gsub!(RUBY_2_5_WARNING_REGEX, '') if RUBY_ENGINE == 'ruby' && RUBY_VERSION.match?(/\A2\.5\.\d+\z/)
+      # :nocov:
     end
   end
 

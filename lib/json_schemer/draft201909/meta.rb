@@ -2,6 +2,9 @@
 module JSONSchemer
   module Draft201909
     BASE_URI = URI('https://json-schema.org/draft/2019-09/schema')
+    FORMATS = Draft202012::FORMATS
+    CONTENT_ENCODINGS = Draft202012::CONTENT_ENCODINGS
+    CONTENT_MEDIA_TYPES = Draft202012::CONTENT_MEDIA_TYPES
     SCHEMA = {
       '$schema' => 'https://json-schema.org/draft/2019-09/schema',
       '$id' => 'https://json-schema.org/draft/2019-09/schema',
@@ -48,9 +51,6 @@ module JSONSchemer
       CORE = {
         '$schema' => 'https://json-schema.org/draft/2019-09/schema',
         '$id' => 'https://json-schema.org/draft/2019-09/meta/core',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2019-09/vocab/core' => true
-        },
         '$recursiveAnchor' => true,
         'title' => 'Core vocabulary meta-schema',
         'type' => ['object', 'boolean'],
@@ -105,9 +105,6 @@ module JSONSchemer
       APPLICATOR = {
         '$schema' => 'https://json-schema.org/draft/2019-09/schema',
         '$id' => 'https://json-schema.org/draft/2019-09/meta/applicator',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2019-09/vocab/applicator' => true
-        },
         '$recursiveAnchor' => true,
         'title' => 'Applicator vocabulary meta-schema',
         'type' => ['object', 'boolean'],
@@ -161,9 +158,6 @@ module JSONSchemer
       VALIDATION = {
         '$schema' => 'https://json-schema.org/draft/2019-09/schema',
         '$id' => 'https://json-schema.org/draft/2019-09/meta/validation',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2019-09/vocab/validation' => true
-        },
         '$recursiveAnchor' => true,
         'title' => 'Validation vocabulary meta-schema',
         'type' => ['object', 'boolean'],
@@ -259,9 +253,6 @@ module JSONSchemer
       META_DATA = {
         '$schema' => 'https://json-schema.org/draft/2019-09/schema',
         '$id' => 'https://json-schema.org/draft/2019-09/meta/meta-data',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2019-09/vocab/meta-data' => true
-        },
         '$recursiveAnchor' => true,
         'title' => 'Meta-data vocabulary meta-schema',
         'type' => ['object', 'boolean'],
@@ -295,9 +286,6 @@ module JSONSchemer
       FORMAT = {
         '$schema' => 'https://json-schema.org/draft/2019-09/schema',
         '$id' => 'https://json-schema.org/draft/2019-09/meta/format',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2019-09/vocab/format' => true
-        },
         '$recursiveAnchor' => true,
         'title' => 'Format vocabulary meta-schema',
         'type' => ['object', 'boolean'],
@@ -309,9 +297,6 @@ module JSONSchemer
       CONTENT = {
         '$schema' => 'https://json-schema.org/draft/2019-09/schema',
         '$id' => 'https://json-schema.org/draft/2019-09/meta/content',
-        '$vocabulary' => {
-          'https://json-schema.org/draft/2019-09/vocab/content' => true
-        },
         '$recursiveAnchor' => true,
         'title' => 'Content vocabulary meta-schema',
         'type' => ['object', 'boolean'],

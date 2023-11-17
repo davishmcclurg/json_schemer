@@ -192,6 +192,43 @@
     ],
     [
       [
+        {
+          "data": "bar",
+          "data_pointer": "/1",
+          "schema": false,
+          "schema_pointer": "/additionalItems",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "items": [
+              {
+              }
+            ],
+            "additionalItems": false
+          },
+          "type": "schema"
+        },
+        {
+          "data": 37,
+          "data_pointer": "/2",
+          "schema": false,
+          "schema_pointer": "/additionalItems",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "items": [
+              {
+              }
+            ],
+            "additionalItems": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
 
       ]
     ]
@@ -1691,9 +1728,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -1765,9 +1799,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -1839,9 +1870,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -3459,9 +3487,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/validation": true
-            },
             "$recursiveAnchor": true,
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -3597,9 +3622,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/validation": true
-            },
             "$recursiveAnchor": true,
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -4225,6 +4247,7 @@
           "schema": false,
           "schema_pointer": "/dependentSchemas/foo/additionalProperties",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
               "foo": {
               }
@@ -4252,6 +4275,7 @@
           "schema": false,
           "schema_pointer": "/dependentSchemas/foo/additionalProperties",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
               "foo": {
               }
@@ -5316,9 +5340,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -5392,9 +5413,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -5468,9 +5486,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -5544,9 +5559,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -5620,9 +5632,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -5696,9 +5705,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -5772,9 +5778,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -12057,6 +12060,21 @@
           },
           "type": "format"
         }
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
       ]
     ]
   ],
@@ -12651,6 +12669,21 @@
       ],
       [
 
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
       ]
     ]
   ],
@@ -12779,6 +12812,22 @@
       [
         {
           "data": "1২7.0.0.1",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "ipv4"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "ipv4"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "192.168.1.0/24",
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -15017,6 +15066,32 @@
             }
           },
           "type": "integer"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": 42,
+          "data_pointer": "",
+          "schema": {
+            "type": "string"
+          },
+          "schema_pointer": "/examples/0",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "$id": "/base",
+            "examples": [
+              {
+                "type": "string"
+              }
+            ],
+            "$ref": "#/examples/0"
+          },
+          "type": "string"
         }
       ]
     ]
@@ -18218,9 +18293,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/validation": true
-            },
             "$recursiveAnchor": true,
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -19023,9 +19095,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2019-09/vocab/core": true
-            },
             "$recursiveAnchor": true,
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -19161,6 +19230,7 @@
           },
           "schema_pointer": "/$defs/foo/$defs/bar",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$ref": "urn:uuid:deadbeef-4321-ffff-ffff-1234feebdaed",
             "$defs": {
               "foo": {
@@ -19189,6 +19259,7 @@
           },
           "schema_pointer": "/if",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$ref": "http://example.com/ref/if",
             "if": {
               "$id": "http://example.com/ref/if",
@@ -19213,6 +19284,7 @@
           },
           "schema_pointer": "/then",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$ref": "http://example.com/ref/then",
             "then": {
               "$id": "http://example.com/ref/then",
@@ -19237,6 +19309,7 @@
           },
           "schema_pointer": "/else",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$ref": "http://example.com/ref/else",
             "else": {
               "$id": "http://example.com/ref/else",
@@ -19264,6 +19337,7 @@
           },
           "schema_pointer": "/$defs/b",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "http://example.com/ref/absref.json",
             "$defs": {
               "a": {
@@ -19294,6 +19368,7 @@
           },
           "schema_pointer": "/$defs/foo",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "file:///folder/file.json",
             "$defs": {
               "foo": {
@@ -19319,6 +19394,7 @@
           },
           "schema_pointer": "/$defs/foo",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$id": "file:///c:/folder/file.json",
             "$defs": {
               "foo": {
@@ -19344,6 +19420,7 @@
           },
           "schema_pointer": "/$defs//$defs/",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
             "$defs": {
               "": {
                 "$defs": {
@@ -21699,6 +21776,50 @@
     ],
     [
       [
+
+      ],
+      [
+        {
+          "data": "too many",
+          "data_pointer": "/1/3",
+          "schema": false,
+          "schema_pointer": "/$defs/tree/items/1/unevaluatedItems",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "$id": "https://example.com/extended-tree",
+            "$recursiveAnchor": true,
+            "$ref": "/tree",
+            "items": [
+              true,
+              true,
+              {
+                "type": "string"
+              }
+            ],
+            "$defs": {
+              "tree": {
+                "$id": "/tree",
+                "$recursiveAnchor": true,
+                "type": "array",
+                "items": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "$comment": "unevaluatedItems comes first so it's more likely to catch bugs with implementations that are sensitive to keyword ordering",
+                    "unevaluatedItems": false,
+                    "$recursiveRef": "#"
+                  }
+                ]
+              }
+            }
+          },
+          "type": "schema"
+        }
+      ]
+    ],
+    [
+      [
         {
           "data": 1,
           "data_pointer": "/0",
@@ -22660,6 +22781,49 @@
                     "type": "string"
                   }
                 }
+              }
+            }
+          },
+          "type": "schema"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "b",
+          "data_pointer": "/branches/foo",
+          "schema": false,
+          "schema_pointer": "/$defs/tree/properties/branches/unevaluatedProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "$id": "https://example.com/extended-tree",
+            "$recursiveAnchor": true,
+            "$ref": "/tree",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            },
+            "$defs": {
+              "tree": {
+                "$id": "/tree",
+                "$recursiveAnchor": true,
+                "type": "object",
+                "properties": {
+                  "node": true,
+                  "branches": {
+                    "$comment": "unevaluatedProperties comes first so it's more likely to bugs errors with implementations that are sensitive to keyword ordering",
+                    "unevaluatedProperties": false,
+                    "$recursiveRef": "#"
+                  }
+                },
+                "required": [
+                  "node"
+                ]
               }
             }
           },

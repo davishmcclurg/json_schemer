@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'csv'
 
 class JSONSchemerTest < Minitest::Test
   def test_that_it_has_a_version_number
@@ -237,11 +238,11 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_it_raises_for_unsupported_content_encoding
-    assert_raises(JSONSchemer::UnknownContentEncoding) { JSONSchemer.schema({ 'contentEncoding' => '7bit' }).valid?('') }
+    assert_raises(JSONSchemer::UnknownContentEncoding) { JSONSchemer.schema({ 'contentEncoding' => '7bit' }) }
   end
 
   def test_it_raises_for_unsupported_content_media_type
-    assert_raises(JSONSchemer::UnknownContentMediaType) { JSONSchemer.schema({ 'contentMediaType' => 'application/xml' }).valid?('') }
+    assert_raises(JSONSchemer::UnknownContentMediaType) { JSONSchemer.schema({ 'contentMediaType' => 'application/xml' }) }
   end
 
   def test_it_raises_for_required_unknown_vocabulary
@@ -380,6 +381,12 @@ class JSONSchemerTest < Minitest::Test
       'type' => 'integer',
       '$defs' => {
         'foo' => {
+          '$id' => 'subschemer',
+          '$defs' => {
+            'bar' => {
+              'required' => ['z']
+            }
+          },
           'type' => 'object',
           'required' => ['x', 'y'],
           'properties' => {
@@ -401,10 +408,20 @@ class JSONSchemerTest < Minitest::Test
 
     refute(subschemer.valid?(1))
     assert_equal(
-      [["/x", "/$defs/foo/properties/x", "string"], ["", "/$defs/foo", "required"]],
+      [['/x', '/$defs/foo/properties/x', 'string'], ['', '/$defs/foo', 'required']],
       subschemer.validate({ 'x' => 1 }).map { |error| error.values_at('data_pointer', 'schema_pointer', 'type') }
     )
     assert(subschemer.valid?({ 'x' => '1', 'y' => 1 }))
+
+    subsubschemer = subschemer.ref('#/$defs/bar')
+    refute(subsubschemer.valid?({ 'x' => 1 }))
+    assert_equal(
+      [['', '/$defs/foo/$defs/bar', 'required']],
+      subsubschemer.validate({ 'x' => 1 }).map { |error| error.values_at('data_pointer', 'schema_pointer', 'type') }
+    )
+
+    assert_equal(subschemer, subschemer.ref('#'))
+    assert_equal(subschemer, subsubschemer.ref('#'))
   end
 
   def test_published_meta_schemas
@@ -422,7 +439,7 @@ class JSONSchemerTest < Minitest::Test
       JSONSchemer::OpenAPI30::Document::SCHEMA
     ].each do |meta_schema|
       id = meta_schema.key?('$id') ? meta_schema.fetch('$id') : meta_schema.fetch('id')
-      assert_equal(meta_schema, JSON.parse(Net::HTTP.get(URI(id))))
+      assert_equal(meta_schema, JSON.parse(fetch(id)))
     end
   end
 
@@ -530,5 +547,56 @@ class JSONSchemerTest < Minitest::Test
     bundle = JSONSchemer.schema(schemer.bundle)
     assert(bundle.valid?('yah'))
     refute(bundle.valid?('nah'))
+  end
+
+  def test_custom_content_encodings_and_media_types
+    data = '😊'
+    instance = Base64.urlsafe_encode64(data)
+    schema = {
+      'contentEncoding' => 'urlsafe_base64',
+      'contentMediaType' => 'text/csv'
+    }
+    content_encodings = {
+      'urlsafe_base64' => proc do |instance|
+        [true, Base64.urlsafe_decode64(instance).force_encoding('utf-8')]
+      rescue
+        [false, nil]
+      end
+    }
+    content_media_types = {
+      'text/csv' => proc do |instance|
+        [true, CSV.parse(instance)]
+      rescue
+        [false, nil]
+      end
+    }
+
+    refute(JSONSchemer.schema({ 'contentEncoding' => 'base64' }).validate(instance, :output_format => 'basic').fetch('annotations').first.key?('annotation'))
+
+    schemer = JSONSchemer.schema(schema, :content_encodings => content_encodings, :content_media_types => content_media_types)
+
+    assert_nil(annotation(schemer.validate('invalid', :output_format => 'basic'), '/contentEncoding'))
+    assert_nil(annotation(schemer.validate(Base64.urlsafe_encode64("#{data}\""), :output_format => 'basic'), '/contentMediaType'))
+
+    result = schemer.validate(instance, :output_format => 'basic')
+    assert_equal(data, annotation(result, '/contentEncoding'))
+    assert_equal([[data]], annotation(result, '/contentMediaType'))
+
+    draft7_schemer = JSONSchemer.schema(
+      schema,
+      :meta_schema => JSONSchemer.draft7,
+      :content_encodings => content_encodings,
+      :content_media_types => content_media_types
+    )
+
+    assert(draft7_schemer.valid?(instance))
+    refute(draft7_schemer.valid?('invalid'))
+    refute(draft7_schemer.valid?(Base64.urlsafe_encode64("#{data}\"")))
+  end
+
+private
+
+  def annotation(result, keyword_location)
+    result.fetch('annotations').find { |annotation| annotation.fetch('keywordLocation') == keyword_location }['annotation']
   end
 end

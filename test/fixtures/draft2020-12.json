@@ -1494,9 +1494,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -1573,9 +1570,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -1652,9 +1646,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -3277,9 +3268,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/validation": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -3415,9 +3403,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/validation": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -4043,6 +4028,7 @@
           "schema": false,
           "schema_pointer": "/dependentSchemas/foo/additionalProperties",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "properties": {
               "foo": {
               }
@@ -4070,6 +4056,7 @@
           "schema": false,
           "schema_pointer": "/dependentSchemas/foo/additionalProperties",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "properties": {
               "foo": {
               }
@@ -6353,9 +6340,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6433,9 +6417,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6513,9 +6494,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6593,9 +6571,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6673,9 +6648,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6753,9 +6725,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -6833,9 +6802,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -7967,6 +7933,43 @@
           },
           "type": "integer"
         }
+      ]
+    ],
+    [
+      [
+        {
+          "data": "bar",
+          "data_pointer": "/1",
+          "schema": false,
+          "schema_pointer": "/items",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "prefixItems": [
+              {
+              }
+            ],
+            "items": false
+          },
+          "type": "schema"
+        },
+        {
+          "data": 37,
+          "data_pointer": "/2",
+          "schema": false,
+          "schema_pointer": "/items",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "prefixItems": [
+              {
+              }
+            ],
+            "items": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+
       ]
     ],
     [
@@ -11697,9 +11700,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/validation": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -13288,6 +13288,21 @@
           },
           "type": "format"
         }
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
       ]
     ]
   ],
@@ -13882,6 +13897,21 @@
       ],
       [
 
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
       ]
     ]
   ],
@@ -14010,6 +14040,22 @@
       [
         {
           "data": "1২7.0.0.1",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "ipv4"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "ipv4"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "192.168.1.0/24",
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -16298,6 +16344,32 @@
           "type": "integer"
         }
       ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": 42,
+          "data_pointer": "",
+          "schema": {
+            "type": "string"
+          },
+          "schema_pointer": "/examples/0",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "/base",
+            "examples": [
+              {
+                "type": "string"
+              }
+            ],
+            "$ref": "#/examples/0"
+          },
+          "type": "string"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2020-12/pattern.json": [
@@ -17691,9 +17763,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/validation",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/validation": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Validation vocabulary meta-schema",
             "type": [
@@ -18495,9 +18564,6 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$vocabulary": {
-              "https://json-schema.org/draft/2020-12/vocab/core": true
-            },
             "$dynamicAnchor": "meta",
             "title": "Core vocabulary meta-schema",
             "type": [
@@ -18638,6 +18704,7 @@
           },
           "schema_pointer": "/$defs/foo/$defs/bar",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$ref": "urn:uuid:deadbeef-4321-ffff-ffff-1234feebdaed",
             "$defs": {
               "foo": {
@@ -18666,6 +18733,7 @@
           },
           "schema_pointer": "/if",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$ref": "http://example.com/ref/if",
             "if": {
               "$id": "http://example.com/ref/if",
@@ -18690,6 +18758,7 @@
           },
           "schema_pointer": "/then",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$ref": "http://example.com/ref/then",
             "then": {
               "$id": "http://example.com/ref/then",
@@ -18714,6 +18783,7 @@
           },
           "schema_pointer": "/else",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$ref": "http://example.com/ref/else",
             "else": {
               "$id": "http://example.com/ref/else",
@@ -18741,6 +18811,7 @@
           },
           "schema_pointer": "/$defs/b",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "http://example.com/ref/absref.json",
             "$defs": {
               "a": {
@@ -18771,6 +18842,7 @@
           },
           "schema_pointer": "/$defs/foo",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "file:///folder/file.json",
             "$defs": {
               "foo": {
@@ -18796,6 +18868,7 @@
           },
           "schema_pointer": "/$defs/foo",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "file:///c:/folder/file.json",
             "$defs": {
               "foo": {
@@ -18821,6 +18894,7 @@
           },
           "schema_pointer": "/$defs//$defs/",
           "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$defs": {
               "": {
                 "$defs": {
@@ -21183,6 +21257,54 @@
     ],
     [
       [
+
+      ],
+      [
+        {
+          "data": "baz",
+          "data_pointer": "/2",
+          "schema": false,
+          "schema_pointer": "/$defs/baseSchema/unevaluatedItems",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "https://example.com/derived",
+            "$ref": "/baseSchema",
+            "$defs": {
+              "derived": {
+                "$dynamicAnchor": "addons",
+                "prefixItems": [
+                  true,
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "baseSchema": {
+                "$id": "/baseSchema",
+                "$comment": "unevaluatedItems comes first so it's more likely to catch bugs with implementations that are sensitive to keyword ordering",
+                "unevaluatedItems": false,
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "string"
+                  }
+                ],
+                "$dynamicRef": "#addons",
+                "$defs": {
+                  "defaultAddons": {
+                    "$comment": "Needed to satisfy the bookending requirement",
+                    "$dynamicAnchor": "addons"
+                  }
+                }
+              }
+            }
+          },
+          "type": "schema"
+        }
+      ]
+    ],
+    [
+      [
         {
           "data": 1,
           "data_pointer": "/0",
@@ -22630,6 +22752,53 @@
                 "properties": {
                   "bar": {
                     "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "type": "schema"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "baz",
+          "data_pointer": "/baz",
+          "schema": false,
+          "schema_pointer": "/$defs/baseSchema/unevaluatedProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "https://example.com/derived",
+            "$ref": "/baseSchema",
+            "$defs": {
+              "derived": {
+                "$dynamicAnchor": "addons",
+                "properties": {
+                  "bar": {
+                    "type": "string"
+                  }
+                }
+              },
+              "baseSchema": {
+                "$id": "/baseSchema",
+                "$comment": "unevaluatedProperties comes first so it's more likely to catch bugs with implementations that are sensitive to keyword ordering",
+                "unevaluatedProperties": false,
+                "type": "object",
+                "properties": {
+                  "foo": {
+                    "type": "string"
+                  }
+                },
+                "$dynamicRef": "#addons",
+                "$defs": {
+                  "defaultAddons": {
+                    "$comment": "Needed to satisfy the bookending requirement",
+                    "$dynamicAnchor": "addons"
                   }
                 }
               }

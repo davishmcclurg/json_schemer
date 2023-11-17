@@ -12,3 +12,17 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "json_schemer"
 
 require "minitest/autorun"
+
+def fetch(location, limit = 10)
+  raise if limit.zero?
+  uri = URI(location)
+  response = Net::HTTP.get_response(uri)
+  case response
+  when Net::HTTPSuccess
+    response.body
+  when Net::HTTPRedirection
+    fetch(URI.join(uri, response['Location']), limit - 1)
+  else
+    response.value.body
+  end
+end

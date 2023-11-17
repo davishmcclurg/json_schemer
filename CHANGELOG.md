@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.1.0] - XXXX-XX-XX
+
+### Bug Fixes
+
+- Limit anyOf/oneOf discriminator to listed refs: https://github.com/davishmcclurg/json_schemer/pull/145
+- Require discriminator `propertyName` property: https://github.com/davishmcclurg/json_schemer/pull/145
+- Support `Schema#ref` in subschemas: https://github.com/davishmcclurg/json_schemer/pull/145
+- Resolve JSON pointer refs using correct base URI: https://github.com/davishmcclurg/json_schemer/pull/147
+- `date` format in OpenAPI 3.0: https://github.com/davishmcclurg/json_schemer/commit/69fe7a815ecf0cfb1c40ac402bf46a789c05e972
+
+### Features
+
+- Custom error messages with `x-error` keyword and I18n: https://github.com/davishmcclurg/json_schemer/pull/149
+- Custom content encodings and media types: https://github.com/davishmcclurg/json_schemer/pull/148
+
+[2.1.0]: https://github.com/davishmcclurg/json_schemer/releases/tag/v2.1.0
+
 ## [2.0.0] - 2023-08-20
 
 For 2.0.0, much of the codebase was rewritten to simplify support for the two new JSON Schema draft versions (2019-09 and 2020-12). The major change is moving each keyword into its own class and organizing them into vocabularies. [Output formats](https://json-schema.org/draft/2020-12/json-schema-core.html#section-12) and [annotations](https://json-schema.org/draft/2020-12/json-schema-core.html#section-7.7) from the new drafts are also supported. The known breaking changes are listed below, but there may be others that haven't been identified.

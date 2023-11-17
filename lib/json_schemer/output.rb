@@ -5,14 +5,15 @@ module JSONSchemer
 
     attr_reader :keyword, :schema
 
+    def x_error
+      return @x_error if defined?(@x_error)
+      @x_error = schema.parsed['x-error']&.message(error_key)
+    end
+
   private
 
     def result(instance, instance_location, keyword_location, valid, nested = nil, type: nil, annotation: nil, details: nil, ignore_nested: false)
-      if valid
-        Result.new(self, instance, instance_location, keyword_location, valid, nested, type, annotation, details, ignore_nested, 'annotations')
-      else
-        Result.new(self, instance, instance_location, keyword_location, valid, nested, type, annotation, details, ignore_nested, 'errors')
-      end
+      Result.new(self, instance, instance_location, keyword_location, valid, nested, type, annotation, details, ignore_nested, valid ? 'annotations' : 'errors')
     end
 
     def escaped_keyword

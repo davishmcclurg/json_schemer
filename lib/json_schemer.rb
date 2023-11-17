@@ -20,6 +20,7 @@ require 'json_schemer/format/json_pointer'
 require 'json_schemer/format/uri_template'
 require 'json_schemer/format/email'
 require 'json_schemer/format'
+require 'json_schemer/content'
 require 'json_schemer/errors'
 require 'json_schemer/cached_resolver'
 require 'json_schemer/ecma_regexp'
@@ -145,6 +146,9 @@ module JSONSchemer
       @draft202012 ||= Schema.new(
         Draft202012::SCHEMA,
         :base_uri => Draft202012::BASE_URI,
+        :formats => Draft202012::FORMATS,
+        :content_encodings => Draft202012::CONTENT_ENCODINGS,
+        :content_media_types => Draft202012::CONTENT_MEDIA_TYPES,
         :ref_resolver => Draft202012::Meta::SCHEMAS.to_proc,
         :regexp_resolver => 'ecma'
       )
@@ -154,6 +158,9 @@ module JSONSchemer
       @draft201909 ||= Schema.new(
         Draft201909::SCHEMA,
         :base_uri => Draft201909::BASE_URI,
+        :formats => Draft201909::FORMATS,
+        :content_encodings => Draft201909::CONTENT_ENCODINGS,
+        :content_media_types => Draft201909::CONTENT_MEDIA_TYPES,
         :ref_resolver => Draft201909::Meta::SCHEMAS.to_proc,
         :regexp_resolver => 'ecma'
       )
@@ -164,6 +171,9 @@ module JSONSchemer
         Draft7::SCHEMA,
         :vocabulary => { 'json-schemer://draft7' => true },
         :base_uri => Draft7::BASE_URI,
+        :formats => Draft7::FORMATS,
+        :content_encodings => Draft7::CONTENT_ENCODINGS,
+        :content_media_types => Draft7::CONTENT_MEDIA_TYPES,
         :regexp_resolver => 'ecma'
       )
     end
@@ -173,6 +183,9 @@ module JSONSchemer
         Draft6::SCHEMA,
         :vocabulary => { 'json-schemer://draft6' => true },
         :base_uri => Draft6::BASE_URI,
+        :formats => Draft6::FORMATS,
+        :content_encodings => Draft6::CONTENT_ENCODINGS,
+        :content_media_types => Draft6::CONTENT_MEDIA_TYPES,
         :regexp_resolver => 'ecma'
       )
     end
@@ -182,6 +195,9 @@ module JSONSchemer
         Draft4::SCHEMA,
         :vocabulary => { 'json-schemer://draft4' => true },
         :base_uri => Draft4::BASE_URI,
+        :formats => Draft4::FORMATS,
+        :content_encodings => Draft4::CONTENT_ENCODINGS,
+        :content_media_types => Draft4::CONTENT_MEDIA_TYPES,
         :regexp_resolver => 'ecma'
       )
     end
@@ -190,16 +206,9 @@ module JSONSchemer
       @openapi31 ||= Schema.new(
         OpenAPI31::SCHEMA,
         :base_uri => OpenAPI31::BASE_URI,
+        :formats => OpenAPI31::FORMATS,
         :ref_resolver => OpenAPI31::Meta::SCHEMAS.to_proc,
-        :regexp_resolver => 'ecma',
-        # https://spec.openapis.org/oas/latest.html#data-types
-        :formats => {
-          'int32' => proc { |instance, _value| instance.is_a?(Integer) && instance.bit_length <= 32 },
-          'int64' => proc { |instance, _value| instance.is_a?(Integer) && instance.bit_length <= 64 },
-          'float' => proc { |instance, _value| instance.is_a?(Float) },
-          'double' => proc { |instance, _value| instance.is_a?(Float) },
-          'password' => proc { |_instance, _value| true }
-        }
+        :regexp_resolver => 'ecma'
       )
     end
 
@@ -211,17 +220,9 @@ module JSONSchemer
           'json-schemer://openapi30' => true
         },
         :base_uri => OpenAPI30::BASE_URI,
+        :formats => OpenAPI30::FORMATS,
         :ref_resolver => OpenAPI30::Meta::SCHEMAS.to_proc,
-        :regexp_resolver => 'ecma',
-        :formats => {
-          'int32' => proc { |instance, _value| instance.is_a?(Integer) && instance.bit_length <= 32 },
-          'int64' => proc { |instance, _value| instance.is_a?(Integer) && instance.bit_length <= 64 },
-          'float' => proc { |instance, _value| instance.is_a?(Float) },
-          'double' => proc { |instance, _value| instance.is_a?(Float) },
-          'byte' => proc { |instance, _value| Format.decode_content_encoding(instance, 'base64').first },
-          'binary' => proc { |instance, _value| instance.is_a?(String) && instance.encoding == Encoding::ASCII_8BIT },
-          'password' => proc { |_instance, _value| true }
-        }
+        :regexp_resolver => 'ecma'
       )
     end
 

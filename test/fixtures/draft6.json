@@ -186,6 +186,41 @@
     ],
     [
       [
+        {
+          "data": "bar",
+          "data_pointer": "/1",
+          "schema": false,
+          "schema_pointer": "/additionalItems",
+          "root_schema": {
+            "items": [
+              {
+              }
+            ],
+            "additionalItems": false
+          },
+          "type": "schema"
+        },
+        {
+          "data": 37,
+          "data_pointer": "/2",
+          "schema": false,
+          "schema_pointer": "/additionalItems",
+          "root_schema": {
+            "items": [
+              {
+              }
+            ],
+            "additionalItems": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
 
       ]
     ]
@@ -8117,6 +8152,18 @@
           },
           "type": "format"
         }
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
       ]
     ]
   ],
@@ -8233,6 +8280,20 @@
       [
         {
           "data": "1২7.0.0.1",
+          "data_pointer": "",
+          "schema": {
+            "format": "ipv4"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "ipv4"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "192.168.1.0/24",
           "data_pointer": "",
           "schema": {
             "format": "ipv4"
@@ -11664,13 +11725,15 @@
           "schema": {
             "type": "integer"
           },
-          "schema_pointer": "/integer",
+          "schema_pointer": "/definitions/integer",
           "root_schema": {
-            "integer": {
-              "type": "integer"
-            },
-            "refToInteger": {
-              "$ref": "#/integer"
+            "definitions": {
+              "integer": {
+                "type": "integer"
+              },
+              "refToInteger": {
+                "$ref": "#/definitions/integer"
+              }
             }
           },
           "type": "integer"
@@ -11688,13 +11751,15 @@
           "schema": {
             "type": "integer"
           },
-          "schema_pointer": "/integer",
+          "schema_pointer": "/definitions/integer",
           "root_schema": {
-            "integer": {
-              "type": "integer"
-            },
-            "refToInteger": {
-              "$ref": "#/integer"
+            "definitions": {
+              "integer": {
+                "type": "integer"
+              },
+              "refToInteger": {
+                "$ref": "#/definitions/integer"
+              }
             }
           },
           "type": "integer"

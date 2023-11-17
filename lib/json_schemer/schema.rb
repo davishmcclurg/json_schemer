@@ -10,7 +10,6 @@ module JSONSchemer
     end
 
     include Output
-    include Format::JSONPointer
 
     DEFAULT_SCHEMA = Draft202012::BASE_URI.to_s.freeze
     SCHEMA_KEYWORD_CLASS = Draft202012::Vocab::Core::Schema
@@ -21,6 +20,8 @@ module JSONSchemer
     PROPERTIES_KEYWORD_CLASS = Draft202012::Vocab::Applicator::Properties
     DEFAULT_BASE_URI = URI('json-schemer://schema').freeze
     DEFAULT_FORMATS = {}.freeze
+    DEFAULT_CONTENT_ENCODINGS = {}.freeze
+    DEFAULT_CONTENT_MEDIA_TYPES = {}.freeze
     DEFAULT_KEYWORDS = {}.freeze
     DEFAULT_BEFORE_PROPERTY_VALIDATION = [].freeze
     DEFAULT_AFTER_PROPERTY_VALIDATION = [].freeze
@@ -42,7 +43,7 @@ module JSONSchemer
 
     attr_accessor :base_uri, :meta_schema, :keywords, :keyword_order
     attr_reader :value, :parent, :root, :parsed
-    attr_reader :vocabulary, :format, :formats, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults, :property_default_resolver
+    attr_reader :vocabulary, :format, :formats, :content_encodings, :content_media_types, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults, :property_default_resolver
 
     def initialize(
       value,
@@ -54,6 +55,8 @@ module JSONSchemer
       vocabulary: nil,
       format: true,
       formats: DEFAULT_FORMATS,
+      content_encodings: DEFAULT_CONTENT_ENCODINGS,
+      content_media_types: DEFAULT_CONTENT_MEDIA_TYPES,
       keywords: DEFAULT_KEYWORDS,
       before_property_validation: DEFAULT_BEFORE_PROPERTY_VALIDATION,
       after_property_validation: DEFAULT_AFTER_PROPERTY_VALIDATION,
@@ -75,6 +78,8 @@ module JSONSchemer
       @vocabulary = vocabulary
       @format = format
       @formats = formats
+      @content_encodings = content_encodings
+      @content_media_types = content_media_types
       @custom_keywords = keywords
       @before_property_validation = Array(before_property_validation)
       @after_property_validation = Array(after_property_validation)
@@ -113,7 +118,7 @@ module JSONSchemer
     end
 
     def ref(value)
-      resolve_ref(URI.join(base_uri, value))
+      root.resolve_ref(URI.join(base_uri, value))
     end
 
     def validate_instance(instance, instance_location, keyword_location, context)
@@ -160,7 +165,7 @@ module JSONSchemer
 
     def resolve_ref(uri)
       pointer = ''
-      if valid_json_pointer?(uri.fragment)
+      if Format.valid_json_pointer?(uri.fragment)
         pointer = URI.decode_www_form_component(uri.fragment)
         uri.fragment = nil
       end
@@ -183,6 +188,8 @@ module JSONSchemer
           :meta_schema => meta_schema,
           :format => format,
           :formats => formats,
+          :content_encodings => content_encodings,
+          :content_media_types => content_media_types,
           :keywords => custom_keywords,
           :before_property_validation => before_property_validation,
           :after_property_validation => after_property_validation,
@@ -288,6 +295,34 @@ module JSONSchemer
       end
     end
 
+    def error_key
+      '^'
+    end
+
+    def fetch_format(format, *args, &block)
+      if meta_schema == self
+        formats.fetch(format, *args, &block)
+      else
+        formats.fetch(format) { meta_schema.fetch_format(format, *args, &block) }
+      end
+    end
+
+    def fetch_content_encoding(content_encoding, *args, &block)
+      if meta_schema == self
+        content_encodings.fetch(content_encoding, *args, &block)
+      else
+        content_encodings.fetch(content_encoding) { meta_schema.fetch_content_encoding(content_encoding, *args, &block) }
+      end
+    end
+
+    def fetch_content_media_type(content_media_type, *args, &block)
+      if meta_schema == self
+        content_media_types.fetch(content_media_type, *args, &block)
+      else
+        content_media_types.fetch(content_media_type) { meta_schema.fetch_content_media_type(content_media_type, *args, &block) }
+      end
+    end
+
     def id_keyword
       @id_keyword ||= (keywords.key?('$id') ? '$id' : 'id')
     end
@@ -329,28 +364,27 @@ module JSONSchemer
         VOCABULARY_KEYWORD_CLASS.new(vocabulary, self, '$vocabulary')
       end
 
-      if root == self && (!value.is_a?(Hash) || !value.key?(meta_schema.id_keyword))
+      keywords = meta_schema.keywords
+      exclusive_ref = value.is_a?(Hash) && value.key?('$ref') && keywords.fetch('$ref').exclusive?
+
+      if root == self && (!value.is_a?(Hash) || !value.key?(meta_schema.id_keyword) || exclusive_ref)
         ID_KEYWORD_CLASS.new(base_uri, self, meta_schema.id_keyword)
       end
 
-      if value.is_a?(Hash)
-        keywords = meta_schema.keywords
+      if exclusive_ref
+        @parsed['$ref'] = keywords.fetch('$ref').new(value.fetch('$ref'), self, '$ref')
+        defs_keyword = meta_schema.defs_keyword
+        if value.key?(defs_keyword) && keywords.key?(defs_keyword)
+          @parsed[defs_keyword] = keywords.fetch(defs_keyword).new(value.fetch(defs_keyword), self, defs_keyword)
+        end
+      elsif value.is_a?(Hash)
+        keyword_order = meta_schema.keyword_order
+        last = keywords.size
 
-        if value.key?('$ref') && keywords.fetch('$ref').exclusive?
-          @parsed['$ref'] = keywords.fetch('$ref').new(value.fetch('$ref'), self, '$ref')
-          defs_keyword = meta_schema.defs_keyword
-          if value.key?(defs_keyword) && keywords.key?(defs_keyword)
-            @parsed[defs_keyword] = keywords.fetch(defs_keyword).new(value.fetch(defs_keyword), self, defs_keyword)
-          end
-        else
-          keyword_order = meta_schema.keyword_order
-          last = keywords.size
-
-          value.sort do |(keyword_a, _value_a), (keyword_b, _value_b)|
-            keyword_order.fetch(keyword_a, last) <=> keyword_order.fetch(keyword_b, last)
-          end.each do |keyword, value|
-            @parsed[keyword] ||= keywords.fetch(keyword, UNKNOWN_KEYWORD_CLASS).new(value, self, keyword)
-          end
+        value.sort do |(keyword_a, _value_a), (keyword_b, _value_b)|
+          keyword_order.fetch(keyword_a, last) <=> keyword_order.fetch(keyword_b, last)
+        end.each do |keyword, value|
+          @parsed[keyword] ||= keywords.fetch(keyword, UNKNOWN_KEYWORD_CLASS).new(value, self, keyword)
         end
       end
 
