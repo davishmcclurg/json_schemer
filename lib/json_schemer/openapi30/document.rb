@@ -1584,8 +1584,7 @@ module JSONSchemer
                 'type' => 'string'
               },
               'operationRef' => {
-                'type' => 'string',
-                'format' => 'uri-reference'
+                'type' => 'string'
               },
               'parameters' => {
                 'type' => 'object',

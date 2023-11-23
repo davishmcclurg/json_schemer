@@ -270,8 +270,7 @@ module JSONSchemer
             'type' => 'object',
             'properties' => {
               'url' => {
-                'type' => 'string',
-                'format' => 'uri-reference'
+                'type' => 'string'
               },
               'description' => {
                 'type' => 'string'
@@ -1054,8 +1053,7 @@ module JSONSchemer
             'type' => 'object',
             'properties' => {
               'operationRef' => {
-                'type' => 'string',
-                'format' => 'uri-reference'
+                'type' => 'string'
               },
               'operationId' => {
                 'type' => 'string'
