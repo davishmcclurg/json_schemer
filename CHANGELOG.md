@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.1] - 2023-11-28
+
+### Bug Fixes
+
+- Fix refs to/through keyword objects: https://github.com/davishmcclurg/json_schemer/pull/160
+- Temporary fix for incorrect `uri-reference` format in OpenAPI 3.x: https://github.com/davishmcclurg/json_schemer/pull/161
+
+[2.1.1]: https://github.com/davishmcclurg/json_schemer/releases/tag/v2.1.1
+
 ## [2.1.0] - 2023-11-17
 
 ### Bug Fixes
