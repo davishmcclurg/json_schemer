@@ -1,21 +1,6 @@
 require 'test_helper'
 
 class JSONSchemaTestSuiteTest < Minitest::Test
-  # https://github.com/flori/json/pull/483
-  INCOMPATIBLE_FILES = if RUBY_ENGINE == 'truffleruby' && Gem::Version.new(JSON::VERSION) < '2.6.3'
-    # :nocov:
-    Set[
-      'JSON-Schema-Test-Suite/tests/draft2020-12/optional/ecmascript-regex.json',
-      'JSON-Schema-Test-Suite/tests/draft2019-09/optional/ecmascript-regex.json',
-      'JSON-Schema-Test-Suite/tests/draft7/optional/ecmascript-regex.json',
-      'JSON-Schema-Test-Suite/tests/draft6/optional/ecmascript-regex.json',
-      'JSON-Schema-Test-Suite/tests/draft4/optional/ecmascript-regex.json'
-    ]
-    # :nocov:
-  else
-    Set[]
-  end
-
   OUTPUT_DRAFTS = {
     'draft2020-12' => JSONSchemer.draft202012,
     'draft2019-09' => JSONSchemer.draft201909
@@ -122,10 +107,6 @@ class JSONSchemaTestSuiteTest < Minitest::Test
             # :nocov:
           end
         end
-      rescue JSON::ParserError => e
-        # :nocov:
-        raise unless Encoding::CompatibilityError === e.cause && INCOMPATIBLE_FILES.include?(file)
-        # :nocov:
       end
 
       fixture = Pathname.new(__dir__).join('fixtures', "#{draft}.json")
@@ -133,9 +114,7 @@ class JSONSchemaTestSuiteTest < Minitest::Test
       if ENV['WRITE_FIXTURES'] == 'true'
         fixture.write("#{JSON.pretty_generate(output)}\n")
       else
-        fixture_json = JSON.parse(fixture.read)
-        INCOMPATIBLE_FILES.each { |file| fixture_json.delete(file) }
-        assert_equal(output, fixture_json)
+        assert_equal(output, JSON.parse(fixture.read))
       end
       # :nocov:
     end
