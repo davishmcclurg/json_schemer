@@ -395,4 +395,84 @@ class RefTest < Minitest::Test
     assert(schema.valid?(1))
     refute(schema.valid?('1'))
   end
+
+  def test_keyword_ref
+    schemer = JSONSchemer.schema({
+      '$ref' => '#/items',
+      'items' => {
+        'type' => 'integer'
+      }
+    })
+    assert(schemer.valid?(1))
+    refute(schemer.valid?('1'))
+  end
+
+  def test_nested_keyword_ref
+    schemer = JSONSchemer.schema({
+      '$ref' => '#/items/not',
+      'items' => {
+        'not' => {
+          'type' => 'integer'
+        }
+      }
+    })
+    assert(schemer.valid?(1))
+    refute(schemer.valid?('1'))
+
+    schemer = JSONSchemer.schema({
+      '$ref' => '#/properties/a',
+      'properties' => {
+        'a' => {
+          'type' => 'integer'
+        }
+      }
+    })
+    assert(schemer.valid?(1))
+    refute(schemer.valid?('1'))
+  end
+
+  def test_complex_nested_keyword_ref
+    schemer = JSONSchemer.schema({
+      '$ref' => '#/definitions/a/allOf/0/items/properties/b/unknown-array/0/unknown-hash/c',
+      'definitions' => {
+        'a' => {
+          'allOf' => [
+            {
+              'items' => {
+                'properties' => {
+                  'b' => {
+                    'unknown-array' => [
+                      {
+                        'unknown-hash' => {
+                          'c' => {
+                            'type' => 'integer'
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    })
+    assert(schemer.valid?(1))
+    refute(schemer.valid?('1'))
+  end
+
+  def test_non_schema_ref_pointer
+    schemer = JSONSchemer.schema({
+      '$ref' => '#/allOf',
+      'allOf' => [true]
+    })
+    assert_raises(JSONSchemer::InvalidRefPointer) { schemer.valid?(1) }
+
+    schemer = JSONSchemer.schema({
+      '$ref' => '#/type/0',
+      'type' => ['integer', 'string']
+    })
+    assert_raises(JSONSchemer::InvalidRefPointer) { schemer.valid?(1) }
+  end
 end

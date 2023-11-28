@@ -30,6 +30,14 @@ module JSONSchemer
       keyword
     end
 
+    def fetch(key)
+      parsed.fetch(parsed.is_a?(Array) ? key.to_i : key)
+    end
+
+    def parsed_schema
+      parsed.is_a?(Schema) ? parsed : nil
+    end
+
   private
 
     def parse

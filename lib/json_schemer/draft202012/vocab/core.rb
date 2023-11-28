@@ -136,7 +136,7 @@ module JSONSchemer
             end
           end
 
-          def fetch_unknown!(token)
+          def fetch(token)
             if value.is_a?(Hash)
               parsed[token] ||= JSONSchemer::Schema::UNKNOWN_KEYWORD_CLASS.new(value.fetch(token), self, token, schema)
             elsif value.is_a?(Array)
@@ -146,8 +146,8 @@ module JSONSchemer
             end
           end
 
-          def unknown_schema!
-            @unknown_schema ||= subschema(value)
+          def parsed_schema
+            @parsed_schema ||= subschema(value)
           end
 
           def validate(instance, instance_location, keyword_location, _context)
