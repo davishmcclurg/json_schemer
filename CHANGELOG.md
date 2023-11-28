@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.1.0] - XXXX-XX-XX
+## [2.1.0] - 2023-11-17
 
 ### Bug Fixes
 
