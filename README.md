@@ -489,6 +489,24 @@ Options:
   -v, --version                    Show version
 ```
 
+## Custom keyword validation
+
+Custom keyword validation can be achieved by extending spec vocab. E.g. to error on fields marked with `deprecated` keyword one can:
+
+```ruby
+class Deprecated < JSONSchemer::Keyword
+  def error(formatted_instance_location:, **)
+    "#{formatted_instance_location} is deprecated"
+  end
+
+  def validate(instance, instance_location, keyword_location, _context)
+    result(instance, instance_location, keyword_location, false)
+  end
+end
+
+JSONSchemer::Draft202012::Vocab::VALIDATION['deprecated'] = Deprecated
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
