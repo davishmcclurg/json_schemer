@@ -8,6 +8,10 @@ module JSONSchemer
             "array items at #{formatted_instance_location} do not match `unevaluatedItems` schema"
           end
 
+          def false_schema_error(formatted_instance_location:, **)
+            "array item at #{formatted_instance_location} is a disallowed unevaluated item"
+          end
+
           def parse
             subschema(value)
           end
@@ -50,6 +54,10 @@ module JSONSchemer
         class UnevaluatedProperties < Keyword
           def error(formatted_instance_location:, **)
             "object properties at #{formatted_instance_location} do not match `unevaluatedProperties` schema"
+          end
+
+          def false_schema_error(formatted_instance_location:, **)
+            "object property at #{formatted_instance_location} is a disallowed unevaluated property"
           end
 
           def parse
