@@ -88,10 +88,9 @@ module JSONSchemer
       include URITemplate
 
       def percent_encode(data, regexp)
-        data = data.dup
-        data.force_encoding(Encoding::BINARY)
-        data.gsub!(regexp, BINARY_TO_PERCENT_ENCODED)
-        data.force_encoding(Encoding::US_ASCII)
+        binary = data.b
+        binary.gsub!(regexp, BINARY_TO_PERCENT_ENCODED)
+        binary.force_encoding(data.encoding)
       end
 
       def valid_date_time?(data)
