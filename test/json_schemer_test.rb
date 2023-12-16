@@ -228,6 +228,32 @@ class JSONSchemerTest < Minitest::Test
     refute(schemer.valid?({ 'x' => 'invalid' }))
   end
 
+  def test_custom_keywords_receive_resolved_instance_location
+    custom_keyword_instance_location = nil
+    schemer = JSONSchemer.schema(
+      {
+        'properties' => {
+          'x' => {
+            'yah' => true
+          },
+          'y' => {
+            'yah' => true
+          }
+        }
+      },
+      keywords: {
+        'yah' => proc do |instance, _schema, instance_location|
+          custom_keyword_instance_location = instance_location
+          instance == 'valid'
+        end
+      }
+    )
+    assert(schemer.valid?({ 'x' => 'valid' }))
+    assert_equal('/x', custom_keyword_instance_location)
+    refute(schemer.valid?({ 'y' => 'invalid' }))
+    assert_equal('/y', custom_keyword_instance_location)
+  end
+
   def test_it_handles_multiple_of_floats
     assert(JSONSchemer.schema({ 'multipleOf' => 0.01 }).valid?(8.61))
     refute(JSONSchemer.schema({ 'multipleOf' => 0.01 }).valid?(8.666))
