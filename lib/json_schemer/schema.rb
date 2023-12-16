@@ -148,8 +148,8 @@ module JSONSchemer
           adjacent_results[keyword_instance.class] = keyword_result
         end
 
-        if custom_keywords.any?
-          custom_keywords.each do |custom_keyword, callable|
+        if root.custom_keywords.any?
+          root.custom_keywords.each do |custom_keyword, callable|
             if value.key?(custom_keyword)
               [*callable.call(instance, value, instance_location)].each do |custom_keyword_result|
                 custom_keyword_valid = custom_keyword_result == true
