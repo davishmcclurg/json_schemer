@@ -300,7 +300,7 @@ module JSONSchemer
           end
 
           def false_schema_error(formatted_instance_location:, **)
-            "object property at #{formatted_instance_location} is not defined and schema does not allow additional properties"
+            "object property at #{formatted_instance_location} is a disallowed additional property"
           end
 
           def parse
