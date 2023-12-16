@@ -4,7 +4,13 @@ module JSONSchemer
     Context = Struct.new(:instance, :dynamic_scope, :adjacent_results, :short_circuit, :access_mode) do
       def original_instance(instance_location)
         Hana::Pointer.parse(Location.resolve(instance_location)).reduce(instance) do |obj, token|
-          obj.fetch(obj.is_a?(Array) ? token.to_i : token)
+          if obj.is_a?(Array)
+            obj.fetch(token.to_i)
+          elsif !obj.key?(token) && obj.key?(token.to_sym)
+            obj.fetch(token.to_sym)
+          else
+            obj.fetch(token)
+          end
         end
       end
     end
