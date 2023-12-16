@@ -149,9 +149,10 @@ module JSONSchemer
         end
 
         if root.custom_keywords.any?
+          resolved_instance_location = Location.resolve(instance_location)
           root.custom_keywords.each do |custom_keyword, callable|
             if value.key?(custom_keyword)
-              [*callable.call(instance, value, instance_location)].each do |custom_keyword_result|
+              [*callable.call(instance, value, resolved_instance_location)].each do |custom_keyword_result|
                 custom_keyword_valid = custom_keyword_result == true
                 valid &&= custom_keyword_valid
                 type = custom_keyword_result.is_a?(String) ? custom_keyword_result : custom_keyword
