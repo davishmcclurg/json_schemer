@@ -59,6 +59,7 @@ require 'json_schemer/openapi30/meta'
 require 'json_schemer/openapi30/vocab/base'
 require 'json_schemer/openapi30/vocab'
 require 'json_schemer/openapi'
+require 'json_schemer/configuration'
 require 'json_schemer/schema'
 
 module JSONSchemer
@@ -244,6 +245,14 @@ module JSONSchemer
 
     def openapi(document, **options)
       OpenAPI.new(document, **options)
+    end
+
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def configure
+      yield configuration
     end
   end
 

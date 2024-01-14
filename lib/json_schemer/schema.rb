@@ -18,28 +18,10 @@ module JSONSchemer
     UNKNOWN_KEYWORD_CLASS = Draft202012::Vocab::Core::UnknownKeyword
     NOT_KEYWORD_CLASS = Draft202012::Vocab::Applicator::Not
     PROPERTIES_KEYWORD_CLASS = Draft202012::Vocab::Applicator::Properties
-    DEFAULT_BASE_URI = URI('json-schemer://schema').freeze
-    DEFAULT_FORMATS = {}.freeze
-    DEFAULT_CONTENT_ENCODINGS = {}.freeze
-    DEFAULT_CONTENT_MEDIA_TYPES = {}.freeze
-    DEFAULT_KEYWORDS = {}.freeze
-    DEFAULT_BEFORE_PROPERTY_VALIDATION = [].freeze
-    DEFAULT_AFTER_PROPERTY_VALIDATION = [].freeze
-    DEFAULT_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
+
     NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }
     RUBY_REGEXP_RESOLVER = proc { |pattern| Regexp.new(pattern) }
     ECMA_REGEXP_RESOLVER = proc { |pattern| Regexp.new(EcmaRegexp.ruby_equivalent(pattern)) }
-
-    DEFAULT_PROPERTY_DEFAULT_RESOLVER = proc do |instance, property, results_with_tree_validity|
-      results_with_tree_validity = results_with_tree_validity.select(&:last) unless results_with_tree_validity.size == 1
-      annotations = results_with_tree_validity.to_set { |result, _tree_valid| result.annotation }
-      if annotations.size == 1
-        instance[property] = annotations.first.clone
-        true
-      else
-        false
-      end
-    end
 
     attr_accessor :base_uri, :meta_schema, :keywords, :keyword_order
     attr_reader :value, :parent, :root, :parsed
@@ -50,23 +32,23 @@ module JSONSchemer
       parent = nil,
       root = self,
       keyword = nil,
-      base_uri: DEFAULT_BASE_URI,
+      base_uri: JSONSchemer.configuration.base_uri,
       meta_schema: nil,
       vocabulary: nil,
       format: true,
-      formats: DEFAULT_FORMATS,
-      content_encodings: DEFAULT_CONTENT_ENCODINGS,
-      content_media_types: DEFAULT_CONTENT_MEDIA_TYPES,
-      keywords: DEFAULT_KEYWORDS,
-      before_property_validation: DEFAULT_BEFORE_PROPERTY_VALIDATION,
-      after_property_validation: DEFAULT_AFTER_PROPERTY_VALIDATION,
-      insert_property_defaults: false,
-      property_default_resolver: DEFAULT_PROPERTY_DEFAULT_RESOLVER,
-      ref_resolver: DEFAULT_REF_RESOLVER,
-      regexp_resolver: 'ruby',
-      output_format: 'classic',
-      resolve_enumerators: false,
-      access_mode: nil
+      formats: JSONSchemer.configuration.formats,
+      content_encodings: JSONSchemer.configuration.content_encodings,
+      content_media_types: JSONSchemer.configuration.content_media_types,
+      keywords: JSONSchemer.configuration.keywords,
+      before_property_validation: JSONSchemer.configuration.before_property_validation,
+      after_property_validation: JSONSchemer.configuration.after_property_validation,
+      insert_property_defaults: JSONSchemer.configuration.insert_property_defaults,
+      property_default_resolver: JSONSchemer.configuration.property_default_resolver,
+      ref_resolver: JSONSchemer.configuration.original_ref_resolver,
+      regexp_resolver: JSONSchemer.configuration.original_regexp_resolver,
+      output_format: JSONSchemer.configuration.output_format,
+      resolve_enumerators: JSONSchemer.configuration.resolve_enumerators,
+      access_mode: JSONSchemer.configuration.access_mode
     )
       @value = deep_stringify_keys(value)
       @parent = parent

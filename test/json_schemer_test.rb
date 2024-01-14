@@ -267,7 +267,10 @@ class JSONSchemerTest < Minitest::Test
   end
 
   def test_draft4_default_id
-    assert_equal(JSONSchemer::Schema::DEFAULT_BASE_URI, JSONSchemer.schema(true, :meta_schema => JSONSchemer::Draft4::BASE_URI.to_s).base_uri)
+    assert_equal(
+      JSONSchemer::Configuration::Defaults::BASE_URI,
+      JSONSchemer.schema(true, :meta_schema => JSONSchemer::Draft4::BASE_URI.to_s).base_uri
+    )
   end
 
   def test_it_ignores_content_schema_without_content_media_type
