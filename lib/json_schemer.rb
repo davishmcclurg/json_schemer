@@ -114,20 +114,7 @@ module JSONSchemer
 
   class << self
     def schema(schema, meta_schema: draft202012, **options)
-      case schema
-      when String
-        schema = JSON.parse(schema)
-      when Pathname
-        base_uri = URI.parse(File.join('file:', URI::DEFAULT_PARSER.escape(schema.realpath.to_s)))
-        options[:base_uri] = base_uri
-        schema = if options.key?(:ref_resolver)
-          FILE_URI_REF_RESOLVER.call(base_uri)
-        else
-          ref_resolver = CachedResolver.new(&FILE_URI_REF_RESOLVER)
-          options[:ref_resolver] = ref_resolver
-          ref_resolver.call(base_uri)
-        end
-      end
+      schema = resolve(schema, options)
       unless meta_schema.is_a?(Schema)
         meta_schema = META_SCHEMAS_BY_BASE_URI_STR[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
       end
@@ -135,10 +122,12 @@ module JSONSchemer
     end
 
     def valid_schema?(schema, **options)
+      schema = resolve(schema, options)
       meta_schema(schema, options).valid?(schema)
     end
 
     def validate_schema(schema, **options)
+      schema = resolve(schema, options)
       meta_schema(schema, options).validate(schema)
     end
 
@@ -247,6 +236,25 @@ module JSONSchemer
     end
 
   private
+
+    def resolve(schema, options)
+      case schema
+      when String
+        JSON.parse(schema)
+      when Pathname
+        base_uri = URI.parse(File.join('file:', URI::DEFAULT_PARSER.escape(schema.realpath.to_s)))
+        options[:base_uri] = base_uri
+        if options.key?(:ref_resolver)
+          FILE_URI_REF_RESOLVER.call(base_uri)
+        else
+          ref_resolver = CachedResolver.new(&FILE_URI_REF_RESOLVER)
+          options[:ref_resolver] = ref_resolver
+          ref_resolver.call(base_uri)
+        end
+      else
+        schema
+      end
+    end
 
     def meta_schema(schema, options)
       parseable_schema = {}

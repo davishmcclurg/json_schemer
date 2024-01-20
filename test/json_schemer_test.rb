@@ -524,6 +524,39 @@ class JSONSchemerTest < Minitest::Test
     assert_empty(JSONSchemer.validate_schema({ 'items' => 'yah', '$schema': 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver).to_a)
   end
 
+  def test_schema_validation_json
+    refute(JSONSchemer.valid_schema?('{"$schema":{}}'))
+    assert(JSONSchemer.valid_schema?('{"items":{}}'))
+    refute(JSONSchemer.valid_schema?('{"items":[{}]}'))
+    assert(JSONSchemer.valid_schema?('{"items":[{}]}', :meta_schema => JSONSchemer.draft201909))
+    assert(JSONSchemer.valid_schema?('{"items":[{}],"$schema":"https://json-schema.org/draft/2019-09/schema"}'))
+
+    refute_empty(JSONSchemer.validate_schema('{"$schema":{}}').to_a)
+    assert_empty(JSONSchemer.validate_schema('{"items":{}}').to_a)
+    refute_empty(JSONSchemer.validate_schema('{"items":[{}]}').to_a)
+    assert_empty(JSONSchemer.validate_schema('{"items":[{}]}', :meta_schema => JSONSchemer.draft201909).to_a)
+    assert_empty(JSONSchemer.validate_schema('{"items":[{}],"$schema":"https://json-schema.org/draft/2019-09/schema"}').to_a)
+  end
+
+  def test_schema_validation_pathname
+    schema_invalid = Pathname.new(__dir__).join('schemas', '$schema_invalid.json')
+    items_object = Pathname.new(__dir__).join('schemas', 'items_object.json')
+    items_array = Pathname.new(__dir__).join('schemas', 'items_array.json')
+    schema_items_array = Pathname.new(__dir__).join('schemas', '$schema_items_array.json')
+
+    refute(JSONSchemer.valid_schema?(schema_invalid))
+    assert(JSONSchemer.valid_schema?(items_object))
+    refute(JSONSchemer.valid_schema?(items_array))
+    assert(JSONSchemer.valid_schema?(items_array, :meta_schema => JSONSchemer.draft201909))
+    assert(JSONSchemer.valid_schema?(schema_items_array))
+
+    refute_empty(JSONSchemer.validate_schema(schema_invalid).to_a)
+    assert_empty(JSONSchemer.validate_schema(items_object).to_a)
+    refute_empty(JSONSchemer.validate_schema(items_array).to_a)
+    assert_empty(JSONSchemer.validate_schema(items_array, :meta_schema => JSONSchemer.draft201909).to_a)
+    assert_empty(JSONSchemer.validate_schema(schema_items_array).to_a)
+  end
+
   def test_non_string_keys
     schemer = JSONSchemer.schema({
       properties: {
