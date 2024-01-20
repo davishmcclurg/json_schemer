@@ -7,7 +7,7 @@ module JSONSchemer
       FORMATS = {}.freeze
       CONTENT_ENCODINGS = {}.freeze
       CONTENT_MEDIA_TYPES = {}.freeze
-      KEYWORDS = {}.freeze
+      CUSTOM_KEYWORDS = {}.freeze
       BEFORE_PROPERTY_VALIDATION = [].freeze
       AFTER_PROPERTY_VALIDATION = [].freeze
       INSERT_PROPERTY_DEFAULTS = false
@@ -24,8 +24,8 @@ module JSONSchemer
           false
         end
       end
-      REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
-      REGEXP_RESOLVER = 'ruby'
+      ORIGINAL_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
+      ORIGINAL_REGEXP_RESOLVER = 'ruby'
       OUTPUT_FORMAT = 'classic'
       RESOLVE_ENUMERATORS = false
       ACCESS_MODE = nil
@@ -36,19 +36,19 @@ module JSONSchemer
       :formats,
       :content_encodings,
       :content_media_types,
-      :keywords,
+      :custom_keywords,
       :insert_property_defaults,
       :property_default_resolver,
       :original_ref_resolver,
-      :original_regexp_resolver,
-      :output_format,
-      :resolve_enumerators,
-      :access_mode
-    )
+      :resolve_enumerators
+      )
 
     attr_reader(
       :before_property_validation,
       :after_property_validation,
+      :original_regexp_resolver,
+      :output_format,
+      :access_mode
     )
 
     def initialize
@@ -56,24 +56,48 @@ module JSONSchemer
       @formats = Defaults::FORMATS
       @content_encodings = Defaults::CONTENT_ENCODINGS
       @content_media_types = Defaults::CONTENT_MEDIA_TYPES
-      @keywords = Defaults::KEYWORDS
+      @custom_keywords = Defaults::CUSTOM_KEYWORDS
       @before_property_validation = Defaults::BEFORE_PROPERTY_VALIDATION
       @after_property_validation = Defaults::AFTER_PROPERTY_VALIDATION
       @insert_property_defaults = Defaults::INSERT_PROPERTY_DEFAULTS
       @property_default_resolver = Defaults::PROPERTY_RESOLVER
-      @original_ref_resolver = Defaults::REF_RESOLVER
-      @original_regexp_resolver = Defaults::REGEXP_RESOLVER
+      @original_ref_resolver = Defaults::ORIGINAL_REF_RESOLVER
+      @original_regexp_resolver = Defaults::ORIGINAL_REGEXP_RESOLVER
       @output_format = Defaults::OUTPUT_FORMAT
       @resolve_enumerators = Defaults::RESOLVE_ENUMERATORS
       @access_mode = Defaults::ACCESS_MODE
     end
-  end
 
-  def before_property_validation=(validations)
-    @before_property_validation = Array(validations)
-  end
+    def before_property_validation=(validations)
+      @before_property_validation = Array(validations)
+    end
 
-  def after_property_validation=(validations)
-    @after_property_validation = Array(validations)
+    def after_property_validation=(validations)
+      @after_property_validation = Array(validations)
+    end
+
+    def original_regexp_resolver=(resolver)
+      if resolver.is_a?(String) && !%w[ruby ecma].include?(resolver)
+        raise UnknownRegexpResolver
+      end
+
+      @original_regexp_resolver = resolver
+    end
+
+    def output_format=(format)
+      unless %[classic flag basic detailed verbose].include?(format)
+        raise UnknownOutputFormat
+      end
+
+      @output_format = format
+    end
+
+    def access_mode=(mode)
+      if mode.is_a?(String) && !%w[read write].include?(mode)
+        raise UnknownAccessMode
+      end
+
+      @access_mode = mode
+    end
   end
 end

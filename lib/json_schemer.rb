@@ -63,19 +63,21 @@ require 'json_schemer/configuration'
 require 'json_schemer/schema'
 
 module JSONSchemer
-  class UnsupportedMetaSchema < StandardError; end
-  class UnsupportedOpenAPIVersion < StandardError; end
-  class UnknownRef < StandardError; end
-  class UnknownFormat < StandardError; end
-  class UnknownVocabulary < StandardError; end
-  class UnknownContentEncoding < StandardError; end
-  class UnknownContentMediaType < StandardError; end
-  class UnknownOutputFormat < StandardError; end
-  class InvalidRefResolution < StandardError; end
-  class InvalidRefPointer < StandardError; end
-  class InvalidRegexpResolution < StandardError; end
-  class InvalidFileURI < StandardError; end
-  class InvalidEcmaRegexp < StandardError; end
+  UnsupportedMetaSchema = Class.new(StandardError)
+  UnsupportedOpenAPIVersion = Class.new(StandardError)
+  UnknownRef = Class.new(StandardError)
+  UnknownFormat = Class.new(StandardError)
+  UnknownVocabulary = Class.new(StandardError)
+  UnknownContentEncoding = Class.new(StandardError)
+  UnknownContentMediaType = Class.new(StandardError)
+  UnknownOutputFormat = Class.new(StandardError)
+  UnknownRegexpResolver = Class.new(StandardError)
+  UnknownAccessMode = Class.new(StandardError)
+  InvalidRefResolution = Class.new(StandardError)
+  InvalidRefPointer = Class.new(StandardError)
+  InvalidRegexpResolution = Class.new(StandardError)
+  InvalidFileURI = Class.new(StandardError)
+  InvalidEcmaRegexp = Class.new(StandardError)
 
   VOCABULARIES = {
     'https://json-schema.org/draft/2020-12/vocab/core' => Draft202012::Vocab::CORE,
