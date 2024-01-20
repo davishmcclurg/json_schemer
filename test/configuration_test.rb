@@ -4,7 +4,11 @@ class ConfigurationTest < Minitest::Test
   parallelize_me!
 
   def run_configuration_test(option, default:, test:, expectation: test)
-    assert_equal(default, JSONSchemer.configuration.public_send(option))
+    if default.nil?
+      assert_nil(JSONSchemer.configuration.public_send(option))
+    else
+      assert_equal(default, JSONSchemer.configuration.public_send(option))
+    end
 
     JSONSchemer.configure { |config| config.public_send("#{option}=", test) }
 
