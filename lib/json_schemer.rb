@@ -135,11 +135,11 @@ module JSONSchemer
     end
 
     def valid_schema?(schema, **options)
-      schema(schema, **options).valid_schema?
+      meta_schema(schema, options).valid?(schema)
     end
 
     def validate_schema(schema, **options)
-      schema(schema, **options).validate_schema
+      meta_schema(schema, options).validate(schema)
     end
 
     def draft202012
@@ -244,6 +244,17 @@ module JSONSchemer
 
     def openapi(document, **options)
       OpenAPI.new(document, **options)
+    end
+
+  private
+
+    def meta_schema(schema, options)
+      parseable_schema = {}
+      if schema.is_a?(Hash)
+        meta_schema = schema['$schema'] || schema[:'$schema']
+        parseable_schema['$schema'] = meta_schema if meta_schema.is_a?(String)
+      end
+      schema(parseable_schema, **options).meta_schema
     end
   end
 

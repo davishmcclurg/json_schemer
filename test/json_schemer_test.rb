@@ -449,6 +449,81 @@ class JSONSchemerTest < Minitest::Test
     assert_equal([required_error], JSONSchemer.validate_schema(invalid_detected_draft4_schema).to_a)
   end
 
+  def test_schema_validation_invalid_meta_schema
+    refute(JSONSchemer.valid_schema?({ '$schema' => {} }))
+  end
+
+  def test_schema_validation_parse_error
+    refute(JSONSchemer.valid_schema?({ 'properties' => '' }))
+    assert(JSONSchemer.valid_schema?({ 'properties' => {} }))
+    assert(JSONSchemer.valid_schema?({ 'items' => {} }))
+    refute(JSONSchemer.valid_schema?({ 'items' => [{}] }))
+    assert(JSONSchemer.valid_schema?({ 'items' => [{}] }, :meta_schema => JSONSchemer.draft201909))
+    assert(JSONSchemer.valid_schema?({ '$schema' => 'https://json-schema.org/draft/2019-09/schema', 'items' => [{}] }))
+    assert(JSONSchemer.valid_schema?({ '$schema': 'https://json-schema.org/draft/2019-09/schema', 'items' => [{}] }))
+
+    refute_empty(JSONSchemer.validate_schema({ 'properties' => '' }).to_a)
+    assert_empty(JSONSchemer.validate_schema({ 'properties' => {} }).to_a)
+    assert_empty(JSONSchemer.validate_schema({ 'items' => {} }).to_a)
+    refute_empty(JSONSchemer.validate_schema({ 'items' => [{}] }).to_a)
+    assert_empty(JSONSchemer.validate_schema({ 'items' => [{}] }, :meta_schema => JSONSchemer.draft201909).to_a)
+    assert_empty(JSONSchemer.validate_schema({ '$schema' => 'https://json-schema.org/draft/2019-09/schema', 'items' => [{}] }).to_a)
+    assert_empty(JSONSchemer.validate_schema({ '$schema': 'https://json-schema.org/draft/2019-09/schema', 'items' => [{}] }).to_a)
+  end
+
+  def test_schema_validation_parse_error_with_custom_meta_schema
+    custom_meta_schema = {
+      '$vocabulary' => {},
+      'oneOf' => [
+        { 'required' => ['$id'] },
+        { 'required' => ['items'] }
+      ],
+      'properties' => {
+        'items' => {
+          'type' => 'string'
+        }
+      }
+    }
+    custom_meta_schemer = JSONSchemer.schema(custom_meta_schema)
+    ref_resolver = {
+      URI('https://example.com/custom-meta-schema') => custom_meta_schema
+    }.to_proc
+
+    assert(JSONSchemer.valid_schema?({}))
+    refute(JSONSchemer.valid_schema?({}, meta_schema: custom_meta_schemer))
+    refute(JSONSchemer.valid_schema?({ '$schema' => 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver))
+    refute(JSONSchemer.valid_schema?({ '$schema': 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver))
+    refute(JSONSchemer.valid_schema?({ '$id' => {} }))
+    assert(JSONSchemer.valid_schema?({ '$id' => {} }, meta_schema: custom_meta_schemer))
+    assert(JSONSchemer.valid_schema?({ '$id' => {}, '$schema' => 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver))
+    assert(JSONSchemer.valid_schema?({ '$id' => {}, '$schema': 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver))
+    assert(JSONSchemer.valid_schema?({ 'items' => {} }))
+    refute(JSONSchemer.valid_schema?({ 'items' => 'yah' }))
+    refute(JSONSchemer.valid_schema?({ 'items' => {} }, meta_schema: custom_meta_schemer))
+    assert(JSONSchemer.valid_schema?({ 'items' => 'yah' }, meta_schema: custom_meta_schemer))
+    refute(JSONSchemer.valid_schema?({ 'items' => {}, '$schema' => 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver))
+    assert(JSONSchemer.valid_schema?({ 'items' => 'yah', '$schema' => 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver))
+    refute(JSONSchemer.valid_schema?({ 'items' => {}, '$schema': 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver))
+    assert(JSONSchemer.valid_schema?({ 'items' => 'yah', '$schema': 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver))
+
+    assert_empty(JSONSchemer.validate_schema({}).to_a)
+    refute_empty(JSONSchemer.validate_schema({}, meta_schema: custom_meta_schemer).to_a)
+    refute_empty(JSONSchemer.validate_schema({ '$schema' => 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver).to_a)
+    refute_empty(JSONSchemer.validate_schema({ '$schema': 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver).to_a)
+    refute_empty(JSONSchemer.validate_schema({ '$id' => {} }).to_a)
+    assert_empty(JSONSchemer.validate_schema({ '$id' => {} }, meta_schema: custom_meta_schemer).to_a)
+    assert_empty(JSONSchemer.validate_schema({ '$id' => {}, '$schema' => 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver).to_a)
+    assert_empty(JSONSchemer.validate_schema({ '$id' => {}, '$schema': 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver).to_a)
+    assert_empty(JSONSchemer.validate_schema({ 'items' => {} }).to_a)
+    refute_empty(JSONSchemer.validate_schema({ 'items' => 'yah' }).to_a)
+    refute_empty(JSONSchemer.validate_schema({ 'items' => {} }, meta_schema: custom_meta_schemer).to_a)
+    assert_empty(JSONSchemer.validate_schema({ 'items' => 'yah' }, meta_schema: custom_meta_schemer).to_a)
+    refute_empty(JSONSchemer.validate_schema({ 'items' => {}, '$schema' => 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver).to_a)
+    assert_empty(JSONSchemer.validate_schema({ 'items' => 'yah', '$schema' => 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver).to_a)
+    refute_empty(JSONSchemer.validate_schema({ 'items' => {}, '$schema': 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver).to_a)
+    assert_empty(JSONSchemer.validate_schema({ 'items' => 'yah', '$schema': 'https://example.com/custom-meta-schema' }, ref_resolver: ref_resolver).to_a)
+  end
+
   def test_non_string_keys
     schemer = JSONSchemer.schema({
       properties: {
