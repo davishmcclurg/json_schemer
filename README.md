@@ -212,7 +212,8 @@ JSONSchemer.schema(
   },
 
   # insert default property values during validation
-  # true/false
+  # string keys by default (use `:symbol` to insert symbol keys)
+  # true/false/:symbol
   # default: false
   insert_property_defaults: true,
 

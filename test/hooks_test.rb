@@ -100,6 +100,28 @@ class HooksTest < Minitest::Test
     assert_equal('x', instance.dig(:a, :b, 'c'))
   end
 
+  def test_it_can_insert_symbol_keys
+    schema = {
+      'properties' => {
+        'a' => {
+          'default' => 'x'
+        }
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema, insert_property_defaults: true)
+    instance = {}
+    schemer.validate(instance)
+    refute(instance.key?(:a))
+    assert_equal('x', instance.fetch('a'))
+
+    schemer = JSONSchemer.schema(schema, insert_property_defaults: :symbol)
+    instance = {}
+    schemer.validate(instance)
+    refute(instance.key?('a'))
+    assert_equal('x', instance.fetch(:a))
+  end
+
   def test_it_does_not_fail_using_insert_defaults_when_no_properties_are_defined_by_schema
     schema = {
       '$comment' => 'Mostly empty schema'

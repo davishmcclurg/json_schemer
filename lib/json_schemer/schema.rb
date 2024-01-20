@@ -46,10 +46,13 @@ module JSONSchemer
         false
       end
     end
+    SYMBOL_PROPERTY_DEFAULT_RESOLVER = proc do |instance, property, results_with_tree_validity|
+      DEFAULT_PROPERTY_DEFAULT_RESOLVER.call(instance, property.to_sym, results_with_tree_validity)
+    end
 
     attr_accessor :base_uri, :meta_schema, :keywords, :keyword_order
     attr_reader :value, :parent, :root, :parsed
-    attr_reader :vocabulary, :format, :formats, :content_encodings, :content_media_types, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults, :property_default_resolver
+    attr_reader :vocabulary, :format, :formats, :content_encodings, :content_media_types, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults
 
     def initialize(
       value,
@@ -67,7 +70,7 @@ module JSONSchemer
       before_property_validation: DEFAULT_BEFORE_PROPERTY_VALIDATION,
       after_property_validation: DEFAULT_AFTER_PROPERTY_VALIDATION,
       insert_property_defaults: false,
-      property_default_resolver: DEFAULT_PROPERTY_DEFAULT_RESOLVER,
+      property_default_resolver: nil,
       ref_resolver: DEFAULT_REF_RESOLVER,
       regexp_resolver: 'ruby',
       output_format: 'classic',
@@ -399,6 +402,10 @@ module JSONSchemer
 
     def root_keyword_location
       @root_keyword_location ||= Location.root
+    end
+
+    def property_default_resolver
+      @property_default_resolver ||= insert_property_defaults == :symbol ? SYMBOL_PROPERTY_DEFAULT_RESOLVER : DEFAULT_PROPERTY_DEFAULT_RESOLVER
     end
 
     def ref_resolver
