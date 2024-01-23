@@ -118,12 +118,12 @@ module JSONSchemer
       output
     end
 
-    def valid_schema?
-      meta_schema.valid?(value)
+    def valid_schema?(**options)
+      meta_schema.valid?(value, **options)
     end
 
-    def validate_schema
-      meta_schema.validate(value)
+    def validate_schema(**options)
+      meta_schema.validate(value, **options)
     end
 
     def ref(value)
