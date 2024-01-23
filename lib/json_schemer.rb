@@ -123,12 +123,12 @@ module JSONSchemer
 
     def valid_schema?(schema, **options)
       schema = resolve(schema, options)
-      meta_schema(schema, options).valid?(schema)
+      meta_schema(schema, options).valid?(schema, **options.slice(:output_format, :resolve_enumerators, :access_mode))
     end
 
     def validate_schema(schema, **options)
       schema = resolve(schema, options)
-      meta_schema(schema, options).validate(schema)
+      meta_schema(schema, options).validate(schema, **options.slice(:output_format, :resolve_enumerators, :access_mode))
     end
 
     def draft202012

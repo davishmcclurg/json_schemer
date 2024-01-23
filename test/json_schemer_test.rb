@@ -557,6 +557,43 @@ class JSONSchemerTest < Minitest::Test
     assert_empty(JSONSchemer.validate_schema(schema_items_array).to_a)
   end
 
+  def test_schema_validation_options
+    custom_meta_schemer = JSONSchemer.schema({
+      '$vocabulary' => {},
+      'properties' => {
+        'yah' => {
+          'readOnly' => true
+        }
+      }
+    })
+    read_only_schemer = JSONSchemer.schema({ 'yah' => 1 }, meta_schema: custom_meta_schemer)
+    invalid_ref_schemer = JSONSchemer.schema({ '$ref' => {} })
+
+    assert(JSONSchemer.valid_schema?({ 'yah' => 1 }, meta_schema: custom_meta_schemer))
+    assert(JSONSchemer.valid_schema?({ 'yah' => 1 }, meta_schema: custom_meta_schemer, access_mode: 'read'))
+    refute(JSONSchemer.valid_schema?({ 'yah' => 1 }, meta_schema: custom_meta_schemer, access_mode: 'write'))
+
+    assert(read_only_schemer.valid_schema?)
+    assert(read_only_schemer.valid_schema?(access_mode: 'read'))
+    refute(read_only_schemer.valid_schema?(access_mode: 'write'))
+
+    assert_equal(['string'], JSONSchemer.validate_schema({ '$schema' => {} }).map { |result| result.fetch('type') })
+    refute(JSONSchemer.validate_schema({ '$schema' => {} }, output_format: 'basic').fetch('valid'))
+    assert_kind_of(Enumerator, JSONSchemer.validate_schema({ '$schema' => {} }, output_format: 'basic').fetch('errors'))
+    assert_kind_of(Array, JSONSchemer.validate_schema({ '$schema' => {} }, output_format: 'basic', resolve_enumerators: true).fetch('errors'))
+    assert_empty(JSONSchemer.validate_schema({ 'yah' => 1 }, meta_schema: custom_meta_schemer).to_a)
+    assert_empty(JSONSchemer.validate_schema({ 'yah' => 1 }, meta_schema: custom_meta_schemer, access_mode: 'read').to_a)
+    refute_empty(JSONSchemer.validate_schema({ 'yah' => 1 }, meta_schema: custom_meta_schemer, access_mode: 'write').to_a)
+
+    assert_equal(['string'], invalid_ref_schemer.validate_schema.map { |result| result.fetch('type') })
+    refute(invalid_ref_schemer.validate_schema(output_format: 'basic').fetch('valid'))
+    assert_kind_of(Enumerator, invalid_ref_schemer.validate_schema(output_format: 'basic').fetch('errors'))
+    assert_kind_of(Array, invalid_ref_schemer.validate_schema(output_format: 'basic', resolve_enumerators: true).fetch('errors'))
+    assert_empty(read_only_schemer.validate_schema.to_a)
+    assert_empty(read_only_schemer.validate_schema(access_mode: 'read').to_a)
+    refute_empty(read_only_schemer.validate_schema(access_mode: 'write').to_a)
+  end
+
   def test_non_string_keys
     schemer = JSONSchemer.schema({
       properties: {
