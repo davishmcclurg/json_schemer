@@ -201,8 +201,8 @@ module JSONSchemer
 
         if result.source.is_a?(Schema::PROPERTIES_KEYWORD_CLASS) && result.instance.is_a?(Hash)
           result.source.parsed.each do |property, schema|
-            next if result.instance.key?(property) || !schema.parsed.key?('default')
-            default = schema.parsed.fetch('default')
+            next if result.instance.key?(property)
+            next unless default = default_keyword_instance(schema)
             instance_location = Location.join(result.instance_location, property)
             keyword_location = Location.join(Location.join(result.keyword_location, property), default.keyword)
             default_result = default.validate(nil, instance_location, keyword_location, nil)
@@ -224,6 +224,18 @@ module JSONSchemer
       end
 
       inserted
+    end
+
+  private
+
+    def default_keyword_instance(schema)
+      schema.parsed.fetch('default') do
+        schema.parsed.find do |_keyword, keyword_instance|
+          next unless keyword_instance.respond_to?(:ref_schema)
+          next unless default = default_keyword_instance(keyword_instance.ref_schema)
+          break default
+        end
+      end
     end
   end
 end
