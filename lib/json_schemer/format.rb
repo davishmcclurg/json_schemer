@@ -76,8 +76,8 @@ module JSONSchemer
     IRI_ESCAPE_REGEX = /[^[:ascii:]]/
     UUID_REGEX = /\A\h{8}-\h{4}-\h{4}-[89AB]\h{3}-\h{12}\z/i
     NIL_UUID = '00000000-0000-0000-0000-000000000000'
-    ASCII_8BIT_TO_PERCENT_ENCODED = 256.times.each_with_object({}) do |byte, out|
-      out[-byte.chr] = -sprintf('%%%02X', byte)
+    BINARY_TO_PERCENT_ENCODED = 256.times.each_with_object({}) do |byte, out|
+      out[-byte.chr(Encoding::BINARY)] = -sprintf('%%%02X', byte)
     end.freeze
 
     class << self
@@ -88,10 +88,9 @@ module JSONSchemer
       include URITemplate
 
       def percent_encode(data, regexp)
-        data = data.dup
-        data.force_encoding(Encoding::ASCII_8BIT)
-        data.gsub!(regexp, ASCII_8BIT_TO_PERCENT_ENCODED)
-        data.force_encoding(Encoding::US_ASCII)
+        binary = data.b
+        binary.gsub!(regexp, BINARY_TO_PERCENT_ENCODED)
+        binary.force_encoding(data.encoding)
       end
 
       def valid_date_time?(data)

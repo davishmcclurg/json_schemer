@@ -67,6 +67,61 @@ class HooksTest < Minitest::Test
     )
   end
 
+  def test_it_inserts_defaults_in_symbol_keys
+    schemer = JSONSchemer.schema(
+      {
+        'properties' => {
+          'a' => {
+            'properties' => {
+              'b' => {
+                'properties' => {
+                  'c' => {
+                    'default' => 'x'
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      insert_property_defaults: true
+    )
+    instance = { 'a' => { 'b' => {} } }
+    schemer.validate(instance)
+    assert_equal('x', instance.dig('a', 'b', 'c'))
+    instance = { :a => { 'b' => {} } }
+    schemer.validate(instance)
+    assert_equal('x', instance.dig(:a, 'b', 'c'))
+    instance = { 'a' => { :b => {} } }
+    schemer.validate(instance)
+    assert_equal('x', instance.dig('a', :b, 'c'))
+    instance = { :a => { :b => {} } }
+    schemer.validate(instance)
+    assert_equal('x', instance.dig(:a, :b, 'c'))
+  end
+
+  def test_it_can_insert_symbol_keys
+    schema = {
+      'properties' => {
+        'a' => {
+          'default' => 'x'
+        }
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema, insert_property_defaults: true)
+    instance = {}
+    schemer.validate(instance)
+    refute(instance.key?(:a))
+    assert_equal('x', instance.fetch('a'))
+
+    schemer = JSONSchemer.schema(schema, insert_property_defaults: :symbol)
+    instance = {}
+    schemer.validate(instance)
+    refute(instance.key?('a'))
+    assert_equal('x', instance.fetch(:a))
+  end
+
   def test_it_does_not_fail_using_insert_defaults_when_no_properties_are_defined_by_schema
     schema = {
       '$comment' => 'Mostly empty schema'

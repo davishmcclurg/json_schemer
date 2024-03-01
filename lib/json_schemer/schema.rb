@@ -4,7 +4,13 @@ module JSONSchemer
     Context = Struct.new(:instance, :dynamic_scope, :adjacent_results, :short_circuit, :access_mode) do
       def original_instance(instance_location)
         Hana::Pointer.parse(Location.resolve(instance_location)).reduce(instance) do |obj, token|
-          obj.fetch(obj.is_a?(Array) ? token.to_i : token)
+          if obj.is_a?(Array)
+            obj.fetch(token.to_i)
+          elsif !obj.key?(token) && obj.key?(token.to_sym)
+            obj.fetch(token.to_sym)
+          else
+            obj.fetch(token)
+          end
         end
       end
     end
@@ -23,9 +29,23 @@ module JSONSchemer
     RUBY_REGEXP_RESOLVER = proc { |pattern| Regexp.new(pattern) }
     ECMA_REGEXP_RESOLVER = proc { |pattern| Regexp.new(EcmaRegexp.ruby_equivalent(pattern)) }
 
+    DEFAULT_PROPERTY_DEFAULT_RESOLVER = proc do |instance, property, results_with_tree_validity|
+      results_with_tree_validity = results_with_tree_validity.select(&:last) unless results_with_tree_validity.size == 1
+      annotations = results_with_tree_validity.to_set { |result, _tree_valid| result.annotation }
+      if annotations.size == 1
+        instance[property] = annotations.first.clone
+        true
+      else
+        false
+      end
+    end
+    SYMBOL_PROPERTY_DEFAULT_RESOLVER = proc do |instance, property, results_with_tree_validity|
+      DEFAULT_PROPERTY_DEFAULT_RESOLVER.call(instance, property.to_sym, results_with_tree_validity)
+    end
+
     attr_accessor :base_uri, :meta_schema, :keywords, :keyword_order
     attr_reader :value, :parent, :root, :parsed
-    attr_reader :vocabulary, :format, :formats, :content_encodings, :content_media_types, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults, :property_default_resolver
+    attr_reader :vocabulary, :format, :formats, :content_encodings, :content_media_types, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults
 
     def initialize(
       value,
@@ -91,12 +111,12 @@ module JSONSchemer
       output
     end
 
-    def valid_schema?
-      meta_schema.valid?(value)
+    def valid_schema?(**options)
+      meta_schema.valid?(value, **options)
     end
 
-    def validate_schema
-      meta_schema.validate(value)
+    def validate_schema(**options)
+      meta_schema.validate(value, **options)
     end
 
     def ref(value)
@@ -124,10 +144,11 @@ module JSONSchemer
           adjacent_results[keyword_instance.class] = keyword_result
         end
 
-        if custom_keywords.any?
-          custom_keywords.each do |custom_keyword, callable|
+        if root.custom_keywords.any?
+          resolved_instance_location = Location.resolve(instance_location)
+          root.custom_keywords.each do |custom_keyword, callable|
             if value.key?(custom_keyword)
-              [*callable.call(instance, value, instance_location)].each do |custom_keyword_result|
+              [*callable.call(instance, value, resolved_instance_location)].each do |custom_keyword_result|
                 custom_keyword_valid = custom_keyword_result == true
                 valid &&= custom_keyword_valid
                 type = custom_keyword_result.is_a?(String) ? custom_keyword_result : custom_keyword
@@ -374,6 +395,10 @@ module JSONSchemer
 
     def root_keyword_location
       @root_keyword_location ||= Location.root
+    end
+
+    def property_default_resolver
+      @property_default_resolver ||= insert_property_defaults == :symbol ? SYMBOL_PROPERTY_DEFAULT_RESOLVER : DEFAULT_PROPERTY_DEFAULT_RESOLVER
     end
 
     def ref_resolver

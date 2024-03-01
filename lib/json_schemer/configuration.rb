@@ -11,19 +11,7 @@ module JSONSchemer
       BEFORE_PROPERTY_VALIDATION = [].freeze
       AFTER_PROPERTY_VALIDATION = [].freeze
       INSERT_PROPERTY_DEFAULTS = false
-      PROPERTY_RESOLVER = proc do |instance, property, results_with_tree_validity|
-        unless results_with_tree_validity.size == 1
-          results_with_tree_validity = results_with_tree_validity.select(&:last)
-        end
-        annotations = results_with_tree_validity.to_set { |result, _tree_valid| result.annotation }
-
-        if annotations.size == 1
-          instance[property] = annotations.first.clone
-          true
-        else
-          false
-        end
-      end
+      PROPERTY_RESOLVER = nil
       ORIGINAL_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
       ORIGINAL_REGEXP_RESOLVER = 'ruby'
       OUTPUT_FORMAT = 'classic'
