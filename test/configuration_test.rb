@@ -82,29 +82,11 @@ class ConfigurationTest < Minitest::Test
     )
   end
 
-  def test_before_property_validation_without_array
-    run_configuration_test(
-      :before_property_validation,
-      default: JSONSchemer::Configuration::Defaults::BEFORE_PROPERTY_VALIDATION,
-      test: 'something',
-      expectation: ['something']
-    )
-  end
-
   def test_after_property_validation
     run_configuration_test(
       :after_property_validation,
       default: JSONSchemer::Configuration::Defaults::AFTER_PROPERTY_VALIDATION,
       test: ['something']
-    )
-  end
-
-  def test_after_property_validation_without_array
-    run_configuration_test(
-      :after_property_validation,
-      default: JSONSchemer::Configuration::Defaults::AFTER_PROPERTY_VALIDATION,
-      test: 'something',
-      expectation: ['something']
     )
   end
 

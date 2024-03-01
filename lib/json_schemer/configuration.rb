@@ -25,6 +25,8 @@ module JSONSchemer
       :content_encodings,
       :content_media_types,
       :keywords,
+      :before_property_validation,
+      :after_property_validation,
       :insert_property_defaults,
       :property_default_resolver,
       :ref_resolver,
@@ -33,11 +35,6 @@ module JSONSchemer
       :resolve_enumerators,
       :access_mode
       )
-
-    attr_reader(
-      :before_property_validation,
-      :after_property_validation
-    )
 
     def initialize
       @base_uri = Defaults::BASE_URI
@@ -54,14 +51,6 @@ module JSONSchemer
       @output_format = Defaults::OUTPUT_FORMAT
       @resolve_enumerators = Defaults::RESOLVE_ENUMERATORS
       @access_mode = Defaults::ACCESS_MODE
-    end
-
-    def before_property_validation=(validations)
-      @before_property_validation = Array(validations)
-    end
-
-    def after_property_validation=(validations)
-      @after_property_validation = Array(validations)
     end
   end
 end
