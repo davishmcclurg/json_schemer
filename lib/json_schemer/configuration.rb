@@ -4,6 +4,9 @@ module JSONSchemer
   class Configuration
     module Defaults
       BASE_URI = URI('json-schemer://schema').freeze
+      META_SCHEMA = nil
+      VOCABULARY = nil
+      FORMAT = true
       FORMATS = {}.freeze
       CONTENT_ENCODINGS = {}.freeze
       CONTENT_MEDIA_TYPES = {}.freeze
@@ -21,6 +24,9 @@ module JSONSchemer
 
     attr_accessor(
       :base_uri,
+      :meta_schema,
+      :vocabulary,
+      :format,
       :formats,
       :content_encodings,
       :content_media_types,
@@ -38,6 +44,9 @@ module JSONSchemer
 
     def initialize
       @base_uri = Defaults::BASE_URI
+      @meta_schema = Defaults::META_SCHEMA
+      @vocabulary = Defaults::VOCABULARY
+      @format = Defaults::FORMAT
       @formats = Defaults::FORMATS
       @content_encodings = Defaults::CONTENT_ENCODINGS
       @content_media_types = Defaults::CONTENT_MEDIA_TYPES

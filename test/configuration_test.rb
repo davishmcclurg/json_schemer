@@ -30,6 +30,30 @@ class ConfigurationTest < Minitest::Test
     )
   end
 
+  def test_meta_schema
+    run_configuration_test(
+      :meta_schema,
+      default: JSONSchemer::Configuration::Defaults::META_SCHEMA,
+      test: JSONSchemer.draft201909
+    )
+  end
+
+  def test_vocabulary
+    run_configuration_test(
+      :vocabulary,
+      default: JSONSchemer::Configuration::Defaults::VOCABULARY,
+      test: { 'json-schemer://draft4' => true }
+    )
+  end
+
+  def test_format
+    run_configuration_test(
+      :format,
+      default: JSONSchemer::Configuration::Defaults::FORMAT,
+      test: false
+    )
+  end
+
   def test_formats
     run_configuration_test(
       :formats,
