@@ -59,7 +59,7 @@ module JSONSchemer
       formats: JSONSchemer.configuration.formats,
       content_encodings: JSONSchemer.configuration.content_encodings,
       content_media_types: JSONSchemer.configuration.content_media_types,
-      keywords: JSONSchemer.configuration.custom_keywords,
+      keywords: JSONSchemer.configuration.keywords,
       before_property_validation: JSONSchemer.configuration.before_property_validation,
       after_property_validation: JSONSchemer.configuration.after_property_validation,
       insert_property_defaults: JSONSchemer.configuration.insert_property_defaults,

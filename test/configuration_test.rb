@@ -68,8 +68,8 @@ class ConfigurationTest < Minitest::Test
 
   def test_keywords
     run_configuration_test(
-      :custom_keywords,
-      default: JSONSchemer::Configuration::Defaults::CUSTOM_KEYWORDS,
+      :keywords,
+      default: JSONSchemer::Configuration::Defaults::KEYWORDS,
       test: {
         'even' => lambda { |data, curr_schema, _pointer| curr_schema.fetch('even') == data.to_i.even? }
       }
@@ -121,7 +121,7 @@ class ConfigurationTest < Minitest::Test
   def test_property_default_resolver
     run_configuration_test(
       :property_default_resolver,
-      default: JSONSchemer::Configuration::Defaults::PROPERTY_RESOLVER,
+      default: JSONSchemer::Configuration::Defaults::PROPERTY_DEFAULT_RESOLVER,
       test: lambda { |instance, property, results_with_tree_validity| true }
     )
   end

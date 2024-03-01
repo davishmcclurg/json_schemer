@@ -7,11 +7,11 @@ module JSONSchemer
       FORMATS = {}.freeze
       CONTENT_ENCODINGS = {}.freeze
       CONTENT_MEDIA_TYPES = {}.freeze
-      CUSTOM_KEYWORDS = {}.freeze
+      KEYWORDS = {}.freeze
       BEFORE_PROPERTY_VALIDATION = [].freeze
       AFTER_PROPERTY_VALIDATION = [].freeze
       INSERT_PROPERTY_DEFAULTS = false
-      PROPERTY_RESOLVER = nil
+      PROPERTY_DEFAULT_RESOLVER = nil
       REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
       REGEXP_RESOLVER = 'ruby'
       OUTPUT_FORMAT = 'classic'
@@ -24,7 +24,7 @@ module JSONSchemer
       :formats,
       :content_encodings,
       :content_media_types,
-      :custom_keywords,
+      :keywords,
       :insert_property_defaults,
       :property_default_resolver,
       :ref_resolver,
@@ -44,11 +44,11 @@ module JSONSchemer
       @formats = Defaults::FORMATS
       @content_encodings = Defaults::CONTENT_ENCODINGS
       @content_media_types = Defaults::CONTENT_MEDIA_TYPES
-      @custom_keywords = Defaults::CUSTOM_KEYWORDS
+      @keywords = Defaults::KEYWORDS
       @before_property_validation = Defaults::BEFORE_PROPERTY_VALIDATION
       @after_property_validation = Defaults::AFTER_PROPERTY_VALIDATION
       @insert_property_defaults = Defaults::INSERT_PROPERTY_DEFAULTS
-      @property_default_resolver = Defaults::PROPERTY_RESOLVER
+      @property_default_resolver = Defaults::PROPERTY_DEFAULT_RESOLVER
       @ref_resolver = Defaults::REF_RESOLVER
       @regexp_resolver = Defaults::REGEXP_RESOLVER
       @output_format = Defaults::OUTPUT_FORMAT
