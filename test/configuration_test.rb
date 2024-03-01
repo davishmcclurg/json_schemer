@@ -142,32 +142,12 @@ class ConfigurationTest < Minitest::Test
     )
   end
 
-  def test_original_regexp_resolver_invalid_string
-    assert_raises(JSONSchemer::UnknownRegexpResolver) do
-      run_configuration_test(
-        :original_regexp_resolver,
-        default: JSONSchemer::Configuration::Defaults::ORIGINAL_REGEXP_RESOLVER,
-        test: 'invalid'
-      )
-    end
-  end
-
   def test_output_format
     run_configuration_test(
       :output_format,
       default: JSONSchemer::Configuration::Defaults::OUTPUT_FORMAT,
       test: 'basic'
     )
-  end
-
-  def test_output_format_invalid
-    assert_raises(JSONSchemer::UnknownOutputFormat) do
-      run_configuration_test(
-        :output_format,
-        default: JSONSchemer::Configuration::Defaults::OUTPUT_FORMAT,
-        test: 'invalid'
-      )
-    end
   end
 
   def test_resolve_enumerators
@@ -184,15 +164,5 @@ class ConfigurationTest < Minitest::Test
       default: JSONSchemer::Configuration::Defaults::ACCESS_MODE,
       test: "write"
     )
-  end
-
-  def test_access_mode_invalid_string
-    assert_raises(JSONSchemer::UnknownAccessMode) do
-      run_configuration_test(
-        :access_mode,
-        default: JSONSchemer::Configuration::Defaults::ACCESS_MODE,
-        test: "invalid"
-      )
-    end
   end
 end

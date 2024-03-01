@@ -28,15 +28,15 @@ module JSONSchemer
       :insert_property_defaults,
       :property_default_resolver,
       :original_ref_resolver,
-      :resolve_enumerators
+      :original_regexp_resolver,
+      :output_format,
+      :resolve_enumerators,
+      :access_mode
       )
 
     attr_reader(
       :before_property_validation,
-      :after_property_validation,
-      :original_regexp_resolver,
-      :output_format,
-      :access_mode
+      :after_property_validation
     )
 
     def initialize
@@ -62,30 +62,6 @@ module JSONSchemer
 
     def after_property_validation=(validations)
       @after_property_validation = Array(validations)
-    end
-
-    def original_regexp_resolver=(resolver)
-      if resolver.is_a?(String) && !%w[ruby ecma].include?(resolver)
-        raise UnknownRegexpResolver
-      end
-
-      @original_regexp_resolver = resolver
-    end
-
-    def output_format=(format)
-      unless %[classic flag basic detailed verbose].include?(format)
-        raise UnknownOutputFormat
-      end
-
-      @output_format = format
-    end
-
-    def access_mode=(mode)
-      if mode.is_a?(String) && !%w[read write].include?(mode)
-        raise UnknownAccessMode
-      end
-
-      @access_mode = mode
     end
   end
 end

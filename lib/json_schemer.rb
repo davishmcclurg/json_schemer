@@ -71,8 +71,6 @@ module JSONSchemer
   UnknownContentEncoding = Class.new(StandardError)
   UnknownContentMediaType = Class.new(StandardError)
   UnknownOutputFormat = Class.new(StandardError)
-  UnknownRegexpResolver = Class.new(StandardError)
-  UnknownAccessMode = Class.new(StandardError)
   InvalidRefResolution = Class.new(StandardError)
   InvalidRefPointer = Class.new(StandardError)
   InvalidRegexpResolution = Class.new(StandardError)
