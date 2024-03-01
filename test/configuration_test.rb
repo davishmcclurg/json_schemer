@@ -1,8 +1,6 @@
 require 'test_helper'
 
 class ConfigurationTest < Minitest::Test
-  parallelize_me!
-
   def run_configuration_test(option, default:, test:, expectation: test)
     if default.nil?
       assert_nil(JSONSchemer.configuration.public_send(option))
