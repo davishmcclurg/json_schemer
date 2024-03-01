@@ -126,18 +126,18 @@ class ConfigurationTest < Minitest::Test
     )
   end
 
-  def test_original_ref_resolver
+  def test_ref_resolver
     run_configuration_test(
-      :original_ref_resolver,
-      default: JSONSchemer::Configuration::Defaults::ORIGINAL_REF_RESOLVER,
+      :ref_resolver,
+      default: JSONSchemer::Configuration::Defaults::REF_RESOLVER,
       test: lambda { |uri| { 'type' => 'string' } }
     )
   end
 
-  def test_original_regexp_resolver
+  def test_regexp_resolver
     run_configuration_test(
-      :original_regexp_resolver,
-      default: JSONSchemer::Configuration::Defaults::ORIGINAL_REGEXP_RESOLVER,
+      :regexp_resolver,
+      default: JSONSchemer::Configuration::Defaults::REGEXP_RESOLVER,
       test: 'ecma'
     )
   end

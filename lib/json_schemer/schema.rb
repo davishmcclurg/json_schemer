@@ -64,8 +64,8 @@ module JSONSchemer
       after_property_validation: JSONSchemer.configuration.after_property_validation,
       insert_property_defaults: JSONSchemer.configuration.insert_property_defaults,
       property_default_resolver: JSONSchemer.configuration.property_default_resolver,
-      ref_resolver: JSONSchemer.configuration.original_ref_resolver,
-      regexp_resolver: JSONSchemer.configuration.original_regexp_resolver,
+      ref_resolver: JSONSchemer.configuration.ref_resolver,
+      regexp_resolver: JSONSchemer.configuration.regexp_resolver,
       output_format: JSONSchemer.configuration.output_format,
       resolve_enumerators: JSONSchemer.configuration.resolve_enumerators,
       access_mode: JSONSchemer.configuration.access_mode

@@ -12,8 +12,8 @@ module JSONSchemer
       AFTER_PROPERTY_VALIDATION = [].freeze
       INSERT_PROPERTY_DEFAULTS = false
       PROPERTY_RESOLVER = nil
-      ORIGINAL_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
-      ORIGINAL_REGEXP_RESOLVER = 'ruby'
+      REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
+      REGEXP_RESOLVER = 'ruby'
       OUTPUT_FORMAT = 'classic'
       RESOLVE_ENUMERATORS = false
       ACCESS_MODE = nil
@@ -27,8 +27,8 @@ module JSONSchemer
       :custom_keywords,
       :insert_property_defaults,
       :property_default_resolver,
-      :original_ref_resolver,
-      :original_regexp_resolver,
+      :ref_resolver,
+      :regexp_resolver,
       :output_format,
       :resolve_enumerators,
       :access_mode
@@ -49,8 +49,8 @@ module JSONSchemer
       @after_property_validation = Defaults::AFTER_PROPERTY_VALIDATION
       @insert_property_defaults = Defaults::INSERT_PROPERTY_DEFAULTS
       @property_default_resolver = Defaults::PROPERTY_RESOLVER
-      @original_ref_resolver = Defaults::ORIGINAL_REF_RESOLVER
-      @original_regexp_resolver = Defaults::ORIGINAL_REGEXP_RESOLVER
+      @ref_resolver = Defaults::REF_RESOLVER
+      @regexp_resolver = Defaults::REGEXP_RESOLVER
       @output_format = Defaults::OUTPUT_FORMAT
       @resolve_enumerators = Defaults::RESOLVE_ENUMERATORS
       @access_mode = Defaults::ACCESS_MODE
