@@ -190,4 +190,15 @@ class ConfigurationTest < Minitest::Test
       test: "write"
     )
   end
+
+  def test_configuration_option_and_override
+    configuration = JSONSchemer::Configuration.new
+    configuration.format = false
+    assert(JSONSchemer.schema({ 'format' => 'time' }).valid?('08:30:06Z'))
+    refute(JSONSchemer.schema({ 'format' => 'time' }).valid?('X'))
+    assert(JSONSchemer.schema({ 'format' => 'time' }, configuration: configuration).valid?('08:30:06Z'))
+    assert(JSONSchemer.schema({ 'format' => 'time' }, configuration: configuration).valid?('X'))
+    assert(JSONSchemer.schema({ 'format' => 'time' }, configuration: configuration, format: true).valid?('08:30:06Z'))
+    refute(JSONSchemer.schema({ 'format' => 'time' }, configuration: configuration, format: true).valid?('X'))
+  end
 end
