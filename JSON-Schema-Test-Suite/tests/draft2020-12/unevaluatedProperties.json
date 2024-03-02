@@ -716,12 +716,50 @@
         ]
     },
     {
+        "description": "unevaluatedProperties before $ref",
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "unevaluatedProperties": false,
+            "properties": {
+                "foo": { "type": "string" }
+            },
+            "$ref": "#/$defs/bar",
+            "$defs": {
+                "bar": {
+                    "properties": {
+                        "bar": { "type": "string" }
+                    }
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "with no unevaluated properties",
+                "data": {
+                    "foo": "foo",
+                    "bar": "bar"
+                },
+                "valid": true
+            },
+            {
+                "description": "with unevaluated properties",
+                "data": {
+                    "foo": "foo",
+                    "bar": "bar",
+                    "baz": "baz"
+                },
+                "valid": false
+            }
+        ]
+    },
+    {
         "description": "unevaluatedProperties with $dynamicRef",
         "schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://example.com/derived",
+            "$id": "https://example.com/unevaluated-properties-with-dynamic-ref/derived",
 
-            "$ref": "/baseSchema",
+            "$ref": "./baseSchema",
 
             "$defs": {
                 "derived": {
@@ -731,7 +769,7 @@
                     }
                 },
                 "baseSchema": {
-                    "$id": "/baseSchema",
+                    "$id": "./baseSchema",
 
                     "$comment": "unevaluatedProperties comes first so it's more likely to catch bugs with implementations that are sensitive to keyword ordering",
                     "unevaluatedProperties": false,
