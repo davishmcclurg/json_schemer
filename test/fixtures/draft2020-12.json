@@ -1226,194 +1226,6 @@
       ],
       [
         {
-          "data": {
-            "type": "null"
-          },
-          "data_pointer": "",
-          "schema": {
-            "enum": [
-              {
-                "$anchor": "my_anchor",
-                "type": "null"
-              }
-            ]
-          },
-          "schema_pointer": "/$defs/anchor_in_enum",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "anchor_in_enum": {
-                "enum": [
-                  {
-                    "$anchor": "my_anchor",
-                    "type": "null"
-                  }
-                ]
-              },
-              "real_identifier_in_schema": {
-                "$anchor": "my_anchor",
-                "type": "string"
-              },
-              "zzz_anchor_in_const": {
-                "const": {
-                  "$anchor": "my_anchor",
-                  "type": "null"
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/anchor_in_enum"
-              },
-              {
-                "$ref": "#my_anchor"
-              }
-            ]
-          },
-          "type": "enum"
-        },
-        {
-          "data": {
-            "type": "null"
-          },
-          "data_pointer": "",
-          "schema": {
-            "$anchor": "my_anchor",
-            "type": "string"
-          },
-          "schema_pointer": "/$defs/real_identifier_in_schema",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "anchor_in_enum": {
-                "enum": [
-                  {
-                    "$anchor": "my_anchor",
-                    "type": "null"
-                  }
-                ]
-              },
-              "real_identifier_in_schema": {
-                "$anchor": "my_anchor",
-                "type": "string"
-              },
-              "zzz_anchor_in_const": {
-                "const": {
-                  "$anchor": "my_anchor",
-                  "type": "null"
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/anchor_in_enum"
-              },
-              {
-                "$ref": "#my_anchor"
-              }
-            ]
-          },
-          "type": "string"
-        }
-      ],
-      [
-
-      ],
-      [
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "enum": [
-              {
-                "$anchor": "my_anchor",
-                "type": "null"
-              }
-            ]
-          },
-          "schema_pointer": "/$defs/anchor_in_enum",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "anchor_in_enum": {
-                "enum": [
-                  {
-                    "$anchor": "my_anchor",
-                    "type": "null"
-                  }
-                ]
-              },
-              "real_identifier_in_schema": {
-                "$anchor": "my_anchor",
-                "type": "string"
-              },
-              "zzz_anchor_in_const": {
-                "const": {
-                  "$anchor": "my_anchor",
-                  "type": "null"
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/anchor_in_enum"
-              },
-              {
-                "$ref": "#my_anchor"
-              }
-            ]
-          },
-          "type": "enum"
-        },
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "$anchor": "my_anchor",
-            "type": "string"
-          },
-          "schema_pointer": "/$defs/real_identifier_in_schema",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "anchor_in_enum": {
-                "enum": [
-                  {
-                    "$anchor": "my_anchor",
-                    "type": "null"
-                  }
-                ]
-              },
-              "real_identifier_in_schema": {
-                "$anchor": "my_anchor",
-                "type": "string"
-              },
-              "zzz_anchor_in_const": {
-                "const": {
-                  "$anchor": "my_anchor",
-                  "type": "null"
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/anchor_in_enum"
-              },
-              {
-                "$ref": "#my_anchor"
-              }
-            ]
-          },
-          "type": "string"
-        }
-      ]
-    ],
-    [
-      [
-
-      ],
-      [
-        {
           "data": 1,
           "data_pointer": "",
           "schema": {
@@ -1443,41 +1255,6 @@
             "$ref": "child1#my_anchor"
           },
           "type": "string"
-        }
-      ]
-    ],
-    [
-      [
-
-      ],
-      [
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "const": {
-              "$anchor": "not_a_real_anchor"
-            }
-          },
-          "schema_pointer": "/$defs/const_not_anchor",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "const_not_anchor": {
-                "const": {
-                  "$anchor": "not_a_real_anchor"
-                }
-              }
-            },
-            "if": {
-              "const": "skip not_a_real_anchor"
-            },
-            "then": true,
-            "else": {
-              "$ref": "#/$defs/const_not_anchor"
-            }
-          },
-          "type": "const"
         }
       ]
     ],
@@ -5240,6 +5017,35 @@
           "type": "integer"
         }
       ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": 1,
+          "data_pointer": "/false",
+          "schema": false,
+          "schema_pointer": "/$defs/false",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "true": true,
+              "false": false
+            },
+            "properties": {
+              "true": {
+                "$dynamicRef": "#/$defs/true"
+              },
+              "false": {
+                "$dynamicRef": "#/$defs/false"
+              }
+            }
+          },
+          "type": "schema"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2020-12/enum.json": [
@@ -5681,6 +5487,63 @@
       ],
       [
         {
+          "data": [
+            0
+          ],
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+        {
+          "data": [
+            0.0
+          ],
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
           "data": 1,
           "data_pointer": "",
           "schema": {
@@ -5722,6 +5585,63 @@
     ],
     [
       [
+
+      ],
+      [
+        {
+          "data": [
+            1
+          ],
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+        {
+          "data": [
+            1.0
+          ],
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ]
+    ],
+    [
+      [
         {
           "data": false,
           "data_pointer": "",
@@ -5751,6 +5671,40 @@
     [
       [
         {
+          "data": [
+            false
+          ],
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                0
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                0
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+        {
           "data": true,
           "data_pointer": "",
           "schema": {
@@ -5764,6 +5718,40 @@
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "enum": [
               1
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+        {
+          "data": [
+            true
+          ],
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                1
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "enum": [
+              [
+                1
+              ]
             ]
           },
           "type": "enum"
@@ -6887,137 +6875,6 @@
       ],
       [
 
-      ]
-    ],
-    [
-      [
-
-      ],
-      [
-
-      ],
-      [
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "enum": [
-              {
-                "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
-                "type": "null"
-              }
-            ]
-          },
-          "schema_pointer": "/$defs/id_in_enum",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "id_in_enum": {
-                "enum": [
-                  {
-                    "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
-                    "type": "null"
-                  }
-                ]
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
-                "type": "string"
-              },
-              "zzz_id_in_const": {
-                "const": {
-                  "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
-                  "type": "null"
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/id_in_enum"
-              },
-              {
-                "$ref": "https://localhost:1234/draft2020-12/id/my_identifier.json"
-              }
-            ]
-          },
-          "type": "enum"
-        },
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
-            "type": "string"
-          },
-          "schema_pointer": "/$defs/real_id_in_schema",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "id_in_enum": {
-                "enum": [
-                  {
-                    "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
-                    "type": "null"
-                  }
-                ]
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
-                "type": "string"
-              },
-              "zzz_id_in_const": {
-                "const": {
-                  "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
-                  "type": "null"
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/id_in_enum"
-              },
-              {
-                "$ref": "https://localhost:1234/draft2020-12/id/my_identifier.json"
-              }
-            ]
-          },
-          "type": "string"
-        }
-      ]
-    ],
-    [
-      [
-
-      ],
-      [
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "const": {
-              "$id": "not_a_real_id"
-            }
-          },
-          "schema_pointer": "/$defs/const_not_id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "const_not_id": {
-                "const": {
-                  "$id": "not_a_real_id"
-                }
-              }
-            },
-            "if": {
-              "const": "skip not_a_real_id"
-            },
-            "then": true,
-            "else": {
-              "$ref": "#/$defs/const_not_id"
-            }
-          },
-          "type": "const"
-        }
       ]
     ]
   ],
@@ -9641,6 +9498,193 @@
     [
       [
         {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": "foo",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": true,
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": false,
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": {
+            "foo": "bar"
+          },
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": {
+          },
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": [
+            "foo"
+          ],
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": [
+
+          ],
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
           "data": "foo",
           "data_pointer": "",
           "schema": {
@@ -9654,6 +9698,154 @@
           },
           "type": "not"
         }
+      ],
+      [
+        {
+          "data": true,
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": false,
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": {
+            "foo": "bar"
+          },
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": {
+          },
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": [
+            "foo"
+          ],
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": [
+
+          ],
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "not": true
+          },
+          "type": "not"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
       ]
     ],
     [
@@ -10475,6 +10667,196 @@
             ]
           },
           "type": "null"
+        }
+      ]
+    ]
+  ],
+  "JSON-Schema-Test-Suite/tests/draft2020-12/optional/anchor.json": [
+    [
+      [
+
+      ],
+      [
+        {
+          "data": {
+            "type": "null"
+          },
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              {
+                "$anchor": "my_anchor",
+                "type": "null"
+              }
+            ]
+          },
+          "schema_pointer": "/$defs/anchor_in_enum",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "anchor_in_enum": {
+                "enum": [
+                  {
+                    "$anchor": "my_anchor",
+                    "type": "null"
+                  }
+                ]
+              },
+              "real_identifier_in_schema": {
+                "$anchor": "my_anchor",
+                "type": "string"
+              },
+              "zzz_anchor_in_const": {
+                "const": {
+                  "$anchor": "my_anchor",
+                  "type": "null"
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/anchor_in_enum"
+              },
+              {
+                "$ref": "#my_anchor"
+              }
+            ]
+          },
+          "type": "enum"
+        },
+        {
+          "data": {
+            "type": "null"
+          },
+          "data_pointer": "",
+          "schema": {
+            "$anchor": "my_anchor",
+            "type": "string"
+          },
+          "schema_pointer": "/$defs/real_identifier_in_schema",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "anchor_in_enum": {
+                "enum": [
+                  {
+                    "$anchor": "my_anchor",
+                    "type": "null"
+                  }
+                ]
+              },
+              "real_identifier_in_schema": {
+                "$anchor": "my_anchor",
+                "type": "string"
+              },
+              "zzz_anchor_in_const": {
+                "const": {
+                  "$anchor": "my_anchor",
+                  "type": "null"
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/anchor_in_enum"
+              },
+              {
+                "$ref": "#my_anchor"
+              }
+            ]
+          },
+          "type": "string"
+        }
+      ],
+      [
+
+      ],
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              {
+                "$anchor": "my_anchor",
+                "type": "null"
+              }
+            ]
+          },
+          "schema_pointer": "/$defs/anchor_in_enum",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "anchor_in_enum": {
+                "enum": [
+                  {
+                    "$anchor": "my_anchor",
+                    "type": "null"
+                  }
+                ]
+              },
+              "real_identifier_in_schema": {
+                "$anchor": "my_anchor",
+                "type": "string"
+              },
+              "zzz_anchor_in_const": {
+                "const": {
+                  "$anchor": "my_anchor",
+                  "type": "null"
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/anchor_in_enum"
+              },
+              {
+                "$ref": "#my_anchor"
+              }
+            ]
+          },
+          "type": "enum"
+        },
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "$anchor": "my_anchor",
+            "type": "string"
+          },
+          "schema_pointer": "/$defs/real_identifier_in_schema",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "anchor_in_enum": {
+                "enum": [
+                  {
+                    "$anchor": "my_anchor",
+                    "type": "null"
+                  }
+                ]
+              },
+              "real_identifier_in_schema": {
+                "$anchor": "my_anchor",
+                "type": "string"
+              },
+              "zzz_anchor_in_const": {
+                "const": {
+                  "$anchor": "my_anchor",
+                  "type": "null"
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/anchor_in_enum"
+              },
+              {
+                "$ref": "#my_anchor"
+              }
+            ]
+          },
+          "type": "string"
         }
       ]
     ]
@@ -16138,6 +16520,104 @@
       ]
     ]
   ],
+  "JSON-Schema-Test-Suite/tests/draft2020-12/optional/id.json": [
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              {
+                "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
+                "type": "null"
+              }
+            ]
+          },
+          "schema_pointer": "/$defs/id_in_enum",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "id_in_enum": {
+                "enum": [
+                  {
+                    "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
+                    "type": "null"
+                  }
+                ]
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
+                "type": "string"
+              },
+              "zzz_id_in_const": {
+                "const": {
+                  "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
+                  "type": "null"
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/id_in_enum"
+              },
+              {
+                "$ref": "https://localhost:1234/draft2020-12/id/my_identifier.json"
+              }
+            ]
+          },
+          "type": "enum"
+        },
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
+            "type": "string"
+          },
+          "schema_pointer": "/$defs/real_id_in_schema",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "id_in_enum": {
+                "enum": [
+                  {
+                    "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
+                    "type": "null"
+                  }
+                ]
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
+                "type": "string"
+              },
+              "zzz_id_in_const": {
+                "const": {
+                  "$id": "https://localhost:1234/draft2020-12/id/my_identifier.json",
+                  "type": "null"
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/id_in_enum"
+              },
+              {
+                "$ref": "https://localhost:1234/draft2020-12/id/my_identifier.json"
+              }
+            ]
+          },
+          "type": "string"
+        }
+      ]
+    ]
+  ],
   "JSON-Schema-Test-Suite/tests/draft2020-12/optional/no-schema.json": [
     [
       [
@@ -16366,6 +16846,341 @@
               }
             ],
             "$ref": "#/examples/0"
+          },
+          "type": "string"
+        }
+      ]
+    ]
+  ],
+  "JSON-Schema-Test-Suite/tests/draft2020-12/optional/unknownKeyword.json": [
+    [
+      [
+
+      ],
+      [
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+              "array_of_schemas": [
+                {
+                  "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "schema_pointer": "/$defs/id_in_unknown0",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/id_in_unknown0"
+              },
+              {
+                "$ref": "#/$defs/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "not"
+        },
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+              "object_of_schemas": {
+                "foo": {
+                  "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "schema_pointer": "/$defs/id_in_unknown1",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/id_in_unknown0"
+              },
+              {
+                "$ref": "#/$defs/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "not"
+        },
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+            "type": "string"
+          },
+          "schema_pointer": "/$defs/real_id_in_schema",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/id_in_unknown0"
+              },
+              {
+                "$ref": "#/$defs/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "string"
+        }
+      ],
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+              "array_of_schemas": [
+                {
+                  "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "schema_pointer": "/$defs/id_in_unknown0",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/id_in_unknown0"
+              },
+              {
+                "$ref": "#/$defs/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "not"
+        },
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+              "object_of_schemas": {
+                "foo": {
+                  "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "schema_pointer": "/$defs/id_in_unknown1",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/id_in_unknown0"
+              },
+              {
+                "$ref": "#/$defs/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "not"
+        },
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+            "type": "string"
+          },
+          "schema_pointer": "/$defs/real_id_in_schema",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/$defs/id_in_unknown0"
+              },
+              {
+                "$ref": "#/$defs/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
+              }
+            ]
           },
           "type": "string"
         }
@@ -21264,11 +22079,45 @@
           "data": "baz",
           "data_pointer": "/2",
           "schema": false,
+          "schema_pointer": "/unevaluatedItems",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "unevaluatedItems": false,
+            "prefixItems": [
+              {
+                "type": "string"
+              }
+            ],
+            "$ref": "#/$defs/bar",
+            "$defs": {
+              "bar": {
+                "prefixItems": [
+                  true,
+                  {
+                    "type": "string"
+                  }
+                ]
+              }
+            }
+          },
+          "type": "schema"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "baz",
+          "data_pointer": "/2",
+          "schema": false,
           "schema_pointer": "/$defs/baseSchema/unevaluatedItems",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://example.com/derived",
-            "$ref": "/baseSchema",
+            "$id": "https://example.com/unevaluated-items-with-dynamic-ref/derived",
+            "$ref": "./baseSchema",
             "$defs": {
               "derived": {
                 "$dynamicAnchor": "addons",
@@ -21280,7 +22129,7 @@
                 ]
               },
               "baseSchema": {
-                "$id": "/baseSchema",
+                "$id": "./baseSchema",
                 "$comment": "unevaluatedItems comes first so it's more likely to catch bugs with implementations that are sensitive to keyword ordering",
                 "unevaluatedItems": false,
                 "type": "array",
@@ -22770,11 +23619,45 @@
           "data": "baz",
           "data_pointer": "/baz",
           "schema": false,
+          "schema_pointer": "/unevaluatedProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "unevaluatedProperties": false,
+            "properties": {
+              "foo": {
+                "type": "string"
+              }
+            },
+            "$ref": "#/$defs/bar",
+            "$defs": {
+              "bar": {
+                "properties": {
+                  "bar": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "type": "schema"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "baz",
+          "data_pointer": "/baz",
+          "schema": false,
           "schema_pointer": "/$defs/baseSchema/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://example.com/derived",
-            "$ref": "/baseSchema",
+            "$id": "https://example.com/unevaluated-properties-with-dynamic-ref/derived",
+            "$ref": "./baseSchema",
             "$defs": {
               "derived": {
                 "$dynamicAnchor": "addons",
@@ -22785,7 +23668,7 @@
                 }
               },
               "baseSchema": {
-                "$id": "/baseSchema",
+                "$id": "./baseSchema",
                 "$comment": "unevaluatedProperties comes first so it's more likely to catch bugs with implementations that are sensitive to keyword ordering",
                 "unevaluatedProperties": false,
                 "type": "object",
@@ -28414,341 +29297,6 @@
             "items": false
           },
           "type": "schema"
-        }
-      ]
-    ]
-  ],
-  "JSON-Schema-Test-Suite/tests/draft2020-12/unknownKeyword.json": [
-    [
-      [
-
-      ],
-      [
-        {
-          "data": null,
-          "data_pointer": "",
-          "schema": {
-            "not": {
-              "array_of_schemas": [
-                {
-                  "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                  "type": "null"
-                }
-              ]
-            }
-          },
-          "schema_pointer": "/$defs/id_in_unknown0",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/id_in_unknown0"
-              },
-              {
-                "$ref": "#/$defs/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "not"
-        },
-        {
-          "data": null,
-          "data_pointer": "",
-          "schema": {
-            "not": {
-              "object_of_schemas": {
-                "foo": {
-                  "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                  "type": "integer"
-                }
-              }
-            }
-          },
-          "schema_pointer": "/$defs/id_in_unknown1",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/id_in_unknown0"
-              },
-              {
-                "$ref": "#/$defs/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "not"
-        },
-        {
-          "data": null,
-          "data_pointer": "",
-          "schema": {
-            "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-            "type": "string"
-          },
-          "schema_pointer": "/$defs/real_id_in_schema",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/id_in_unknown0"
-              },
-              {
-                "$ref": "#/$defs/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "string"
-        }
-      ],
-      [
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "not": {
-              "array_of_schemas": [
-                {
-                  "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                  "type": "null"
-                }
-              ]
-            }
-          },
-          "schema_pointer": "/$defs/id_in_unknown0",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/id_in_unknown0"
-              },
-              {
-                "$ref": "#/$defs/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "not"
-        },
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "not": {
-              "object_of_schemas": {
-                "foo": {
-                  "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                  "type": "integer"
-                }
-              }
-            }
-          },
-          "schema_pointer": "/$defs/id_in_unknown1",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/id_in_unknown0"
-              },
-              {
-                "$ref": "#/$defs/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "not"
-        },
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-            "type": "string"
-          },
-          "schema_pointer": "/$defs/real_id_in_schema",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/$defs/id_in_unknown0"
-              },
-              {
-                "$ref": "#/$defs/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/draft2020-12/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "string"
         }
       ]
     ]

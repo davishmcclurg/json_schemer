@@ -2944,6 +2944,59 @@
       ],
       [
         {
+          "data": [
+            0
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+        {
+          "data": [
+            0.0
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
           "data": 1,
           "data_pointer": "",
           "schema": {
@@ -2981,6 +3034,59 @@
     ],
     [
       [
+
+      ],
+      [
+        {
+          "data": [
+            1
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+        {
+          "data": [
+            1.0
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ]
+    ],
+    [
+      [
         {
           "data": false,
           "data_pointer": "",
@@ -3008,6 +3114,38 @@
     [
       [
         {
+          "data": [
+            false
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                0
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                0
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+        {
           "data": true,
           "data_pointer": "",
           "schema": {
@@ -3019,6 +3157,38 @@
           "root_schema": {
             "enum": [
               1
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+        {
+          "data": [
+            true
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                1
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                1
+              ]
             ]
           },
           "type": "enum"
@@ -3174,102 +3344,6 @@
       ],
       [
 
-      ]
-    ]
-  ],
-  "JSON-Schema-Test-Suite/tests/draft4/id.json": [
-    [
-      [
-
-      ],
-      [
-
-      ],
-      [
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "enum": [
-              {
-                "id": "https://localhost:1234/my_identifier.json",
-                "type": "null"
-              }
-            ]
-          },
-          "schema_pointer": "/definitions/id_in_enum",
-          "root_schema": {
-            "definitions": {
-              "id_in_enum": {
-                "enum": [
-                  {
-                    "id": "https://localhost:1234/my_identifier.json",
-                    "type": "null"
-                  }
-                ]
-              },
-              "real_id_in_schema": {
-                "id": "https://localhost:1234/my_identifier.json",
-                "type": "string"
-              },
-              "zzz_id_in_const": {
-                "const": {
-                  "id": "https://localhost:1234/my_identifier.json",
-                  "type": "null"
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/definitions/id_in_enum"
-              },
-              {
-                "$ref": "https://localhost:1234/my_identifier.json"
-              }
-            ]
-          },
-          "type": "enum"
-        },
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "id": "https://localhost:1234/my_identifier.json",
-            "type": "string"
-          },
-          "schema_pointer": "/definitions/real_id_in_schema",
-          "root_schema": {
-            "definitions": {
-              "id_in_enum": {
-                "enum": [
-                  {
-                    "id": "https://localhost:1234/my_identifier.json",
-                    "type": "null"
-                  }
-                ]
-              },
-              "real_id_in_schema": {
-                "id": "https://localhost:1234/my_identifier.json",
-                "type": "string"
-              },
-              "zzz_id_in_const": {
-                "const": {
-                  "id": "https://localhost:1234/my_identifier.json",
-                  "type": "null"
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/definitions/id_in_enum"
-              },
-              {
-                "$ref": "https://localhost:1234/my_identifier.json"
-              }
-            ]
-          },
-          "type": "string"
-        }
       ]
     ]
   ],
@@ -4531,6 +4605,164 @@
           "type": "not"
         }
       ],
+      [
+
+      ]
+    ],
+    [
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": "foo",
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": true,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": false,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": {
+            "foo": "bar"
+          },
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": {
+          },
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": [
+            "foo"
+          ],
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": [
+
+          ],
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ]
+    ],
+    [
       [
 
       ]
@@ -7198,6 +7430,102 @@
             "format": "uri"
           },
           "type": "format"
+        }
+      ]
+    ]
+  ],
+  "JSON-Schema-Test-Suite/tests/draft4/optional/id.json": [
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              {
+                "id": "https://localhost:1234/my_identifier.json",
+                "type": "null"
+              }
+            ]
+          },
+          "schema_pointer": "/definitions/id_in_enum",
+          "root_schema": {
+            "definitions": {
+              "id_in_enum": {
+                "enum": [
+                  {
+                    "id": "https://localhost:1234/my_identifier.json",
+                    "type": "null"
+                  }
+                ]
+              },
+              "real_id_in_schema": {
+                "id": "https://localhost:1234/my_identifier.json",
+                "type": "string"
+              },
+              "zzz_id_in_const": {
+                "const": {
+                  "id": "https://localhost:1234/my_identifier.json",
+                  "type": "null"
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/definitions/id_in_enum"
+              },
+              {
+                "$ref": "https://localhost:1234/my_identifier.json"
+              }
+            ]
+          },
+          "type": "enum"
+        },
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "id": "https://localhost:1234/my_identifier.json",
+            "type": "string"
+          },
+          "schema_pointer": "/definitions/real_id_in_schema",
+          "root_schema": {
+            "definitions": {
+              "id_in_enum": {
+                "enum": [
+                  {
+                    "id": "https://localhost:1234/my_identifier.json",
+                    "type": "null"
+                  }
+                ]
+              },
+              "real_id_in_schema": {
+                "id": "https://localhost:1234/my_identifier.json",
+                "type": "string"
+              },
+              "zzz_id_in_const": {
+                "const": {
+                  "id": "https://localhost:1234/my_identifier.json",
+                  "type": "null"
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/definitions/id_in_enum"
+              },
+              {
+                "$ref": "https://localhost:1234/my_identifier.json"
+              }
+            ]
+          },
+          "type": "string"
         }
       ]
     ]

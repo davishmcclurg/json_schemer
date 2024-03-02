@@ -4212,6 +4212,59 @@
       ],
       [
         {
+          "data": [
+            0
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+        {
+          "data": [
+            0.0
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                false
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
           "data": 1,
           "data_pointer": "",
           "schema": {
@@ -4249,6 +4302,59 @@
     ],
     [
       [
+
+      ],
+      [
+        {
+          "data": [
+            1
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+        {
+          "data": [
+            1.0
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                true
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ]
+    ],
+    [
+      [
         {
           "data": false,
           "data_pointer": "",
@@ -4276,6 +4382,38 @@
     [
       [
         {
+          "data": [
+            false
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                0
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                0
+              ]
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+        {
           "data": true,
           "data_pointer": "",
           "schema": {
@@ -4287,6 +4425,38 @@
           "root_schema": {
             "enum": [
               1
+            ]
+          },
+          "type": "enum"
+        }
+      ],
+      [
+
+      ],
+      [
+
+      ]
+    ],
+    [
+      [
+        {
+          "data": [
+            true
+          ],
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              [
+                1
+              ]
+            ]
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "enum": [
+              [
+                1
+              ]
             ]
           },
           "type": "enum"
@@ -4738,170 +4908,6 @@
       ],
       [
 
-      ]
-    ]
-  ],
-  "JSON-Schema-Test-Suite/tests/draft7/id.json": [
-    [
-      [
-
-      ],
-      [
-
-      ],
-      [
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "enum": [
-              {
-                "$id": "https://localhost:1234/id/my_identifier.json",
-                "type": "null"
-              }
-            ]
-          },
-          "schema_pointer": "/definitions/id_in_enum",
-          "root_schema": {
-            "definitions": {
-              "id_in_enum": {
-                "enum": [
-                  {
-                    "$id": "https://localhost:1234/id/my_identifier.json",
-                    "type": "null"
-                  }
-                ]
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/id/my_identifier.json",
-                "type": "string"
-              },
-              "zzz_id_in_const": {
-                "const": {
-                  "$id": "https://localhost:1234/id/my_identifier.json",
-                  "type": "null"
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/definitions/id_in_enum"
-              },
-              {
-                "$ref": "https://localhost:1234/id/my_identifier.json"
-              }
-            ]
-          },
-          "type": "enum"
-        },
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "$id": "https://localhost:1234/id/my_identifier.json",
-            "type": "string"
-          },
-          "schema_pointer": "/definitions/real_id_in_schema",
-          "root_schema": {
-            "definitions": {
-              "id_in_enum": {
-                "enum": [
-                  {
-                    "$id": "https://localhost:1234/id/my_identifier.json",
-                    "type": "null"
-                  }
-                ]
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/id/my_identifier.json",
-                "type": "string"
-              },
-              "zzz_id_in_const": {
-                "const": {
-                  "$id": "https://localhost:1234/id/my_identifier.json",
-                  "type": "null"
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/definitions/id_in_enum"
-              },
-              {
-                "$ref": "https://localhost:1234/id/my_identifier.json"
-              }
-            ]
-          },
-          "type": "string"
-        }
-      ]
-    ],
-    [
-      [
-
-      ],
-      [
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "const": {
-              "$id": "#not_a_real_anchor"
-            }
-          },
-          "schema_pointer": "/definitions/const_not_anchor",
-          "root_schema": {
-            "definitions": {
-              "const_not_anchor": {
-                "const": {
-                  "$id": "#not_a_real_anchor"
-                }
-              }
-            },
-            "if": {
-              "const": "skip not_a_real_anchor"
-            },
-            "then": true,
-            "else": {
-              "$ref": "#/definitions/const_not_anchor"
-            }
-          },
-          "type": "const"
-        }
-      ]
-    ],
-    [
-      [
-
-      ],
-      [
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "const": {
-              "$id": "not_a_real_id"
-            }
-          },
-          "schema_pointer": "/definitions/const_not_id",
-          "root_schema": {
-            "definitions": {
-              "const_not_id": {
-                "const": {
-                  "$id": "not_a_real_id"
-                }
-              }
-            },
-            "if": {
-              "const": "skip not_a_real_id"
-            },
-            "then": true,
-            "else": {
-              "$ref": "#/definitions/const_not_id"
-            }
-          },
-          "type": "const"
-        }
       ]
     ]
   ],
@@ -6495,6 +6501,173 @@
     [
       [
         {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": "foo",
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": true,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": false,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": {
+            "foo": "bar"
+          },
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": {
+          },
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": [
+            "foo"
+          ],
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": [
+
+          ],
+          "data_pointer": "",
+          "schema": {
+            "not": {
+            }
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": {
+            }
+          },
+          "type": "not"
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
           "data": "foo",
           "data_pointer": "",
           "schema": {
@@ -6506,6 +6679,140 @@
           },
           "type": "not"
         }
+      ],
+      [
+        {
+          "data": true,
+          "data_pointer": "",
+          "schema": {
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": false,
+          "data_pointer": "",
+          "schema": {
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": {
+            "foo": "bar"
+          },
+          "data_pointer": "",
+          "schema": {
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": {
+          },
+          "data_pointer": "",
+          "schema": {
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": [
+            "foo"
+          ],
+          "data_pointer": "",
+          "schema": {
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": true
+          },
+          "type": "not"
+        }
+      ],
+      [
+        {
+          "data": [
+
+          ],
+          "data_pointer": "",
+          "schema": {
+            "not": true
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "not": true
+          },
+          "type": "not"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
+      ],
+      [
+
       ]
     ],
     [
@@ -11475,6 +11782,170 @@
       ]
     ]
   ],
+  "JSON-Schema-Test-Suite/tests/draft7/optional/id.json": [
+    [
+      [
+
+      ],
+      [
+
+      ],
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              {
+                "$id": "https://localhost:1234/id/my_identifier.json",
+                "type": "null"
+              }
+            ]
+          },
+          "schema_pointer": "/definitions/id_in_enum",
+          "root_schema": {
+            "definitions": {
+              "id_in_enum": {
+                "enum": [
+                  {
+                    "$id": "https://localhost:1234/id/my_identifier.json",
+                    "type": "null"
+                  }
+                ]
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/id/my_identifier.json",
+                "type": "string"
+              },
+              "zzz_id_in_const": {
+                "const": {
+                  "$id": "https://localhost:1234/id/my_identifier.json",
+                  "type": "null"
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/definitions/id_in_enum"
+              },
+              {
+                "$ref": "https://localhost:1234/id/my_identifier.json"
+              }
+            ]
+          },
+          "type": "enum"
+        },
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "$id": "https://localhost:1234/id/my_identifier.json",
+            "type": "string"
+          },
+          "schema_pointer": "/definitions/real_id_in_schema",
+          "root_schema": {
+            "definitions": {
+              "id_in_enum": {
+                "enum": [
+                  {
+                    "$id": "https://localhost:1234/id/my_identifier.json",
+                    "type": "null"
+                  }
+                ]
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/id/my_identifier.json",
+                "type": "string"
+              },
+              "zzz_id_in_const": {
+                "const": {
+                  "$id": "https://localhost:1234/id/my_identifier.json",
+                  "type": "null"
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/definitions/id_in_enum"
+              },
+              {
+                "$ref": "https://localhost:1234/id/my_identifier.json"
+              }
+            ]
+          },
+          "type": "string"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "const": {
+              "$id": "#not_a_real_anchor"
+            }
+          },
+          "schema_pointer": "/definitions/const_not_anchor",
+          "root_schema": {
+            "definitions": {
+              "const_not_anchor": {
+                "const": {
+                  "$id": "#not_a_real_anchor"
+                }
+              }
+            },
+            "if": {
+              "const": "skip not_a_real_anchor"
+            },
+            "then": true,
+            "else": {
+              "$ref": "#/definitions/const_not_anchor"
+            }
+          },
+          "type": "const"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "const": {
+              "$id": "not_a_real_id"
+            }
+          },
+          "schema_pointer": "/definitions/const_not_id",
+          "root_schema": {
+            "definitions": {
+              "const_not_id": {
+                "const": {
+                  "$id": "not_a_real_id"
+                }
+              }
+            },
+            "if": {
+              "const": "skip not_a_real_id"
+            },
+            "then": true,
+            "else": {
+              "$ref": "#/definitions/const_not_id"
+            }
+          },
+          "type": "const"
+        }
+      ]
+    ]
+  ],
   "JSON-Schema-Test-Suite/tests/draft7/optional/non-bmp-regex.json": [
     [
       [
@@ -11587,6 +12058,335 @@
             }
           },
           "type": "integer"
+        }
+      ]
+    ]
+  ],
+  "JSON-Schema-Test-Suite/tests/draft7/optional/unknownKeyword.json": [
+    [
+      [
+
+      ],
+      [
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+              "array_of_schemas": [
+                {
+                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "schema_pointer": "/definitions/id_in_unknown0",
+          "root_schema": {
+            "definitions": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/definitions/id_in_unknown0"
+              },
+              {
+                "$ref": "#/definitions/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "not"
+        },
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+              "object_of_schemas": {
+                "foo": {
+                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "schema_pointer": "/definitions/id_in_unknown1",
+          "root_schema": {
+            "definitions": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/definitions/id_in_unknown0"
+              },
+              {
+                "$ref": "#/definitions/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "not"
+        },
+        {
+          "data": null,
+          "data_pointer": "",
+          "schema": {
+            "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+            "type": "string"
+          },
+          "schema_pointer": "/definitions/real_id_in_schema",
+          "root_schema": {
+            "definitions": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/definitions/id_in_unknown0"
+              },
+              {
+                "$ref": "#/definitions/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "string"
+        }
+      ],
+      [
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+              "array_of_schemas": [
+                {
+                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "schema_pointer": "/definitions/id_in_unknown0",
+          "root_schema": {
+            "definitions": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/definitions/id_in_unknown0"
+              },
+              {
+                "$ref": "#/definitions/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "not"
+        },
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "not": {
+              "object_of_schemas": {
+                "foo": {
+                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "schema_pointer": "/definitions/id_in_unknown1",
+          "root_schema": {
+            "definitions": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/definitions/id_in_unknown0"
+              },
+              {
+                "$ref": "#/definitions/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "not"
+        },
+        {
+          "data": 1,
+          "data_pointer": "",
+          "schema": {
+            "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+            "type": "string"
+          },
+          "schema_pointer": "/definitions/real_id_in_schema",
+          "root_schema": {
+            "definitions": {
+              "id_in_unknown0": {
+                "not": {
+                  "array_of_schemas": [
+                    {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "real_id_in_schema": {
+                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                "type": "string"
+              },
+              "id_in_unknown1": {
+                "not": {
+                  "object_of_schemas": {
+                    "foo": {
+                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "$ref": "#/definitions/id_in_unknown0"
+              },
+              {
+                "$ref": "#/definitions/id_in_unknown1"
+              },
+              {
+                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
+              }
+            ]
+          },
+          "type": "string"
         }
       ]
     ]
@@ -16294,335 +17094,6 @@
             "additionalItems": false
           },
           "type": "schema"
-        }
-      ]
-    ]
-  ],
-  "JSON-Schema-Test-Suite/tests/draft7/unknownKeyword.json": [
-    [
-      [
-
-      ],
-      [
-        {
-          "data": null,
-          "data_pointer": "",
-          "schema": {
-            "not": {
-              "array_of_schemas": [
-                {
-                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                  "type": "null"
-                }
-              ]
-            }
-          },
-          "schema_pointer": "/definitions/id_in_unknown0",
-          "root_schema": {
-            "definitions": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/definitions/id_in_unknown0"
-              },
-              {
-                "$ref": "#/definitions/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "not"
-        },
-        {
-          "data": null,
-          "data_pointer": "",
-          "schema": {
-            "not": {
-              "object_of_schemas": {
-                "foo": {
-                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                  "type": "integer"
-                }
-              }
-            }
-          },
-          "schema_pointer": "/definitions/id_in_unknown1",
-          "root_schema": {
-            "definitions": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/definitions/id_in_unknown0"
-              },
-              {
-                "$ref": "#/definitions/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "not"
-        },
-        {
-          "data": null,
-          "data_pointer": "",
-          "schema": {
-            "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-            "type": "string"
-          },
-          "schema_pointer": "/definitions/real_id_in_schema",
-          "root_schema": {
-            "definitions": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/definitions/id_in_unknown0"
-              },
-              {
-                "$ref": "#/definitions/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "string"
-        }
-      ],
-      [
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "not": {
-              "array_of_schemas": [
-                {
-                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                  "type": "null"
-                }
-              ]
-            }
-          },
-          "schema_pointer": "/definitions/id_in_unknown0",
-          "root_schema": {
-            "definitions": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/definitions/id_in_unknown0"
-              },
-              {
-                "$ref": "#/definitions/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "not"
-        },
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "not": {
-              "object_of_schemas": {
-                "foo": {
-                  "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                  "type": "integer"
-                }
-              }
-            }
-          },
-          "schema_pointer": "/definitions/id_in_unknown1",
-          "root_schema": {
-            "definitions": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/definitions/id_in_unknown0"
-              },
-              {
-                "$ref": "#/definitions/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "not"
-        },
-        {
-          "data": 1,
-          "data_pointer": "",
-          "schema": {
-            "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-            "type": "string"
-          },
-          "schema_pointer": "/definitions/real_id_in_schema",
-          "root_schema": {
-            "definitions": {
-              "id_in_unknown0": {
-                "not": {
-                  "array_of_schemas": [
-                    {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "real_id_in_schema": {
-                "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                "type": "string"
-              },
-              "id_in_unknown1": {
-                "not": {
-                  "object_of_schemas": {
-                    "foo": {
-                      "$id": "https://localhost:1234/unknownKeyword/my_identifier.json",
-                      "type": "integer"
-                    }
-                  }
-                }
-              }
-            },
-            "anyOf": [
-              {
-                "$ref": "#/definitions/id_in_unknown0"
-              },
-              {
-                "$ref": "#/definitions/id_in_unknown1"
-              },
-              {
-                "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
-              }
-            ]
-          },
-          "type": "string"
         }
       ]
     ]
