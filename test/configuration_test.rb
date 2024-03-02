@@ -213,4 +213,141 @@ class ConfigurationTest < Minitest::Test
     refute(JSONSchemer.schema({ 'format' => 'time' }).valid?('X'))
     assert(JSONSchemer.schema({ 'format' => 'time' }, configuration: configuration).valid?('X'))
   end
+
+  def test_configuration_behavior
+    before_property_validation = false
+    after_property_validation = false
+
+    configuration = JSONSchemer::Configuration.new(
+      base_uri: URI('json-schemer://testschema'),
+      meta_schema: 'http://json-schema.org/draft-07/schema#',
+      formats: {
+        'custom-format' => proc do |instance, _value|
+          instance == 'valid-format'
+        end
+      },
+      content_encodings: {
+        'custom-content-encoding' => proc do |instance|
+          [instance == 'valid-content-encoding', 'valid-content-encoding']
+        end
+      },
+      content_media_types: {
+        'custom-media-type' => proc do |instance|
+          [instance == 'valid-media-type', 'valid-media-type']
+        end
+      },
+      keywords: {
+        'custom-keyword' => proc do |instance, _schema, _instance_location|
+          instance == 'valid-keyword'
+        end
+      },
+      before_property_validation: proc { before_property_validation = true },
+      after_property_validation: [proc { after_property_validation = true }],
+      insert_property_defaults: true,
+      property_default_resolver: proc do |instance, property, _results_with_tree_validity|
+        instance[property] = 'custom-default'
+      end,
+      ref_resolver: {
+        URI('json-schemer://testschema/const-ref') => { 'const' => 'valid-const' }
+      }.to_proc,
+      regexp_resolver: 'ecma',
+      output_format: 'basic',
+      resolve_enumerators: true,
+      access_mode: 'read'
+    )
+
+    schema = {
+      'type' => 'object',
+      'properties' => {
+        'meta-schema' => {
+          '$ref' => 'const-ref',
+          'const' => 'ignored'
+        },
+        'custom-format-test' => {
+          'format' => 'custom-format'
+        },
+        'custom-content-encoding-test' => {
+          'contentEncoding' => 'custom-content-encoding'
+        },
+        'custom-media-type-test' => {
+          'contentMediaType' => 'custom-media-type'
+        },
+        'custom-keyword-test' => {
+          'custom-keyword' => true
+        },
+        'custom-default-test' => {
+          'default' => 'ignored'
+        },
+        'ref-test' => {
+          '$ref' => 'const-ref'
+        },
+        'regexp-test' => {
+          'pattern' => '^valid-regexp$'
+        },
+        'access-mode-test-read' => {
+          'readOnly' => true
+        },
+        'access-mode-test-write' => {
+          'writeOnly' => true
+        }
+      }
+    }
+    schemer = JSONSchemer.schema(schema, configuration: configuration)
+
+    assert_equal(URI('json-schemer://testschema'), schemer.base_uri)
+    refute(before_property_validation)
+    refute(after_property_validation)
+
+    valid_draft7_schema = { 'meta-schema' => 'valid-const' }
+    assert(schemer.valid?(valid_draft7_schema))
+    refute(JSONSchemer.schema(schema, configuration: configuration, meta_schema: JSONSchemer.draft201909).valid?(valid_draft7_schema))
+
+    custom_meta_schema = JSONSchemer.schema(
+      {
+        '$schema' => 'http://example.com/schema',
+        'maximum' => 1,
+        'exclusiveMaximum' => true
+      },
+      configuration: JSONSchemer::Configuration.new(vocabulary: { 'json-schemer://draft4' => true }),
+      base_uri: URI('http://example.com/schema')
+    )
+    assert(JSONSchemer.valid_schema?(0, meta_schema: custom_meta_schema))
+    refute(JSONSchemer.valid_schema?(1, meta_schema: custom_meta_schema))
+
+    refute(JSONSchemer.schema({ 'format' => 'email' }).valid?('invalid'))
+    assert(JSONSchemer.schema({ 'format' => 'email' }, configuration: JSONSchemer::Configuration.new(format: false)).valid?('invalid'))
+
+    assert(schemer.valid?({ 'custom-format-test' => 'valid-format' }))
+    refute(schemer.valid?({ 'custom-format-test' => 'invalid' }))
+
+    assert(schemer.valid?({ 'custom-content-encoding-test' => 'valid-content-encoding' }))
+    refute(schemer.valid?({ 'custom-content-encoding-test' => 'invalid' }))
+
+    assert(schemer.valid?({ 'custom-media-type-test' => 'valid-media-type' }))
+    refute(schemer.valid?({ 'custom-media-type-test' => 'invalid' }))
+
+    assert(schemer.valid?({ 'custom-keyword-test' => 'valid-keyword' }))
+    refute(schemer.valid?({ 'custom-keyword-test' => 'invalid' }))
+
+    assert(before_property_validation)
+    assert(after_property_validation)
+
+    data = {}
+    assert(schemer.valid?(data))
+    assert_equal('custom-default', data.fetch('custom-default-test'))
+
+    assert(schemer.valid?({ 'ref-test' => 'valid-const' }))
+    refute(schemer.valid?({ 'ref-test' => 'invalid' }))
+
+    assert(schemer.valid?({ 'regexp-test' => 'valid-regexp' }))
+    refute(schemer.valid?({ 'regexp-test' => "\nvalid-regexp\n" }))
+
+    assert(schemer.validate({}).fetch('valid'))
+    assert_kind_of(Array, schemer.validate('invalid').fetch('errors'))
+
+    assert(schemer.valid?({ 'access-mode-test-read' => '?' }))
+    refute(schemer.valid?({ 'access-mode-test-read' => '?' }, access_mode: 'write'))
+    refute(schemer.valid?({ 'access-mode-test-write' => '?' }))
+    assert(schemer.valid?({ 'access-mode-test-write' => '?' }, access_mode: 'write'))
+  end
 end
