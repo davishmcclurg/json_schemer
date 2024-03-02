@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.2.0] - XXXX-XX-XX
+
+## Bug Fixes
+
+- Support symbol keys when accessing original instance: https://github.com/davishmcclurg/json_schemer/commit/d52c130e9967919c6cf1c9dbc3f0babfb8b01cf8
+- Support custom keywords in nested schemas: https://github.com/davishmcclurg/json_schemer/commit/93c85a5006981347c7e9a4c11b73c6bdb65d8ba2
+- Stringify instance location for custom keywords: https://github.com/davishmcclurg/json_schemer/commit/513c99130b9e7986b09881e7efd3fb7143744754
+- Reduce unhelpful error output in `unevaluated` keywords: https://github.com/davishmcclurg/json_schemer/pull/164
+- Handle parse errors during schema validation: https://github.com/davishmcclurg/json_schemer/pull/171
+- Follow refs when finding default property values: https://github.com/davishmcclurg/json_schemer/pull/175
+
+## Features
+
+- Global configuration with `Configuration` object: https://github.com/davishmcclurg/json_schemer/pull/170
+- Symbol key property defaults with `insert_property_defaults: :symbol`: https://github.com/davishmcclurg/json_schemer/commit/a72473dc84199107ddedc8998950e5b82273232a
+- Consistent schema type support for schema validation methods: https://github.com/davishmcclurg/json_schemer/commit/bbcd0cea20cbaa61cf2bdae5f53840861cae54b8
+- Validation option support for schema validation methods: https://github.com/davishmcclurg/json_schemer/commit/2eeef77de522f127619b7d0faa51e0d7e40977ad
+
+[2.2.0]: https://github.com/davishmcclurg/json_schemer/releases/tag/v2.2.0
+
 ## [2.1.1] - 2023-11-28
 
 ### Bug Fixes
