@@ -65,7 +65,7 @@ class OutputFormatTest < Minitest::Test
             'keywordLocation' => '/items/$ref/additionalProperties',
             'absoluteKeywordLocation' => 'https://example.com/polygon#/$defs/point/additionalProperties',
             'instanceLocation' => '/1/z',
-            'error' => 'object property at `/1/z` is not defined and schema does not allow additional properties' # 'Additional property \'z\' found but was invalid.'
+            'error' => 'object property at `/1/z` is a disallowed additional property' # 'Additional property \'z\' found but was invalid.'
           },
           {
             'valid' => false, # not in spec
@@ -107,7 +107,7 @@ class OutputFormatTest < Minitest::Test
                 'keywordLocation' => '/items/$ref/additionalProperties',
                 'absoluteKeywordLocation' => 'https://example.com/polygon#/$defs/point/additionalProperties',
                 'instanceLocation' => '/1/z',
-                'error' => 'object property at `/1/z` is not defined and schema does not allow additional properties' # 'Additional property \'z\' found but was invalid.'
+                'error' => 'object property at `/1/z` is a disallowed additional property' # 'Additional property \'z\' found but was invalid.'
               },
               {
                 'valid' => false,

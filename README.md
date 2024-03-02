@@ -212,7 +212,8 @@ JSONSchemer.schema(
   },
 
   # insert default property values during validation
-  # true/false
+  # string keys by default (use `:symbol` to insert symbol keys)
+  # true/false/:symbol
   # default: false
   insert_property_defaults: true,
 
@@ -254,6 +255,20 @@ JSONSchemer.schema(
   # default: nil
   access_mode: 'read'
 )
+```
+
+## Global Configuration
+
+Configuration options can be set globally by modifying `JSONSchemer.configuration`. Global options are applied to any new schemas at creation time (global configuration changes are not reflected in existing schemas). They can be overridden with the regular keyword arguments described [above](#options).
+
+```ruby
+# configuration block
+JSONSchemer.configure do |config|
+  config.regexp_resolver = 'ecma'
+end
+
+# configuration accessors
+JSONSchemer.configuration.insert_property_defaults = true
 ```
 
 ## Custom Error Messages

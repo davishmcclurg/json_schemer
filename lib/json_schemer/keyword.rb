@@ -45,8 +45,11 @@ module JSONSchemer
     end
 
     def subschema(value, keyword = nil, **options)
+      options[:configuration] ||= schema.configuration
       options[:base_uri] ||= schema.base_uri
       options[:meta_schema] ||= schema.meta_schema
+      options[:ref_resolver] ||= schema.ref_resolver
+      options[:regexp_resolver] ||= schema.regexp_resolver
       Schema.new(value, self, root, keyword, **options)
     end
   end

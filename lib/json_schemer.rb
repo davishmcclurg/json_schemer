@@ -59,10 +59,10 @@ require 'json_schemer/openapi30/meta'
 require 'json_schemer/openapi30/vocab/base'
 require 'json_schemer/openapi30/vocab'
 require 'json_schemer/openapi'
+require 'json_schemer/configuration'
 require 'json_schemer/schema'
 
 module JSONSchemer
-  class UnsupportedMetaSchema < StandardError; end
   class UnsupportedOpenAPIVersion < StandardError; end
   class UnknownRef < StandardError; end
   class UnknownFormat < StandardError; end
@@ -113,33 +113,19 @@ module JSONSchemer
   end
 
   class << self
-    def schema(schema, meta_schema: draft202012, **options)
-      case schema
-      when String
-        schema = JSON.parse(schema)
-      when Pathname
-        base_uri = URI.parse(File.join('file:', URI::DEFAULT_PARSER.escape(schema.realpath.to_s)))
-        options[:base_uri] = base_uri
-        schema = if options.key?(:ref_resolver)
-          FILE_URI_REF_RESOLVER.call(base_uri)
-        else
-          ref_resolver = CachedResolver.new(&FILE_URI_REF_RESOLVER)
-          options[:ref_resolver] = ref_resolver
-          ref_resolver.call(base_uri)
-        end
-      end
-      unless meta_schema.is_a?(Schema)
-        meta_schema = META_SCHEMAS_BY_BASE_URI_STR[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
-      end
-      Schema.new(schema, :meta_schema => meta_schema, **options)
+    def schema(schema, **options)
+      schema = resolve(schema, options)
+      Schema.new(schema, **options)
     end
 
     def valid_schema?(schema, **options)
-      schema(schema, **options).valid_schema?
+      schema = resolve(schema, options)
+      meta_schema(schema, options).valid?(schema, **options.slice(:output_format, :resolve_enumerators, :access_mode))
     end
 
     def validate_schema(schema, **options)
-      schema(schema, **options).validate_schema
+      schema = resolve(schema, options)
+      meta_schema(schema, options).validate(schema, **options.slice(:output_format, :resolve_enumerators, :access_mode))
     end
 
     def draft202012
@@ -244,6 +230,44 @@ module JSONSchemer
 
     def openapi(document, **options)
       OpenAPI.new(document, **options)
+    end
+
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def configure
+      yield configuration
+    end
+
+  private
+
+    def resolve(schema, options)
+      case schema
+      when String
+        JSON.parse(schema)
+      when Pathname
+        base_uri = URI.parse(File.join('file:', URI::DEFAULT_PARSER.escape(schema.realpath.to_s)))
+        options[:base_uri] = base_uri
+        if options.key?(:ref_resolver)
+          FILE_URI_REF_RESOLVER.call(base_uri)
+        else
+          ref_resolver = CachedResolver.new(&FILE_URI_REF_RESOLVER)
+          options[:ref_resolver] = ref_resolver
+          ref_resolver.call(base_uri)
+        end
+      else
+        schema
+      end
+    end
+
+    def meta_schema(schema, options)
+      parseable_schema = {}
+      if schema.is_a?(Hash)
+        meta_schema = schema['$schema'] || schema[:'$schema']
+        parseable_schema['$schema'] = meta_schema if meta_schema.is_a?(String)
+      end
+      schema(parseable_schema, **options).meta_schema
     end
   end
 

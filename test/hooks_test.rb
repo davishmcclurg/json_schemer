@@ -67,6 +67,61 @@ class HooksTest < Minitest::Test
     )
   end
 
+  def test_it_inserts_defaults_in_symbol_keys
+    schemer = JSONSchemer.schema(
+      {
+        'properties' => {
+          'a' => {
+            'properties' => {
+              'b' => {
+                'properties' => {
+                  'c' => {
+                    'default' => 'x'
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      insert_property_defaults: true
+    )
+    instance = { 'a' => { 'b' => {} } }
+    schemer.validate(instance)
+    assert_equal('x', instance.dig('a', 'b', 'c'))
+    instance = { :a => { 'b' => {} } }
+    schemer.validate(instance)
+    assert_equal('x', instance.dig(:a, 'b', 'c'))
+    instance = { 'a' => { :b => {} } }
+    schemer.validate(instance)
+    assert_equal('x', instance.dig('a', :b, 'c'))
+    instance = { :a => { :b => {} } }
+    schemer.validate(instance)
+    assert_equal('x', instance.dig(:a, :b, 'c'))
+  end
+
+  def test_it_can_insert_symbol_keys
+    schema = {
+      'properties' => {
+        'a' => {
+          'default' => 'x'
+        }
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema, insert_property_defaults: true)
+    instance = {}
+    schemer.validate(instance)
+    refute(instance.key?(:a))
+    assert_equal('x', instance.fetch('a'))
+
+    schemer = JSONSchemer.schema(schema, insert_property_defaults: :symbol)
+    instance = {}
+    schemer.validate(instance)
+    refute(instance.key?('a'))
+    assert_equal('x', instance.fetch(:a))
+  end
+
   def test_it_does_not_fail_using_insert_defaults_when_no_properties_are_defined_by_schema
     schema = {
       '$comment' => 'Mostly empty schema'
@@ -425,5 +480,192 @@ class HooksTest < Minitest::Test
       after_property_validation: [proc {}].freeze,
       insert_property_defaults: true
     ).valid?(data))
+  end
+
+  def test_insert_property_defaults_refs
+    schema = {
+      'properties' => {
+        'inline' => {
+          'default' => 'a'
+        },
+        'ref-inline' => {
+          '$ref' => '#/$defs/default-b'
+        },
+        'ref-inherit' => {
+          '$ref' => '#/$defs/inherit-default-b'
+        },
+        'ref-inline-override' => {
+          '$ref' => '#/$defs/default-b',
+          'default' => 'c'
+        },
+        'ref-inherit-override' => {
+          '$ref' => '#/$defs/inherit-default-b',
+          'default' => 'd'
+        },
+        'ref-override' => {
+          '$ref' => '#/$defs/override-default-e'
+        }
+      },
+      '$defs' => {
+        'default-b' => {
+          'default' => 'b'
+        },
+        'inherit-default-b' => {
+          '$ref' => '#/$defs/default-b'
+        },
+        'override-default-e' => {
+          '$ref' => '#/$defs/default-b',
+          'default' => 'e'
+        }
+      }
+    }
+    data = {}
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal('a', data.fetch('inline'))
+    assert_equal('b', data.fetch('ref-inline'))
+    assert_equal('b', data.fetch('ref-inherit'))
+    assert_equal('c', data.fetch('ref-inline-override'))
+    assert_equal('d', data.fetch('ref-inherit-override'))
+    assert_equal('e', data.fetch('ref-override'))
+  end
+
+  def test_insert_property_defaults_dynamic_refs
+    schema = {
+      'properties' => {
+        'dynamic-ref-inline' => {
+          '$dynamicRef' => '#default-b'
+        },
+        'dynamic-ref-inline-override' => {
+          '$dynamicRef' => '#default-b',
+          'default' => 'c'
+        },
+        'dynamic-ref-and-ref' => {
+          '$dynamicRef' => '#default-b',
+          '$ref' => '#/$defs/default-a'
+        }
+      },
+      '$defs' => {
+        'default-a' => {
+          'default' => 'a'
+        },
+        'foo' => {
+          '$dynamicAnchor' => 'default-b',
+          'default' => 'b'
+        }
+      }
+    }
+    data = {}
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal('b', data.fetch('dynamic-ref-inline'))
+    assert_equal('c', data.fetch('dynamic-ref-inline-override'))
+    assert_equal('a', data.fetch('dynamic-ref-and-ref'))
+  end
+
+  def test_insert_property_defaults_recursive_refs
+    schema = {
+      '$recursiveAnchor' => true,
+      'default' => 'b',
+      'properties' => {
+        'recursive-ref-inline' => {
+          '$recursiveRef' => '#'
+        },
+        'recursive-ref-inline-override' => {
+          '$recursiveRef' => '#',
+          'default' => 'c'
+        },
+        'recursive-ref-and-ref' => {
+          '$recursiveRef' => '#',
+          '$ref' => '#/$defs/default-a'
+        }
+      },
+      '$defs' => {
+        'default-a' => {
+          'default' => 'a'
+        }
+      }
+    }
+    data = {}
+    assert(JSONSchemer.schema(schema, meta_schema: JSONSchemer.draft201909, insert_property_defaults: true).valid?(data))
+    assert_equal('b', data.fetch('recursive-ref-inline'))
+    assert_equal('c', data.fetch('recursive-ref-inline-override'))
+    assert_equal('a', data.fetch('recursive-ref-and-ref'))
+  end
+
+  def test_insert_property_defaults_non_ref_schema_keywords
+    schema = {
+      'properties' => {
+        'x' => {
+          '$anchor' => 'x', # parsed before `$ref`
+          '$ref' => '#/$defs/y',
+          'type' => 'string' # parsed after `$ref`
+        }
+      },
+      '$defs' => {
+        'y' => {
+          'default' => 'z'
+        }
+      }
+    }
+    data = {}
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal('z', data.fetch('x'))
+    refute(JSONSchemer.schema(schema, insert_property_defaults: true).valid?({ 'x' => 1 }))
+  end
+
+  def test_insert_property_defaults_ref_no_default
+    schema = {
+      'properties' => {
+        'x' => {
+          '$ref' => '#/$defs/y',
+          '$dynamicRef' => '#z'
+        }
+      },
+      '$defs' => {
+        'y' => {
+          'type' => 'string'
+        },
+        'foo' => {
+          '$dynamicAnchor' => 'z',
+          'default' => 'dynamic-ref'
+        }
+      }
+    }
+    data = {}
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal('dynamic-ref', data.fetch('x'))
+    refute(JSONSchemer.schema(schema, insert_property_defaults: true).valid?({ 'x' => 1 }))
+  end
+
+  def test_insert_property_defaults_ref_depth_first
+    schema = {
+      'properties' => {
+        'x' => {
+          '$ref' => '#/$defs/ref1',
+          '$dynamicRef' => '#dynamic-ref1'
+        }
+      },
+      '$defs' => {
+        'ref1' => {
+          '$ref' => '#/$defs/ref2'
+        },
+        'ref2' => {
+          '$ref' => '#/$defs/ref3'
+        },
+        'ref3' => {
+          'default' => 'ref'
+        },
+        'foo' => {
+          '$dynamicAnchor' => 'dynamic-ref1',
+          '$dynamicRef' => '#dynamic-ref2'
+        },
+        'bar' => {
+          '$dynamicAnchor' => 'dynamic-ref2',
+          'default' => 'dynamic-ref'
+        }
+      }
+    }
+    data = {}
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal('ref', data.fetch('x'))
   end
 end
