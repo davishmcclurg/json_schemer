@@ -59,10 +59,10 @@ require 'json_schemer/openapi30/meta'
 require 'json_schemer/openapi30/vocab/base'
 require 'json_schemer/openapi30/vocab'
 require 'json_schemer/openapi'
+require 'json_schemer/configuration'
 require 'json_schemer/schema'
 
 module JSONSchemer
-  class UnsupportedMetaSchema < StandardError; end
   class UnsupportedOpenAPIVersion < StandardError; end
   class UnknownRef < StandardError; end
   class UnknownFormat < StandardError; end
@@ -113,12 +113,9 @@ module JSONSchemer
   end
 
   class << self
-    def schema(schema, meta_schema: draft202012, **options)
+    def schema(schema, **options)
       schema = resolve(schema, options)
-      unless meta_schema.is_a?(Schema)
-        meta_schema = META_SCHEMAS_BY_BASE_URI_STR[meta_schema] || raise(UnsupportedMetaSchema, meta_schema)
-      end
-      Schema.new(schema, :meta_schema => meta_schema, **options)
+      Schema.new(schema, **options)
     end
 
     def valid_schema?(schema, **options)
@@ -233,6 +230,14 @@ module JSONSchemer
 
     def openapi(document, **options)
       OpenAPI.new(document, **options)
+    end
+
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def configure
+      yield configuration
     end
 
   private

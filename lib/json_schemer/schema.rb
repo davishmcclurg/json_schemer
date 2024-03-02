@@ -17,21 +17,13 @@ module JSONSchemer
 
     include Output
 
-    DEFAULT_SCHEMA = Draft202012::BASE_URI.to_s.freeze
     SCHEMA_KEYWORD_CLASS = Draft202012::Vocab::Core::Schema
     VOCABULARY_KEYWORD_CLASS = Draft202012::Vocab::Core::Vocabulary
     ID_KEYWORD_CLASS = Draft202012::Vocab::Core::Id
     UNKNOWN_KEYWORD_CLASS = Draft202012::Vocab::Core::UnknownKeyword
     NOT_KEYWORD_CLASS = Draft202012::Vocab::Applicator::Not
     PROPERTIES_KEYWORD_CLASS = Draft202012::Vocab::Applicator::Properties
-    DEFAULT_BASE_URI = URI('json-schemer://schema').freeze
-    DEFAULT_FORMATS = {}.freeze
-    DEFAULT_CONTENT_ENCODINGS = {}.freeze
-    DEFAULT_CONTENT_MEDIA_TYPES = {}.freeze
-    DEFAULT_KEYWORDS = {}.freeze
-    DEFAULT_BEFORE_PROPERTY_VALIDATION = [].freeze
-    DEFAULT_AFTER_PROPERTY_VALIDATION = [].freeze
-    DEFAULT_REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
+
     NET_HTTP_REF_RESOLVER = proc { |uri| JSON.parse(Net::HTTP.get(uri)) }
     RUBY_REGEXP_RESOLVER = proc { |pattern| Regexp.new(pattern) }
     ECMA_REGEXP_RESOLVER = proc { |pattern| Regexp.new(EcmaRegexp.ruby_equivalent(pattern)) }
@@ -51,7 +43,7 @@ module JSONSchemer
     end
 
     attr_accessor :base_uri, :meta_schema, :keywords, :keyword_order
-    attr_reader :value, :parent, :root, :parsed
+    attr_reader :value, :parent, :root, :configuration, :parsed
     attr_reader :vocabulary, :format, :formats, :content_encodings, :content_media_types, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults
 
     def initialize(
@@ -59,29 +51,31 @@ module JSONSchemer
       parent = nil,
       root = self,
       keyword = nil,
-      base_uri: DEFAULT_BASE_URI,
-      meta_schema: nil,
-      vocabulary: nil,
-      format: true,
-      formats: DEFAULT_FORMATS,
-      content_encodings: DEFAULT_CONTENT_ENCODINGS,
-      content_media_types: DEFAULT_CONTENT_MEDIA_TYPES,
-      keywords: DEFAULT_KEYWORDS,
-      before_property_validation: DEFAULT_BEFORE_PROPERTY_VALIDATION,
-      after_property_validation: DEFAULT_AFTER_PROPERTY_VALIDATION,
-      insert_property_defaults: false,
-      property_default_resolver: nil,
-      ref_resolver: DEFAULT_REF_RESOLVER,
-      regexp_resolver: 'ruby',
-      output_format: 'classic',
-      resolve_enumerators: false,
-      access_mode: nil
+      configuration: JSONSchemer.configuration,
+      base_uri: configuration.base_uri,
+      meta_schema: configuration.meta_schema,
+      vocabulary: configuration.vocabulary,
+      format: configuration.format,
+      formats: configuration.formats,
+      content_encodings: configuration.content_encodings,
+      content_media_types: configuration.content_media_types,
+      keywords: configuration.keywords,
+      before_property_validation: configuration.before_property_validation,
+      after_property_validation: configuration.after_property_validation,
+      insert_property_defaults: configuration.insert_property_defaults,
+      property_default_resolver: configuration.property_default_resolver,
+      ref_resolver: configuration.ref_resolver,
+      regexp_resolver: configuration.regexp_resolver,
+      output_format: configuration.output_format,
+      resolve_enumerators: configuration.resolve_enumerators,
+      access_mode: configuration.access_mode
     )
       @value = deep_stringify_keys(value)
       @parent = parent
       @root = root
       @keyword = keyword
       @schema = self
+      @configuration = configuration
       @base_uri = base_uri
       @meta_schema = meta_schema
       @vocabulary = vocabulary
@@ -194,16 +188,9 @@ module JSONSchemer
         uri.fragment = nil
         remote_schema = JSONSchemer.schema(
           ref_resolver.call(uri) || raise(InvalidRefResolution, uri.to_s),
+          :configuration => configuration,
           :base_uri => uri,
           :meta_schema => meta_schema,
-          :format => format,
-          :formats => formats,
-          :content_encodings => content_encodings,
-          :content_media_types => content_media_types,
-          :keywords => custom_keywords,
-          :before_property_validation => before_property_validation,
-          :after_property_validation => after_property_validation,
-          :property_default_resolver => property_default_resolver,
           :ref_resolver => ref_resolver,
           :regexp_resolver => regexp_resolver
         )
@@ -352,6 +339,21 @@ module JSONSchemer
       end
     end
 
+    def ref_resolver
+      @ref_resolver ||= @original_ref_resolver == 'net/http' ? CachedResolver.new(&NET_HTTP_REF_RESOLVER) : @original_ref_resolver
+    end
+
+    def regexp_resolver
+      @regexp_resolver ||= case @original_regexp_resolver
+      when 'ecma'
+        CachedResolver.new(&ECMA_REGEXP_RESOLVER)
+      when 'ruby'
+        CachedResolver.new(&RUBY_REGEXP_RESOLVER)
+      else
+        @original_regexp_resolver
+      end
+    end
+
     def inspect
       "#<#{self.class.name} @value=#{@value.inspect} @parent=#{@parent.inspect} @keyword=#{@keyword.inspect}>"
     end
@@ -363,8 +365,8 @@ module JSONSchemer
 
       if value.is_a?(Hash) && value.key?('$schema')
         @parsed['$schema'] = SCHEMA_KEYWORD_CLASS.new(value.fetch('$schema'), self, '$schema')
-      elsif root == self && !meta_schema
-        SCHEMA_KEYWORD_CLASS.new(DEFAULT_SCHEMA, self, '$schema')
+      elsif meta_schema.is_a?(String)
+        SCHEMA_KEYWORD_CLASS.new(meta_schema, self, '$schema')
       end
 
       if value.is_a?(Hash) && value.key?('$vocabulary')
@@ -406,21 +408,6 @@ module JSONSchemer
 
     def property_default_resolver
       @property_default_resolver ||= insert_property_defaults == :symbol ? SYMBOL_PROPERTY_DEFAULT_RESOLVER : DEFAULT_PROPERTY_DEFAULT_RESOLVER
-    end
-
-    def ref_resolver
-      @ref_resolver ||= @original_ref_resolver == 'net/http' ? CachedResolver.new(&NET_HTTP_REF_RESOLVER) : @original_ref_resolver
-    end
-
-    def regexp_resolver
-      @regexp_resolver ||= case @original_regexp_resolver
-      when 'ecma'
-        CachedResolver.new(&ECMA_REGEXP_RESOLVER)
-      when 'ruby'
-        CachedResolver.new(&RUBY_REGEXP_RESOLVER)
-      else
-        @original_regexp_resolver
-      end
     end
 
     def resolve_enumerators!(output)

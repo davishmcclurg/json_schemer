@@ -266,7 +266,7 @@ private
       I18n.load_path -= [file.path]
     end
   ensure
-    JSONSchemer.remove_class_variable(:@@i18n) if JSONSchemer.class_variable_defined?(:@@i18n)
+    JSONSchemer.remove_class_variable(:@@i18n)
     # I18n::Debug.on_lookup {}
   end
 end
