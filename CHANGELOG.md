@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.2.0] - XXXX-XX-XX
+## [2.2.0] - 2024-03-02
 
 ## Bug Fixes
 
