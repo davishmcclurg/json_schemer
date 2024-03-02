@@ -257,6 +257,20 @@ JSONSchemer.schema(
 )
 ```
 
+## Global Configuration
+
+Configuration options can be set globally by modifying `JSONSchemer.configuration`. Global options are applied to any new schemas at creation time (global configuration changes are not reflected in existing schemas). They can be overridden with the regular keyword arguments described [above](#options).
+
+```ruby
+# configuration block
+JSONSchemer.configure do |config|
+  config.regexp_resolver = 'ecma'
+end
+
+# configuration accessors
+JSONSchemer.configuration.insert_property_defaults = true
+```
+
 ## Custom Error Messages
 
 Error messages can be customized using the `x-error` keyword and/or [I18n](https://github.com/ruby-i18n/i18n) translations. `x-error` takes precedence if both are defined.
