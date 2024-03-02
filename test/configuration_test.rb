@@ -6,6 +6,8 @@ class ConfigurationTest < Minitest::Test
 
     if default.nil?
       assert_nil(original)
+    elsif default.respond_to?(:call)
+      default.call(original)
     elsif !skip_default
       assert_equal(default, original)
     end
@@ -29,7 +31,7 @@ class ConfigurationTest < Minitest::Test
   def test_base_uri
     run_configuration_test(
       :base_uri,
-      default: JSONSchemer::Configuration::Defaults::BASE_URI,
+      default: URI('json-schemer://schema'),
       test: URI('some-other://schema')
     )
   end
@@ -37,7 +39,7 @@ class ConfigurationTest < Minitest::Test
   def test_meta_schema
     run_configuration_test(
       :meta_schema,
-      default: JSONSchemer::Configuration::Defaults::META_SCHEMA,
+      default: 'https://json-schema.org/draft/2020-12/schema',
       test: JSONSchemer.draft201909
     )
   end
@@ -62,7 +64,7 @@ class ConfigurationTest < Minitest::Test
   def test_vocabulary
     run_configuration_test(
       :vocabulary,
-      default: JSONSchemer::Configuration::Defaults::VOCABULARY,
+      default: nil,
       test: { 'json-schemer://draft4' => true }
     )
   end
@@ -70,7 +72,7 @@ class ConfigurationTest < Minitest::Test
   def test_format
     run_configuration_test(
       :format,
-      default: JSONSchemer::Configuration::Defaults::FORMAT,
+      default: true,
       test: false
     )
   end
@@ -78,7 +80,7 @@ class ConfigurationTest < Minitest::Test
   def test_formats
     run_configuration_test(
       :formats,
-      default: JSONSchemer::Configuration::Defaults::FORMATS,
+      default: {},
       test: {
         'some-format' => lambda { |instance, _format| true }
       }
@@ -88,7 +90,7 @@ class ConfigurationTest < Minitest::Test
   def test_content_encodings
     run_configuration_test(
       :content_encodings,
-      default: JSONSchemer::Configuration::Defaults::CONTENT_ENCODINGS,
+      default: {},
       test: {
         'lowercase' => lambda { |instance| [true, instance&.downcase] }
       }
@@ -98,7 +100,7 @@ class ConfigurationTest < Minitest::Test
   def test_content_media_types
     run_configuration_test(
       :content_media_types,
-      default: JSONSchemer::Configuration::Defaults::CONTENT_MEDIA_TYPES,
+      default: {},
       test: {
         'text/csv' => lambda do |instance|
           [true, CSV.parse(instance)]
@@ -112,7 +114,7 @@ class ConfigurationTest < Minitest::Test
   def test_keywords
     run_configuration_test(
       :keywords,
-      default: JSONSchemer::Configuration::Defaults::KEYWORDS,
+      default: {},
       test: {
         'even' => lambda { |data, curr_schema, _pointer| curr_schema.fetch('even') == data.to_i.even? }
       }
@@ -122,7 +124,7 @@ class ConfigurationTest < Minitest::Test
   def test_before_property_validation
     run_configuration_test(
       :before_property_validation,
-      default: JSONSchemer::Configuration::Defaults::BEFORE_PROPERTY_VALIDATION,
+      default: [],
       test: ['something']
     )
   end
@@ -130,7 +132,7 @@ class ConfigurationTest < Minitest::Test
   def test_after_property_validation
     run_configuration_test(
       :after_property_validation,
-      default: JSONSchemer::Configuration::Defaults::AFTER_PROPERTY_VALIDATION,
+      default: [],
       test: ['something']
     )
   end
@@ -138,7 +140,7 @@ class ConfigurationTest < Minitest::Test
   def test_insert_property_defaults
     run_configuration_test(
       :insert_property_defaults,
-      default: JSONSchemer::Configuration::Defaults::INSERT_PROPERTY_DEFAULTS,
+      default: false,
       test: true
     )
   end
@@ -146,7 +148,7 @@ class ConfigurationTest < Minitest::Test
   def test_property_default_resolver
     run_configuration_test(
       :property_default_resolver,
-      default: JSONSchemer::Configuration::Defaults::PROPERTY_DEFAULT_RESOLVER,
+      default: nil,
       test: lambda { |instance, property, results_with_tree_validity| true }
     )
   end
@@ -154,7 +156,11 @@ class ConfigurationTest < Minitest::Test
   def test_ref_resolver
     run_configuration_test(
       :ref_resolver,
-      default: JSONSchemer::Configuration::Defaults::REF_RESOLVER,
+      default: lambda do |ref_resolver|
+        assert_raises(JSONSchemer::UnknownRef) do
+          ref_resolver.call(URI('example'))
+        end
+      end,
       test: lambda { |uri| { 'type' => 'string' } }
     )
   end
@@ -162,7 +168,7 @@ class ConfigurationTest < Minitest::Test
   def test_regexp_resolver
     run_configuration_test(
       :regexp_resolver,
-      default: JSONSchemer::Configuration::Defaults::REGEXP_RESOLVER,
+      default: 'ruby',
       test: 'ecma'
     )
   end
@@ -170,7 +176,7 @@ class ConfigurationTest < Minitest::Test
   def test_output_format
     run_configuration_test(
       :output_format,
-      default: JSONSchemer::Configuration::Defaults::OUTPUT_FORMAT,
+      default: 'classic',
       test: 'basic'
     )
   end
@@ -178,7 +184,7 @@ class ConfigurationTest < Minitest::Test
   def test_resolve_enumerators
     run_configuration_test(
       :resolve_enumerators,
-      default: JSONSchemer::Configuration::Defaults::RESOLVE_ENUMERATORS,
+      default: false,
       test: true
     )
   end
@@ -186,7 +192,7 @@ class ConfigurationTest < Minitest::Test
   def test_access_mode
     run_configuration_test(
       :access_mode,
-      default: JSONSchemer::Configuration::Defaults::ACCESS_MODE,
+      default: nil,
       test: "write"
     )
   end
@@ -200,5 +206,11 @@ class ConfigurationTest < Minitest::Test
     assert(JSONSchemer.schema({ 'format' => 'time' }, configuration: configuration).valid?('X'))
     assert(JSONSchemer.schema({ 'format' => 'time' }, configuration: configuration, format: true).valid?('08:30:06Z'))
     refute(JSONSchemer.schema({ 'format' => 'time' }, configuration: configuration, format: true).valid?('X'))
+  end
+
+  def test_configuration_keyword_init
+    configuration = JSONSchemer::Configuration.new(:format => false)
+    refute(JSONSchemer.schema({ 'format' => 'time' }).valid?('X'))
+    assert(JSONSchemer.schema({ 'format' => 'time' }, configuration: configuration).valid?('X'))
   end
 end

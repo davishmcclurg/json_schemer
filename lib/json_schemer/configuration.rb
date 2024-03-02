@@ -1,65 +1,32 @@
 # frozen_string_literal: true
 
 module JSONSchemer
-  class Configuration
-    module Defaults
-      BASE_URI = URI('json-schemer://schema').freeze
-      META_SCHEMA = Draft202012::BASE_URI.to_s.freeze
-      VOCABULARY = nil
-      FORMAT = true
-      FORMATS = {}.freeze
-      CONTENT_ENCODINGS = {}.freeze
-      CONTENT_MEDIA_TYPES = {}.freeze
-      KEYWORDS = {}.freeze
-      BEFORE_PROPERTY_VALIDATION = [].freeze
-      AFTER_PROPERTY_VALIDATION = [].freeze
-      INSERT_PROPERTY_DEFAULTS = false
-      PROPERTY_DEFAULT_RESOLVER = nil
-      REF_RESOLVER = proc { |uri| raise UnknownRef, uri.to_s }
-      REGEXP_RESOLVER = 'ruby'
-      OUTPUT_FORMAT = 'classic'
-      RESOLVE_ENUMERATORS = false
-      ACCESS_MODE = nil
-    end
-
-    attr_accessor(
-      :base_uri,
-      :meta_schema,
-      :vocabulary,
-      :format,
-      :formats,
-      :content_encodings,
-      :content_media_types,
-      :keywords,
-      :before_property_validation,
-      :after_property_validation,
-      :insert_property_defaults,
-      :property_default_resolver,
-      :ref_resolver,
-      :regexp_resolver,
-      :output_format,
-      :resolve_enumerators,
-      :access_mode
-      )
-
-    def initialize
-      @base_uri = Defaults::BASE_URI
-      @meta_schema = Defaults::META_SCHEMA
-      @vocabulary = Defaults::VOCABULARY
-      @format = Defaults::FORMAT
-      @formats = Defaults::FORMATS
-      @content_encodings = Defaults::CONTENT_ENCODINGS
-      @content_media_types = Defaults::CONTENT_MEDIA_TYPES
-      @keywords = Defaults::KEYWORDS
-      @before_property_validation = Defaults::BEFORE_PROPERTY_VALIDATION
-      @after_property_validation = Defaults::AFTER_PROPERTY_VALIDATION
-      @insert_property_defaults = Defaults::INSERT_PROPERTY_DEFAULTS
-      @property_default_resolver = Defaults::PROPERTY_DEFAULT_RESOLVER
-      @ref_resolver = Defaults::REF_RESOLVER
-      @regexp_resolver = Defaults::REGEXP_RESOLVER
-      @output_format = Defaults::OUTPUT_FORMAT
-      @resolve_enumerators = Defaults::RESOLVE_ENUMERATORS
-      @access_mode = Defaults::ACCESS_MODE
+  Configuration = Struct.new(
+    :base_uri, :meta_schema, :vocabulary, :format, :formats, :content_encodings, :content_media_types, :keywords,
+    :before_property_validation, :after_property_validation, :insert_property_defaults, :property_default_resolver,
+    :ref_resolver, :regexp_resolver, :output_format, :resolve_enumerators, :access_mode,
+    keyword_init: true
+  ) do
+    def initialize(
+      base_uri: URI('json-schemer://schema'),
+      meta_schema: Draft202012::BASE_URI.to_s,
+      vocabulary: nil,
+      format: true,
+      formats: {},
+      content_encodings: {},
+      content_media_types: {},
+      keywords: {},
+      before_property_validation: [],
+      after_property_validation: [],
+      insert_property_defaults: false,
+      property_default_resolver: nil,
+      ref_resolver: proc { |uri| raise UnknownRef, uri.to_s },
+      regexp_resolver: 'ruby',
+      output_format: 'classic',
+      resolve_enumerators: false,
+      access_mode: nil
+    )
+      super
     end
   end
 end

@@ -313,7 +313,7 @@ class JSONSchemerTest < Minitest::Test
 
   def test_draft4_default_id
     assert_equal(
-      JSONSchemer::Configuration::Defaults::BASE_URI,
+      URI('json-schemer://schema'),
       JSONSchemer.schema(true, :meta_schema => JSONSchemer::Draft4::BASE_URI.to_s).base_uri
     )
   end
