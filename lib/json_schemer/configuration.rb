@@ -4,7 +4,7 @@ module JSONSchemer
   class Configuration
     module Defaults
       BASE_URI = URI('json-schemer://schema').freeze
-      META_SCHEMA = nil
+      META_SCHEMA = Draft202012::BASE_URI.to_s.freeze
       VOCABULARY = nil
       FORMAT = true
       FORMATS = {}.freeze

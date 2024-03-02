@@ -769,7 +769,7 @@ class OpenAPITest < Minitest::Test
   end
 
   def test_unsupported_json_schema_dialect
-    assert_raises(JSONSchemer::UnsupportedMetaSchema) { JSONSchemer.openapi({ 'openapi' => '3.1.0', 'jsonSchemaDialect' => 'unsupported' }) }
+    assert_raises(JSONSchemer::UnknownRef) { JSONSchemer.openapi({ 'openapi' => '3.1.0', 'jsonSchemaDialect' => 'unsupported' }) }
   end
 
   def test_openapi_documents

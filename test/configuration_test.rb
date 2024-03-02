@@ -1,19 +1,23 @@
 require 'test_helper'
 
 class ConfigurationTest < Minitest::Test
-  def run_configuration_test(option, default:, test:, expectation: test)
+  def run_configuration_test(option, default: (skip_default = true), test:)
+    original = JSONSchemer.configuration.public_send(option)
+
     if default.nil?
-      assert_nil(JSONSchemer.configuration.public_send(option))
-    else
-      assert_equal(default, JSONSchemer.configuration.public_send(option))
+      assert_nil(original)
+    elsif !skip_default
+      assert_equal(default, original)
     end
 
     JSONSchemer.configure { |config| config.public_send("#{option}=", test) }
 
-    assert_equal(expectation, JSONSchemer.configuration.public_send(option))
+    yield if block_given?
+
+    assert_equal(test, JSONSchemer.configuration.public_send(option))
 
     # We need to reset the configuration to avoid "polluting" other tests.
-    JSONSchemer.configure { |config| config.public_send("#{option}=", default) }
+    JSONSchemer.configure { |config| config.public_send("#{option}=", original) }
   end
 
   def test_configure
@@ -36,6 +40,23 @@ class ConfigurationTest < Minitest::Test
       default: JSONSchemer::Configuration::Defaults::META_SCHEMA,
       test: JSONSchemer.draft201909
     )
+  end
+
+  def test_string_meta_schema
+    run_configuration_test(:meta_schema, test: 'https://json-schema.org/draft/2019-09/schema') do
+      assert_equal(JSONSchemer.draft201909, JSONSchemer.schema({ 'maximum' => 1 }).meta_schema)
+      assert(JSONSchemer.schema({ 'maximum' => 1 }).valid?(1))
+      refute(JSONSchemer.schema({ 'exclusiveMaximum' => 1 }).valid?(1))
+      assert(JSONSchemer.valid_schema?({ 'exclusiveMaximum' => 1  }))
+      refute(JSONSchemer.valid_schema?({ 'maximum' => 1, 'exclusiveMaximum' => true  }))
+    end
+    run_configuration_test(:meta_schema, test: 'http://json-schema.org/draft-04/schema#') do
+      assert_equal(JSONSchemer.draft4, JSONSchemer.schema({ 'maximum' => 1 }).meta_schema)
+      assert(JSONSchemer.schema({ 'maximum' => 1 }).valid?(1))
+      refute(JSONSchemer.schema({ 'maximum' => 1, 'exclusiveMaximum' => true }).valid?(1))
+      refute(JSONSchemer.valid_schema?({ 'exclusiveMaximum' => 1  }))
+      assert(JSONSchemer.valid_schema?({ 'maximum' => 1, 'exclusiveMaximum' => true  }))
+    end
   end
 
   def test_vocabulary

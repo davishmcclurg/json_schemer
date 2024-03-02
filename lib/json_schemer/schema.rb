@@ -17,7 +17,6 @@ module JSONSchemer
 
     include Output
 
-    DEFAULT_SCHEMA = Draft202012::BASE_URI.to_s.freeze
     SCHEMA_KEYWORD_CLASS = Draft202012::Vocab::Core::Schema
     VOCABULARY_KEYWORD_CLASS = Draft202012::Vocab::Core::Vocabulary
     ID_KEYWORD_CLASS = Draft202012::Vocab::Core::Id
@@ -356,8 +355,8 @@ module JSONSchemer
 
       if value.is_a?(Hash) && value.key?('$schema')
         @parsed['$schema'] = SCHEMA_KEYWORD_CLASS.new(value.fetch('$schema'), self, '$schema')
-      elsif root == self && !meta_schema
-        SCHEMA_KEYWORD_CLASS.new(DEFAULT_SCHEMA, self, '$schema')
+      elsif meta_schema.is_a?(String)
+        SCHEMA_KEYWORD_CLASS.new(meta_schema, self, '$schema')
       end
 
       if value.is_a?(Hash) && value.key?('$vocabulary')
