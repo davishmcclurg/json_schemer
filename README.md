@@ -510,7 +510,13 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 ## Build Status
 
-![Build Status](https://github.com/davishmcclurg/json_schemer/workflows/ci/badge.svg)
+![CI](https://github.com/davishmcclurg/json_schemer/actions/workflows/ci.yml/badge.svg)
+![JSON Schema Versions](https://img.shields.io/endpoint?url=https%3A%2F%2Fbowtie.report%2Fbadges%2Fruby-json_schemer%2Fsupported_versions.json)<br>
+![Draft 2020-12](https://img.shields.io/endpoint?url=https%3A%2F%2Fbowtie.report%2Fbadges%2Fruby-json_schemer%2Fcompliance%2Fdraft2020-12.json)
+![Draft 2019-09](https://img.shields.io/endpoint?url=https%3A%2F%2Fbowtie.report%2Fbadges%2Fruby-json_schemer%2Fcompliance%2Fdraft2019-09.json)
+![Draft 7](https://img.shields.io/endpoint?url=https%3A%2F%2Fbowtie.report%2Fbadges%2Fruby-json_schemer%2Fcompliance%2Fdraft7.json)
+![Draft 6](https://img.shields.io/endpoint?url=https%3A%2F%2Fbowtie.report%2Fbadges%2Fruby-json_schemer%2Fcompliance%2Fdraft6.json)
+![Draft 4](https://img.shields.io/endpoint?url=https%3A%2F%2Fbowtie.report%2Fbadges%2Fruby-json_schemer%2Fcompliance%2Fdraft4.json)
 
 ## Contributing
 
