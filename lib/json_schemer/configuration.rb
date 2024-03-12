@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 module JSONSchemer
   Configuration = Struct.new(
     :base_uri, :meta_schema, :vocabulary, :format, :formats, :content_encodings, :content_media_types, :keywords,
