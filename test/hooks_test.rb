@@ -668,4 +668,52 @@ class HooksTest < Minitest::Test
     assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
     assert_equal('ref', data.fetch('x'))
   end
+
+  def test_insert_property_defaults_compare_by_identity
+    data = JSON.parse(%q({
+      "fieldname": [
+        { "aaaa": "item0", "bbbb": "val1", "cccc": true },
+        { "aaaa": "item1", "cccc": true, "buggy": true, "dddd": 0 },
+        { "aaaa": "item2", "cccc": true, "buggy": true, "dddd": 0 },
+        { "aaaa": "item3", "buggy": true },
+        { "aaaa": "item4", "cccc": true },
+        { "aaaa": "item5", "cccc": true }
+      ]
+    }))
+    schema = %q({
+      "type": "object",
+      "properties": {
+        "fieldname": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Record"
+          }
+        }
+      },
+      "$defs": {
+        "Enumerated": {
+          "enum": [ "val1", "val2" ]
+        },
+        "Record": {
+          "type": "object",
+          "properties": {
+            "aaaa": { "type": "string" },
+            "cccc": { "type": "boolean", "default": false },
+            "buggy": { "type": "boolean", "default": false },
+            "bbbb": { "$ref": "#/$defs/Enumerated", "default": "val2" },
+            "dddd": { "type": "number", "default": 0 },
+            "eeee": { "type": "boolean", "default": false },
+            "ffff": { "type": "boolean", "default": false }
+          }
+        }
+      }
+    })
+    assert(JSONSchemer.schema(schema, insert_property_defaults: true).valid?(data))
+    assert_equal('val2', data.dig('fieldname', 2, 'bbbb'))
+    assert_equal(false, data.dig('fieldname', 3, 'cccc'))
+    assert_equal(false, data.dig('fieldname', 4, 'buggy'))
+    assert_equal(0, data.dig('fieldname', 0, 'dddd'))
+    assert_equal(false, data.dig('fieldname', 1, 'eeee'))
+    assert_equal(false, data.dig('fieldname', 5, 'ffff'))
+  end
 end

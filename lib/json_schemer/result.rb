@@ -191,6 +191,7 @@ module JSONSchemer
 
     def insert_property_defaults(context)
       instance_locations = {}
+      instance_locations.compare_by_identity
 
       results = [[self, true]]
       while (result, valid = results.pop)
