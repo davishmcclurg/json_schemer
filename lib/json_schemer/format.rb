@@ -74,7 +74,7 @@ module JSONSchemer
     IP_REGEX = /\A[\h:.]+\z/.freeze
     INVALID_QUERY_REGEX = /\s/.freeze
     IRI_ESCAPE_REGEX = /[^[:ascii:]]/
-    UUID_REGEX = /\A\h{8}-\h{4}-\h{4}-[89AB]\h{3}-\h{12}\z/i
+    UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
     NIL_UUID = '00000000-0000-0000-0000-000000000000'
     BINARY_TO_PERCENT_ENCODED = 256.times.each_with_object({}) do |byte, out|
       out[-byte.chr(Encoding::BINARY)] = -sprintf('%%%02X', byte)
