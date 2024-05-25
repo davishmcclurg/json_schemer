@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     json_schemer (2.2.1)
-      base64
       bigdecimal
       hana (~> 1.3)
       regexp_parser (~> 2.0)
@@ -43,6 +42,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  base64
   bundler (~> 2.0)
   csv
   i18n

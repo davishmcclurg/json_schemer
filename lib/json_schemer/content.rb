@@ -2,7 +2,7 @@
 module JSONSchemer
   module ContentEncoding
     BASE64 = proc do |instance|
-      [true, Base64.strict_decode64(instance)]
+      [true, instance.unpack1("m0")]
     rescue
       [false, nil]
     end

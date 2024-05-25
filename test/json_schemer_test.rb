@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'base64'
 require 'csv'
 
 class JSONSchemerTest < Minitest::Test
