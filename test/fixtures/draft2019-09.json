@@ -385,6 +385,114 @@
       [
 
       ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "available",
+          "data_pointer": "/pear",
+          "schema": {
+            "type": "number"
+          },
+          "schema_pointer": "/additionalProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "propertyNames": {
+              "maxLength": 5
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "type": "number"
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "data": "",
+          "data_pointer": "/foo",
+          "schema": false,
+          "schema_pointer": "/additionalProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "properties": {
+              "foo2": {
+              }
+            },
+            "dependentSchemas": {
+              "foo": {
+              },
+              "foo2": {
+                "properties": {
+                  "bar": {
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+        {
+          "data": "",
+          "data_pointer": "/bar",
+          "schema": false,
+          "schema_pointer": "/additionalProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "properties": {
+              "foo2": {
+              }
+            },
+            "dependentSchemas": {
+              "foo": {
+              },
+              "foo2": {
+                "properties": {
+                  "bar": {
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+        {
+          "data": "",
+          "data_pointer": "/bar",
+          "schema": false,
+          "schema_pointer": "/additionalProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "properties": {
+              "foo2": {
+              }
+            },
+            "dependentSchemas": {
+              "foo": {
+              },
+              "foo2": {
+                "properties": {
+                  "bar": {
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "type": "schema"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/allOf.json": [
@@ -1489,221 +1597,6 @@
             "$ref": "child1#my_anchor"
           },
           "type": "string"
-        }
-      ]
-    ],
-    [
-      [
-        {
-          "data": "#foo",
-          "data_pointer": "/$anchor",
-          "schema": {
-            "type": "string",
-            "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-          },
-          "schema_pointer": "/properties/$anchor",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "/a/b",
-          "data_pointer": "/$anchor",
-          "schema": {
-            "type": "string",
-            "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-          },
-          "schema_pointer": "/properties/$anchor",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "foo#something",
-          "data_pointer": "/$anchor",
-          "schema": {
-            "type": "string",
-            "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-          },
-          "schema_pointer": "/properties/$anchor",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
         }
       ]
     ]
@@ -5269,543 +5162,6 @@
       [
 
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
-    ]
-  ],
-  "JSON-Schema-Test-Suite/tests/draft2019-09/id.json": [
-    [
-      [
-        {
-          "data": "#foo",
-          "data_pointer": "/$defs/A/$id",
-          "schema": {
-            "type": "string",
-            "format": "uri-reference",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "#foo",
-          "data_pointer": "/$defs/A/$id",
-          "schema": {
-            "type": "string",
-            "format": "uri-reference",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "#/a/b",
-          "data_pointer": "/$defs/A/$id",
-          "schema": {
-            "type": "string",
-            "format": "uri-reference",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "http://localhost:1234/draft2019-09/bar#foo",
-          "data_pointer": "/$defs/A/$id",
-          "schema": {
-            "type": "string",
-            "format": "uri-reference",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "http://localhost:1234/draft2019-09/bar#/a/b",
-          "data_pointer": "/$defs/A/$id",
-          "schema": {
-            "type": "string",
-            "format": "uri-reference",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "#foo",
-          "data_pointer": "/$defs/A/$defs/B/$id",
-          "schema": {
-            "type": "string",
-            "format": "uri-reference",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "#/a/b",
-          "data_pointer": "/$defs/A/$defs/B/$id",
-          "schema": {
-            "type": "string",
-            "format": "uri-reference",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ]
-    ],
-    [
-      [
-
-      ],
-      [
-
-      ]
-    ],
-    [
       [
 
       ],
@@ -12962,7 +12318,7 @@
       ],
       [
         {
-          "data": "٠۰",
+          "data": "ب٠۰",
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -19868,81 +19224,6 @@
     ],
     [
       [
-        {
-          "data": "urn:example:foo-bar-baz-qux#somepart",
-          "data_pointer": "/$id",
-          "schema": {
-            "type": "string",
-            "format": "uri-reference",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "$id": "https://json-schema.org/draft/2019-09/meta/core",
-            "$recursiveAnchor": true,
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "type": "string",
-                "format": "uri-reference",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "type": "string",
-                "format": "uri"
-              },
-              "$anchor": {
-                "type": "string",
-                "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$"
-              },
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveRef": {
-                "type": "string",
-                "format": "uri-reference"
-              },
-              "$recursiveAnchor": {
-                "type": "boolean",
-                "default": false
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$recursiveRef": "#"
-                },
-                "default": {
-                }
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ]
-    ],
-    [
-      [
 
       ],
       [
@@ -20223,6 +19504,43 @@
             ]
           },
           "type": "number"
+        }
+      ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": 8,
+          "data_pointer": "/2",
+          "schema": false,
+          "schema_pointer": "/unevaluatedItems",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "$id": "https://example.com/schemas/unevaluated-items-are-disallowed",
+            "$ref": "/schemas/unevaluated-items-are-allowed",
+            "$recursiveAnchor": true,
+            "unevaluatedItems": false,
+            "$defs": {
+              "/schemas/unevaluated-items-are-allowed": {
+                "$schema": "https://json-schema.org/draft/2019-09/schema",
+                "$id": "/schemas/unevaluated-items-are-allowed",
+                "$recursiveAnchor": true,
+                "type": "array",
+                "items": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#"
+                  }
+                ]
+              }
+            }
+          },
+          "type": "schema"
         }
       ]
     ]
@@ -28607,6 +27925,65 @@
           },
           "type": "schema"
         }
+      ]
+    ],
+    [
+      [
+        {
+          "data": "",
+          "data_pointer": "/foo",
+          "schema": false,
+          "schema_pointer": "/unevaluatedProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "properties": {
+              "foo2": {
+              }
+            },
+            "dependentSchemas": {
+              "foo": {
+              },
+              "foo2": {
+                "properties": {
+                  "bar": {
+                  }
+                }
+              }
+            },
+            "unevaluatedProperties": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+        {
+          "data": "",
+          "data_pointer": "/bar",
+          "schema": false,
+          "schema_pointer": "/unevaluatedProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "properties": {
+              "foo2": {
+              }
+            },
+            "dependentSchemas": {
+              "foo": {
+              },
+              "foo2": {
+                "properties": {
+                  "bar": {
+                  }
+                }
+              }
+            },
+            "unevaluatedProperties": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+
       ]
     ]
   ],

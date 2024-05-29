@@ -151,6 +151,114 @@
       [
 
       ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "available",
+          "data_pointer": "/pear",
+          "schema": {
+            "type": "number"
+          },
+          "schema_pointer": "/additionalProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "propertyNames": {
+              "maxLength": 5
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "type": "number"
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "data": "",
+          "data_pointer": "/foo",
+          "schema": false,
+          "schema_pointer": "/additionalProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "foo2": {
+              }
+            },
+            "dependentSchemas": {
+              "foo": {
+              },
+              "foo2": {
+                "properties": {
+                  "bar": {
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+        {
+          "data": "",
+          "data_pointer": "/bar",
+          "schema": false,
+          "schema_pointer": "/additionalProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "foo2": {
+              }
+            },
+            "dependentSchemas": {
+              "foo": {
+              },
+              "foo2": {
+                "properties": {
+                  "bar": {
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+        {
+          "data": "",
+          "data_pointer": "/bar",
+          "schema": false,
+          "schema_pointer": "/additionalProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "foo2": {
+              }
+            },
+            "dependentSchemas": {
+              "foo": {
+              },
+              "foo2": {
+                "properties": {
+                  "bar": {
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "type": "schema"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2020-12/allOf.json": [
@@ -1255,236 +1363,6 @@
             "$ref": "child1#my_anchor"
           },
           "type": "string"
-        }
-      ]
-    ],
-    [
-      [
-        {
-          "data": "#foo",
-          "data_pointer": "/$anchor",
-          "schema": {
-            "type": "string",
-            "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-          },
-          "schema_pointer": "/$defs/anchorString",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "/a/b",
-          "data_pointer": "/$anchor",
-          "schema": {
-            "type": "string",
-            "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-          },
-          "schema_pointer": "/$defs/anchorString",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "foo#something",
-          "data_pointer": "/$anchor",
-          "schema": {
-            "type": "string",
-            "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-          },
-          "schema_pointer": "/$defs/anchorString",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
         }
       ]
     ]
@@ -5046,6 +4924,63 @@
           "type": "schema"
         }
       ]
+    ],
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "value",
+          "data_pointer": "/bar-item/content",
+          "schema": {
+            "$dynamicAnchor": "content",
+            "type": "integer"
+          },
+          "schema_pointer": "/$defs/bar/$defs/item/$defs/defaultContent",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "https://test.json-schema.org/dynamic-ref-skips-intermediate-resource/main",
+            "type": "object",
+            "properties": {
+              "bar-item": {
+                "$ref": "item"
+              }
+            },
+            "$defs": {
+              "bar": {
+                "$id": "bar",
+                "type": "array",
+                "items": {
+                  "$ref": "item"
+                },
+                "$defs": {
+                  "item": {
+                    "$id": "item",
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "$dynamicRef": "#content"
+                      }
+                    },
+                    "$defs": {
+                      "defaultContent": {
+                        "$dynamicAnchor": "content",
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "content": {
+                    "$dynamicAnchor": "content",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "type": "integer"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2020-12/enum.json": [
@@ -6299,571 +6234,6 @@
       [
 
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
-    ]
-  ],
-  "JSON-Schema-Test-Suite/tests/draft2020-12/id.json": [
-    [
-      [
-        {
-          "data": "#foo",
-          "data_pointer": "/$defs/A/$id",
-          "schema": {
-            "$ref": "#/$defs/uriReferenceString",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "#foo",
-          "data_pointer": "/$defs/A/$id",
-          "schema": {
-            "$ref": "#/$defs/uriReferenceString",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "#/a/b",
-          "data_pointer": "/$defs/A/$id",
-          "schema": {
-            "$ref": "#/$defs/uriReferenceString",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "http://localhost:1234/draft2020-12/bar#foo",
-          "data_pointer": "/$defs/A/$id",
-          "schema": {
-            "$ref": "#/$defs/uriReferenceString",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "http://localhost:1234/draft2020-12/bar#/a/b",
-          "data_pointer": "/$defs/A/$id",
-          "schema": {
-            "$ref": "#/$defs/uriReferenceString",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "#foo",
-          "data_pointer": "/$defs/A/$defs/B/$id",
-          "schema": {
-            "$ref": "#/$defs/uriReferenceString",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ],
-      [
-        {
-          "data": "#/a/b",
-          "data_pointer": "/$defs/A/$defs/B/$id",
-          "schema": {
-            "$ref": "#/$defs/uriReferenceString",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
-        }
-      ]
-    ],
-    [
-      [
-
-      ],
-      [
-
-      ]
-    ],
-    [
       [
 
       ],
@@ -11474,6 +10844,65 @@
       ]
     ]
   ],
+  "JSON-Schema-Test-Suite/tests/draft2020-12/optional/dynamicRef.json": [
+    [
+      [
+
+      ],
+      [
+        {
+          "data": "value",
+          "data_pointer": "/bar-item/content",
+          "schema": {
+            "$dynamicAnchor": "content",
+            "type": "integer"
+          },
+          "schema_pointer": "/$defs/bar/$defs/item/$defs/defaultContent",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "https://test.json-schema.org/dynamic-ref-skips-intermediate-resource/optional/main",
+            "type": "object",
+            "properties": {
+              "bar-item": {
+                "$ref": "bar#/$defs/item"
+              }
+            },
+            "$defs": {
+              "bar": {
+                "$id": "bar",
+                "type": "array",
+                "items": {
+                  "$ref": "item"
+                },
+                "$defs": {
+                  "item": {
+                    "$id": "item",
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "$dynamicRef": "#content"
+                      }
+                    },
+                    "$defs": {
+                      "defaultContent": {
+                        "$dynamicAnchor": "content",
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "content": {
+                    "$dynamicAnchor": "content",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "type": "integer"
+        }
+      ]
+    ]
+  ],
   "JSON-Schema-Test-Suite/tests/draft2020-12/optional/ecmascript-regex.json": [
     [
       [
@@ -12073,132 +11502,15 @@
       [
         {
           "data": "\\a",
-          "data_pointer": "/pattern",
+          "data_pointer": "",
           "schema": {
-            "type": "string",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "format": "regex"
           },
-          "schema_pointer": "/properties/pattern",
+          "schema_pointer": "",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/validation",
-            "$dynamicAnchor": "meta",
-            "title": "Validation vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "type": {
-                "anyOf": [
-                  {
-                    "$ref": "#/$defs/simpleTypes"
-                  },
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/simpleTypes"
-                    },
-                    "minItems": 1,
-                    "uniqueItems": true
-                  }
-                ]
-              },
-              "const": true,
-              "enum": {
-                "type": "array",
-                "items": true
-              },
-              "multipleOf": {
-                "type": "number",
-                "exclusiveMinimum": 0
-              },
-              "maximum": {
-                "type": "number"
-              },
-              "exclusiveMaximum": {
-                "type": "number"
-              },
-              "minimum": {
-                "type": "number"
-              },
-              "exclusiveMinimum": {
-                "type": "number"
-              },
-              "maxLength": {
-                "$ref": "#/$defs/nonNegativeInteger"
-              },
-              "minLength": {
-                "$ref": "#/$defs/nonNegativeIntegerDefault0"
-              },
-              "pattern": {
-                "type": "string",
-                "format": "regex"
-              },
-              "maxItems": {
-                "$ref": "#/$defs/nonNegativeInteger"
-              },
-              "minItems": {
-                "$ref": "#/$defs/nonNegativeIntegerDefault0"
-              },
-              "uniqueItems": {
-                "type": "boolean",
-                "default": false
-              },
-              "maxContains": {
-                "$ref": "#/$defs/nonNegativeInteger"
-              },
-              "minContains": {
-                "$ref": "#/$defs/nonNegativeInteger",
-                "default": 1
-              },
-              "maxProperties": {
-                "$ref": "#/$defs/nonNegativeInteger"
-              },
-              "minProperties": {
-                "$ref": "#/$defs/nonNegativeIntegerDefault0"
-              },
-              "required": {
-                "$ref": "#/$defs/stringArray"
-              },
-              "dependentRequired": {
-                "type": "object",
-                "additionalProperties": {
-                  "$ref": "#/$defs/stringArray"
-                }
-              }
-            },
-            "$defs": {
-              "nonNegativeInteger": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "nonNegativeIntegerDefault0": {
-                "$ref": "#/$defs/nonNegativeInteger",
-                "default": 0
-              },
-              "simpleTypes": {
-                "enum": [
-                  "array",
-                  "boolean",
-                  "integer",
-                  "null",
-                  "number",
-                  "object",
-                  "string"
-                ]
-              },
-              "stringArray": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "uniqueItems": true,
-                "default": [
-
-                ]
-              }
-            }
+            "format": "regex"
           },
           "type": "format"
         }
@@ -14219,7 +13531,7 @@
       ],
       [
         {
-          "data": "٠۰",
+          "data": "ب٠۰",
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -19362,85 +18674,6 @@
             }
           },
           "type": "string"
-        }
-      ]
-    ],
-    [
-      [
-        {
-          "data": "urn:example:foo-bar-baz-qux#somepart",
-          "data_pointer": "/$id",
-          "schema": {
-            "$ref": "#/$defs/uriReferenceString",
-            "$comment": "Non-empty fragments not allowed.",
-            "pattern": "^[^#]*#?$"
-          },
-          "schema_pointer": "/properties/$id",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://json-schema.org/draft/2020-12/meta/core",
-            "$dynamicAnchor": "meta",
-            "title": "Core vocabulary meta-schema",
-            "type": [
-              "object",
-              "boolean"
-            ],
-            "properties": {
-              "$id": {
-                "$ref": "#/$defs/uriReferenceString",
-                "$comment": "Non-empty fragments not allowed.",
-                "pattern": "^[^#]*#?$"
-              },
-              "$schema": {
-                "$ref": "#/$defs/uriString"
-              },
-              "$ref": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$anchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$dynamicRef": {
-                "$ref": "#/$defs/uriReferenceString"
-              },
-              "$dynamicAnchor": {
-                "$ref": "#/$defs/anchorString"
-              },
-              "$vocabulary": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/uriString"
-                },
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              },
-              "$comment": {
-                "type": "string"
-              },
-              "$defs": {
-                "type": "object",
-                "additionalProperties": {
-                  "$dynamicRef": "#meta"
-                }
-              }
-            },
-            "$defs": {
-              "anchorString": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][-A-Za-z0-9._]*$"
-              },
-              "uriString": {
-                "type": "string",
-                "format": "uri"
-              },
-              "uriReferenceString": {
-                "type": "string",
-                "format": "uri-reference"
-              }
-            }
-          },
-          "type": "pattern"
         }
       ]
     ],
@@ -28613,6 +27846,65 @@
           },
           "type": "schema"
         }
+      ]
+    ],
+    [
+      [
+        {
+          "data": "",
+          "data_pointer": "/foo",
+          "schema": false,
+          "schema_pointer": "/unevaluatedProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "foo2": {
+              }
+            },
+            "dependentSchemas": {
+              "foo": {
+              },
+              "foo2": {
+                "properties": {
+                  "bar": {
+                  }
+                }
+              }
+            },
+            "unevaluatedProperties": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+        {
+          "data": "",
+          "data_pointer": "/bar",
+          "schema": false,
+          "schema_pointer": "/unevaluatedProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+              "foo2": {
+              }
+            },
+            "dependentSchemas": {
+              "foo": {
+              },
+              "foo2": {
+                "properties": {
+                  "bar": {
+                  }
+                }
+              }
+            },
+            "unevaluatedProperties": false
+          },
+          "type": "schema"
+        }
+      ],
+      [
+
       ]
     ]
   ],
