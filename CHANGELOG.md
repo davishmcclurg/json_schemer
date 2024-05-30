@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.3.0] - 2024-05-30
+
+## Ruby Versions
+
+- Ruby 2.5 and 2.6 are no longer supported.
+
+## Bug Fixes
+
+- Remove `base64` runtime dependency: https://github.com/davishmcclurg/json_schemer/pull/182
+- Relax `uuid` format validation: https://github.com/davishmcclurg/json_schemer/pull/183
+
+[2.3.0]: https://github.com/davishmcclurg/json_schemer/releases/tag/v2.3.0
+
 ## [2.2.0] - 2024-03-02
 
 ## Bug Fixes

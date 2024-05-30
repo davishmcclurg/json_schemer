@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    json_schemer (2.2.1)
+    json_schemer (2.3.0)
       bigdecimal
       hana (~> 1.3)
       regexp_parser (~> 2.0)
@@ -11,8 +11,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     base64 (0.2.0)
-    bigdecimal (3.1.7)
-    bigdecimal (3.1.7-java)
+    bigdecimal (3.1.8)
+    bigdecimal (3.1.8-java)
     concurrent-ruby (1.2.2)
     csv (3.2.8)
     docile (1.4.0)
@@ -23,19 +23,14 @@ GEM
       i18n (< 2)
     minitest (5.15.0)
     rake (13.1.0)
-    regexp_parser (2.9.0)
+    regexp_parser (2.9.2)
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
-    simpleidn (0.2.1)
-      unf (~> 0.1.4)
-    unf (0.1.4)
-      unf_ext
-    unf (0.1.4-java)
-    unf_ext (0.0.9.1)
+    simpleidn (0.2.3)
 
 PLATFORMS
   java
