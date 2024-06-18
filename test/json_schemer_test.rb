@@ -66,6 +66,13 @@ class JSONSchemerTest < Minitest::Test
     assert(errors.none?)
   end
 
+  def test_it_fails_with_no_valid_properties
+    schema = { 'type' => 'object', 'properties' => { 'one' => { 'type' => 'integer' } } }
+    data = { 'two' => 2 }
+    schema = JSONSchemer.schema(schema)
+    refute(schema.valid?(data))
+  end
+
   def test_it_does_not_fail_when_the_schema_is_completely_empty
     schema = {}
     data = {
