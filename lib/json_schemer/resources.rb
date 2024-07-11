@@ -23,10 +23,6 @@ module JSONSchemer
       @resources[:dynamic].fetch(namespace_uri.to_s)
     end
 
-    def dynamic(namespace_uri)
-      @resources[:dynamic][namespace_uri.to_s]
-    end
-
     def dynamic?(namespace_uri)
       @resources[:dynamic].key?(namespace_uri.to_s)
     end
