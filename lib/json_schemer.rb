@@ -59,6 +59,7 @@ require 'json_schemer/openapi30/vocab/base'
 require 'json_schemer/openapi30/vocab'
 require 'json_schemer/openapi'
 require 'json_schemer/configuration'
+require 'json_schemer/resources'
 require 'json_schemer/schema'
 
 module JSONSchemer
