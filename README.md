@@ -95,18 +95,6 @@ JSONSchemer.validate_schema({ '$id' => '#invalid' }).to_a
 #      "type"=>"pattern",
 #      "error"=>"string at `/$id` does not match pattern: ^[^#]*#?$"}]
 
-JSONSchemer.schema({ '$id' => 'valid' }).valid_schema?
-# => true
-
-JSONSchemer.schema({ '$id' => '#invalid' }).validate_schema.to_a
-# => [{"data"=>"#invalid",
-#      "data_pointer"=>"/$id",
-#      "schema"=>{"$ref"=>"#/$defs/uriReferenceString", "$comment"=>"Non-empty fragments not allowed.", "pattern"=>"^[^#]*#?$"},
-#      "schema_pointer"=>"/properties/$id",
-#      "root_schema"=>{...meta schema},
-#      "type"=>"pattern",
-#      "error"=>"string at `/$id` does not match pattern: ^[^#]*#?$"}]
-
 # subschemas
 
 schema = {
