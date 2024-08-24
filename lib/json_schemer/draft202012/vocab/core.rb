@@ -37,7 +37,7 @@ module JSONSchemer
           def parse
             URI.join(schema.base_uri, value).tap do |uri|
               schema.base_uri = uri
-              root.resources.register(:lexical, uri, schema)
+              root.resources[:lexical][uri] = schema
             end
           end
         end
@@ -45,7 +45,7 @@ module JSONSchemer
         class Anchor < Keyword
           def parse
             URI.join(schema.base_uri, "##{value}").tap do |uri|
-              root.resources.register(:lexical, uri, schema)
+              root.resources[:lexical][uri] = schema
             end
           end
         end
@@ -71,8 +71,8 @@ module JSONSchemer
         class DynamicAnchor < Keyword
           def parse
             URI.join(schema.base_uri, "##{value}").tap do |uri|
-              root.resources.register(:lexical, uri, schema)
-              root.resources.register(:dynamic, uri, schema)
+              root.resources[:lexical][uri] = schema
+              root.resources[:dynamic][uri] = schema
             end
           end
         end
@@ -98,8 +98,8 @@ module JSONSchemer
             if dynamic_anchor
               context.dynamic_scope.each do |ancestor|
                 dynamic_uri = URI.join(ancestor.base_uri, "##{dynamic_anchor}")
-                if ancestor.root.resources.dynamic?(dynamic_uri)
-                  schema = ancestor.root.resources.dynamic!(dynamic_uri)
+                if ancestor.root.resources.fetch(:dynamic).key?(dynamic_uri)
+                  schema = ancestor.root.resources.fetch(:dynamic).fetch(dynamic_uri)
                   break
                 end
               end

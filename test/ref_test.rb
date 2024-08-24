@@ -475,4 +475,25 @@ class RefTest < Minitest::Test
     })
     assert_raises(JSONSchemer::InvalidRefPointer) { schemer.valid?(1) }
   end
+
+  def test_file_uri_resource_fragments
+    schemer = JSONSchemer.schema({
+      '$defs' => {
+        'a1' => {
+          '$id' => 'file:///a#one',
+          'type' => 'string'
+        },
+        'a2' => {
+          '$id' => 'file:///a#two',
+          'type' => 'integer'
+        }
+      }
+    })
+    a1 = schemer.ref('file:///a#one')
+    assert(a1.valid?('1'))
+    refute(a1.valid?(1))
+    a2 = schemer.ref('file:///a#two')
+    assert(a2.valid?(1))
+    refute(a2.valid?('1'))
+  end
 end

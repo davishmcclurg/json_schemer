@@ -5,7 +5,7 @@ module JSONSchemer
       module Core
         class RecursiveAnchor < Keyword
           def parse
-            root.resources.register(:dynamic, schema.base_uri, schema) if value == true
+            root.resources[:dynamic][schema.base_uri] = schema if value == true
             value
           end
         end
@@ -29,8 +29,8 @@ module JSONSchemer
 
             if recursive_anchor
               context.dynamic_scope.each do |ancestor|
-                if ancestor.root.resources.dynamic?(ancestor.base_uri)
-                  schema = ancestor.root.resources.dynamic!(ancestor.base_uri)
+                if ancestor.root.resources.fetch(:dynamic).key?(ancestor.base_uri)
+                  schema = ancestor.root.resources.fetch(:dynamic).fetch(ancestor.base_uri)
                   break
                 end
               end

@@ -174,12 +174,13 @@ module JSONSchemer
         uri.fragment = nil
       end
 
-      schema = resources.lexical(uri)
+      lexical_resources = resources.fetch(:lexical)
+      schema = lexical_resources[uri]
 
       if !schema && uri.fragment.nil?
         empty_fragment_uri = uri.dup
         empty_fragment_uri.fragment = ''
-        schema = resources.lexical(empty_fragment_uri)
+        schema = lexical_resources[empty_fragment_uri]
       end
 
       unless schema
@@ -195,7 +196,7 @@ module JSONSchemer
         )
         remote_uri = remote_schema.base_uri.dup
         remote_uri.fragment = location_independent_identifier if location_independent_identifier
-        schema = remote_schema.resources.lexical!(remote_uri)
+        schema = remote_schema.resources.fetch(:lexical).fetch(remote_uri)
       end
 
       schema = Hana::Pointer.parse(pointer).reduce(schema) do |obj, token|
@@ -327,7 +328,7 @@ module JSONSchemer
     end
 
     def resources
-      @resources ||= Resources.new
+      @resources ||= { :lexical => Resources.new, :dynamic => Resources.new }
     end
 
     def error(formatted_instance_location:, **options)

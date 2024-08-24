@@ -1,30 +1,24 @@
 # frozen_string_literal: true
-
 module JSONSchemer
   class Resources
-
     def initialize
-      @resources ||= { :lexical => {}, :dynamic => {} }
+      @resources = {}
     end
 
-    def register(type, namespace_uri, schema)
-      @resources[type][namespace_uri.to_s] = schema
+    def [](uri)
+      @resources[uri.to_s]
     end
 
-    def lexical!(namespace_uri)
-      @resources[:lexical].fetch(namespace_uri.to_s)
+    def []=(uri, resource)
+      @resources[uri.to_s] = resource
     end
 
-    def lexical(namespace_uri)
-      @resources[:lexical][namespace_uri.to_s]
+    def fetch(uri)
+      @resources.fetch(uri.to_s)
     end
 
-    def dynamic!(namespace_uri)
-      @resources[:dynamic].fetch(namespace_uri.to_s)
-    end
-
-    def dynamic?(namespace_uri)
-      @resources[:dynamic].key?(namespace_uri.to_s)
+    def key?(uri)
+      @resources.key?(uri.to_s)
     end
   end
 end
