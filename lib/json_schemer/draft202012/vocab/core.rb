@@ -64,7 +64,11 @@ module JSONSchemer
           end
 
           def validate(instance, instance_location, keyword_location, context)
-            ref_schema.validate_instance(instance, instance_location, keyword_location, context)
+            if instance.nil? && context.dynamic_scope.any? { |x| x.value['nullable'] }
+              result(instance, instance_location, keyword_location, true)
+            else
+              ref_schema.validate_instance(instance, instance_location, keyword_location, context)
+            end
           end
         end
 

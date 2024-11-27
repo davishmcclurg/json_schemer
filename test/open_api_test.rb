@@ -1094,4 +1094,28 @@ class OpenAPITest < Minitest::Test
     assert(document.valid?)
     assert(schemer.valid_schema?)
   end
+
+  def test_nullable_ref
+    schemer = JSONSchemer.openapi({
+      'openapi' => '3.0.0',
+      'components' => {
+        'schemas' => {
+          'test' => {
+            'nullable' => true,
+            '$ref' => '#/components/schemas/nullable_schema'
+          },
+          'nullable_schema' => {
+            'type' => 'object',
+            'properties' => {
+              'a' => { 'type' => 'string' },
+            }
+          }
+        }
+      }
+    }).schema('test')
+
+    assert(schemer.valid_schema?)
+    assert(schemer.valid?({ 'a' => 'test' }))
+    assert(schemer.valid?(nil))
+  end
 end
