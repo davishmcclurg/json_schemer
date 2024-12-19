@@ -1011,6 +1011,45 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'write_only_true' => 2 }, :access_mode => 'write'))
   end
 
+  def test_path_item_ref
+    openapi = {
+      'openapi' => '3.1.0',
+      'info' => {
+        'title' => 'Example $refs on every level',
+        'version' => '1.0.0'
+      },
+      'paths' => {
+        '/stations' => {
+          '$ref' => '#/components/pathItems/stations'
+        }
+      },
+      'components' => {
+        'pathItems' => {
+          'stations' => {
+            'get' => {
+              'responses' => {
+                '200' => {
+                  'description' => 'OK',
+                  'content' => {
+                    'application/json' => {
+                      'schema' => {
+                        'type' => 'object'
+                      }
+                    }
+                  },
+                }
+              }
+            }
+          },
+        },
+      }}
+
+    document = JSONSchemer.openapi(openapi)
+    pointer = '#/paths/~1stations/get/responses/200/content/application~1json/schema'
+    assert(document.ref(pointer).valid?({}))
+    refute(document.ref(pointer).valid?(2))
+  end
+
   def test_nullable
     schemer = JSONSchemer.openapi({
       'openapi' => '3.0.0',
