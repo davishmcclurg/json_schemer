@@ -26,13 +26,9 @@ class ErrorsTest < Minitest::Test
       'a' => 'foo',
       'b' => 'bar'
     }
-    assert_equal(
-      [
-        'properties a and b were provided, however only one or the other may be specified',
-        '{"a"=>"foo", "b"=>"bar"} `` /oneOf/1/not json-schemer://schema#/oneOf/1/not'
-      ].sort,
-      JSONSchemer.schema(schema).validate(data).map { |error| error.fetch('error') }.sort
-    )
+    error1, error2 = JSONSchemer.schema(schema).validate(data).map { |error| error.fetch('error') }.sort
+    assert_equal('properties a and b were provided, however only one or the other may be specified', error1)
+    assert_match(optional_space_regexp('{"a"', '=>', '"foo", "b"', '=>', '"bar"} `` /oneOf/1/not json-schemer://schema#/oneOf/1/not'), error2)
 
     assert_equal('schema error', JSONSchemer.schema(schema).validate(data, :output_format => 'basic').fetch('error'))
     assert_equal('oneOf error', JSONSchemer.schema(schema).validate(data, :output_format => 'detailed').fetch('error'))
@@ -220,7 +216,7 @@ class ErrorsTest < Minitest::Test
     end
 
     errors.delete('^')
-    assert_equal('I/9: {"yah"=>1} ``  https://example.com/schema#', i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
+    assert_match(optional_space_regexp('I/9: {"yah"', '=>', '1} ``  https://example.com/schema#'), i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
 
     errors.delete('type')
     assert_equal('I/9: 1 `/yah` /properties/yah/type https://example.com/schema#/properties/yah/type', i18n(errors) { schemer.validate(data).first.fetch('error') })
@@ -245,6 +241,10 @@ class ErrorsTest < Minitest::Test
   end
 
 private
+
+  def optional_space_regexp(*parts)
+    /\A#{parts.map { |part| Regexp.escape(part) }.join('\s?')}\z/
+  end
 
   def i18n(errors)
     require 'yaml'

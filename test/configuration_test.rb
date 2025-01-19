@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class ConfigurationTest < Minitest::Test
-  def run_configuration_test(option, default: (skip_default = true), test:)
+  def run_configuration_test(option, test:, default: (skip_default = true))
     original = JSONSchemer.configuration.public_send(option)
 
     if default.nil?
