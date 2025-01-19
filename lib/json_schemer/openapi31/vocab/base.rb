@@ -100,7 +100,7 @@ module JSONSchemer
           end
 
           def validate(instance, instance_location, keyword_location, context)
-            return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Hash)
+            return result(instance, instance_location, keyword_location, false) unless instance.is_a?(Hash)
 
             property_name = value.fetch('propertyName')
 

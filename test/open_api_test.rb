@@ -695,9 +695,107 @@ class OpenAPITest < Minitest::Test
   end
 
   def test_discriminator_non_object_and_missing_property_name
-    schemer = JSONSchemer.schema({ 'discriminator' => { 'propertyName' => 'x' } }, :meta_schema => JSONSchemer.openapi31)
-    assert(schemer.valid?(1))
+    schemer = JSONSchemer.schema(
+      {
+        'anyOf' => [{ '$ref' => '#/components/schemas/z' }],
+        'discriminator' => { 'propertyName' => 'x' },
+        'components' => { 'schemas' => { 'z' => true } },
+      },
+      :meta_schema => JSONSchemer.openapi31
+    )
+    refute(schemer.valid?(1))
     refute(schemer.valid?({ 'y' => 'z' }))
+    assert(schemer.valid?({ 'x' => 'z' }))
+  end
+
+  def test_discriminator_nullable
+    cat = { id: 1, type: 'cat', meow: 'Meow' }
+    dog = { id: 1, type: 'dog', bark: 'Woof' }
+    junk = { id: 1, type: 'cat', junk: 'junk' }
+
+    refs = {
+      URI('json-schemer://schema/cat') => {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'integer',
+          },
+          type: {
+            type: 'string',
+            const: 'cat',
+          },
+          meow: {
+            type: 'string',
+          },
+        },
+        required: %w[id type meow],
+      },
+      URI('json-schemer://schema/dog') => {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'integer',
+          },
+          type: {
+            type: 'string',
+            const: 'dog',
+          },
+          bark: {
+            type: 'string',
+          },
+        },
+        required: %w[id type bark],
+      },
+    }
+
+    nullable_union_schema = {
+      oneOf: [
+        { type: 'null' },
+        {
+          oneOf: [{ '$ref': 'cat' }, { '$ref': 'dog' }],
+          discriminator: {
+            propertyName: 'type',
+            mapping: {
+              cat: 'cat',
+              dog: 'dog',
+            },
+          },
+        },
+      ],
+    }
+
+    nullable_union_schemer = JSONSchemer.schema(
+      nullable_union_schema,
+      meta_schema: 'https://spec.openapis.org/oas/3.1/dialect/base',
+      ref_resolver: refs.to_proc,
+    )
+
+    assert(nullable_union_schemer.valid?(cat))
+    assert(nullable_union_schemer.valid?(dog))
+    refute(nullable_union_schemer.valid?(junk))
+    assert(nullable_union_schemer.valid?(nil))
+
+    non_nullable_union_schema = {
+      oneOf: [{ '$ref': 'cat' }, { '$ref': 'dog' }],
+      discriminator: {
+        propertyName: 'type',
+        mapping: {
+          cat: 'cat',
+          dog: 'dog',
+        },
+      },
+    }
+
+    non_nullable_union_schemer = JSONSchemer.schema(
+      non_nullable_union_schema,
+      meta_schema: 'https://spec.openapis.org/oas/3.1/dialect/base',
+      ref_resolver: refs.to_proc,
+    )
+
+    assert(non_nullable_union_schemer.valid?(cat))
+    assert(non_nullable_union_schemer.valid?(dog))
+    refute(non_nullable_union_schemer.valid?(junk))
+    refute(non_nullable_union_schemer.valid?(nil))
   end
 
   def test_openapi31_formats
