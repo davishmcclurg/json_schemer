@@ -104,12 +104,16 @@ module JSONSchemer
 
   WINDOWS_URI_PATH_REGEX = /\A\/[a-z]:/i
 
+  # :nocov:
+  URI_PARSER = URI.const_defined?(:RFC2396_PARSER) ? URI::RFC2396_PARSER : URI::DEFAULT_PARSER
+  # :nocov:
+
   FILE_URI_REF_RESOLVER = proc do |uri|
     raise InvalidFileURI, 'must use `file` scheme' unless uri.scheme == 'file'
     raise InvalidFileURI, 'cannot have a host (use `file:///`)' if uri.host && !uri.host.empty?
     path = uri.path
     path = path[1..-1] if path.match?(WINDOWS_URI_PATH_REGEX)
-    JSON.parse(File.read(URI::DEFAULT_PARSER.unescape(path)))
+    JSON.parse(File.read(URI_PARSER.unescape(path)))
   end
 
   class << self
@@ -247,7 +251,7 @@ module JSONSchemer
       when String
         JSON.parse(schema)
       when Pathname
-        base_uri = URI.parse(File.join('file:', URI::DEFAULT_PARSER.escape(schema.realpath.to_s)))
+        base_uri = URI.parse(File.join('file:', URI_PARSER.escape(schema.realpath.to_s)))
         options[:base_uri] = base_uri
         if options.key?(:ref_resolver)
           FILE_URI_REF_RESOLVER.call(base_uri)

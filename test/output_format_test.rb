@@ -154,7 +154,7 @@ class OutputFormatTest < Minitest::Test
     )
 
     uri = URI(absolute_keyword_location)
-    json_pointer = URI::DEFAULT_PARSER.unescape(uri.fragment)
+    json_pointer = JSONSchemer::URI_PARSER.unescape(uri.fragment)
     assert_equal(
       '/patternProperties/^(a[b]{2}c|#%z\\"<>`|[\\-_.!~0*\'();~1?:@&=+$,])/not',
       json_pointer
