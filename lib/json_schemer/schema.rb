@@ -15,6 +15,7 @@ module JSONSchemer
       end
     end
 
+    extend Forwardable
     include Output
 
     SCHEMA_KEYWORD_CLASS = Draft202012::Vocab::Core::Schema
@@ -44,7 +45,8 @@ module JSONSchemer
 
     attr_accessor :base_uri, :meta_schema, :keywords, :keyword_order
     attr_reader :value, :parent, :root, :configuration, :parsed
-    attr_reader :vocabulary, :format, :formats, :content_encodings, :content_media_types, :custom_keywords, :before_property_validation, :after_property_validation, :insert_property_defaults
+    def_delegators :@configuration, :vocabulary, :format, :formats, :content_encodings, :content_media_types, :before_property_validation, :after_property_validation, :insert_property_defaults
+    def_delegator :@configuration, :keywords, :custom_keywords
 
     def initialize(
       value,
@@ -75,24 +77,27 @@ module JSONSchemer
       @root = root
       @keyword = keyword
       @schema = self
-      @configuration = configuration
       @base_uri = base_uri
       @meta_schema = meta_schema
-      @vocabulary = vocabulary
-      @format = format
-      @formats = formats
-      @content_encodings = content_encodings
-      @content_media_types = content_media_types
-      @custom_keywords = keywords
-      @before_property_validation = Array(before_property_validation)
-      @after_property_validation = Array(after_property_validation)
-      @insert_property_defaults = insert_property_defaults
-      @property_default_resolver = property_default_resolver
-      @original_ref_resolver = ref_resolver
-      @original_regexp_resolver = regexp_resolver
-      @output_format = output_format
-      @resolve_enumerators = resolve_enumerators
-      @access_mode = access_mode
+      @configuration = Configuration.new(
+        :base_uri => base_uri,
+        :meta_schema => meta_schema,
+        :vocabulary => vocabulary,
+        :format => format,
+        :formats => formats,
+        :content_encodings => content_encodings,
+        :content_media_types => content_media_types,
+        :keywords => keywords,
+        :before_property_validation => Array(before_property_validation),
+        :after_property_validation => Array(after_property_validation),
+        :insert_property_defaults => insert_property_defaults,
+        :property_default_resolver => property_default_resolver,
+        :ref_resolver => ref_resolver,
+        :regexp_resolver => regexp_resolver,
+        :output_format => output_format,
+        :resolve_enumerators => resolve_enumerators,
+        :access_mode => access_mode
+      )
       @parsed = parse
     end
 
@@ -100,7 +105,7 @@ module JSONSchemer
       validate(instance, :output_format => 'flag', **options).fetch('valid')
     end
 
-    def validate(instance, output_format: @output_format, resolve_enumerators: @resolve_enumerators, access_mode: @access_mode)
+    def validate(instance, output_format: @configuration.output_format, resolve_enumerators: @configuration.resolve_enumerators, access_mode: @configuration.access_mode)
       instance_location = Location.root
       context = Context.new(instance, [], nil, (!insert_property_defaults && output_format == 'flag'), access_mode)
       result = validate_instance(deep_stringify_keys(instance), instance_location, root_keyword_location, context)
@@ -340,17 +345,17 @@ module JSONSchemer
     end
 
     def ref_resolver
-      @ref_resolver ||= @original_ref_resolver == 'net/http' ? CachedResolver.new(&NET_HTTP_REF_RESOLVER) : @original_ref_resolver
+      @ref_resolver ||= @configuration.ref_resolver == 'net/http' ? CachedResolver.new(&NET_HTTP_REF_RESOLVER) : @configuration.ref_resolver
     end
 
     def regexp_resolver
-      @regexp_resolver ||= case @original_regexp_resolver
+      @regexp_resolver ||= case @configuration.regexp_resolver
       when 'ecma'
         CachedResolver.new(&ECMA_REGEXP_RESOLVER)
       when 'ruby'
         CachedResolver.new(&RUBY_REGEXP_RESOLVER)
       else
-        @original_regexp_resolver
+        @configuration.regexp_resolver
       end
     end
 
@@ -407,7 +412,11 @@ module JSONSchemer
     end
 
     def property_default_resolver
-      @property_default_resolver ||= insert_property_defaults == :symbol ? SYMBOL_PROPERTY_DEFAULT_RESOLVER : DEFAULT_PROPERTY_DEFAULT_RESOLVER
+      @property_default_resolver ||= if @configuration.property_default_resolver
+        @configuration.property_default_resolver
+      else
+        insert_property_defaults == :symbol ? SYMBOL_PROPERTY_DEFAULT_RESOLVER : DEFAULT_PROPERTY_DEFAULT_RESOLVER
+      end
     end
 
     def resolve_enumerators!(output)

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'bigdecimal'
+require 'forwardable'
 require 'ipaddr'
 require 'json'
 require 'net/http'
