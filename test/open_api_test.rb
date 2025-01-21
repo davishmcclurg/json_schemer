@@ -703,10 +703,10 @@ class OpenAPITest < Minitest::Test
   def test_openapi31_formats
     schema = {
       'properties' => {
-        'a' => { 'format' => 'int32' },
-        'b' => { 'format' => 'int64' },
-        'c' => { 'format' => 'float' },
-        'd' => { 'format' => 'double' },
+        'a' => { 'type' => 'integer', 'format' => 'int32' },
+        'b' => { 'type' => 'integer', 'format' => 'int64' },
+        'c' => { 'type' => 'number', 'format' => 'float' },
+        'd' => { 'type' => 'number', 'format' => 'double' },
         'e' => { 'format' => 'password' }
       }
     }
@@ -716,23 +716,54 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid_schema?)
     assert(schemer.valid?({ 'a' => 2.pow(31) }))
     refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    refute(schemer.valid?({ 'a' => nil }))
     assert(schemer.valid?({ 'b' => 2.pow(63) }))
     refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    refute(schemer.valid?({ 'b' => nil }))
     assert(schemer.valid?({ 'c' => 2.0 }))
     refute(schemer.valid?({ 'c' => 2 }))
+    refute(schemer.valid?({ 'c' => nil }))
     assert(schemer.valid?({ 'd' => 2.0 }))
     refute(schemer.valid?({ 'd' => 2 }))
+    refute(schemer.valid?({ 'd' => nil }))
     assert(schemer.valid?({ 'e' => 2 }))
     assert(schemer.valid?({ 'e' => 'anything' }))
+  end
+
+  def test_openapi31_nullable_formats
+    schema = {
+      'properties' => {
+        'a' => { 'type' => ['integer', 'null'], 'format' => 'int32' },
+        'b' => { 'type' => ['integer', 'null'], 'format' => 'int64' },
+        'c' => { 'type' => ['number', 'null'], 'format' => 'float' },
+        'd' => { 'type' => ['number', 'null'], 'format' => 'double' },
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema, :meta_schema => JSONSchemer.openapi31)
+
+    assert(schemer.valid_schema?)
+    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => nil }))
+    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => nil }))
+    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    assert(schemer.valid?({ 'c' => 2.0 }))
+    assert(schemer.valid?({ 'c' => nil }))
+    refute(schemer.valid?({ 'c' => 2 }))
+    assert(schemer.valid?({ 'd' => 2.0 }))
+    assert(schemer.valid?({ 'd' => nil }))
+    refute(schemer.valid?({ 'd' => 2 }))
   end
 
   def test_openapi30_formats
     schema = {
       'properties' => {
-        'a' => { 'format' => 'int32' },
-        'b' => { 'format' => 'int64' },
-        'c' => { 'format' => 'float' },
-        'd' => { 'format' => 'double' },
+        'a' => { 'type' => 'integer', 'format' => 'int32' },
+        'b' => { 'type' => 'integer', 'format' => 'int64' },
+        'c' => { 'type' => 'number', 'format' => 'float' },
+        'd' => { 'type' => 'number', 'format' => 'double' },
         'e' => { 'format' => 'password' },
         'f' => { 'format' => 'byte' },
         'g' => { 'format' => 'binary' },
@@ -746,12 +777,16 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid_schema?)
     assert(schemer.valid?({ 'a' => 2.pow(31) }))
     refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    refute(schemer.valid?({ 'a' => nil }))
     assert(schemer.valid?({ 'b' => 2.pow(63) }))
     refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    refute(schemer.valid?({ 'b' => nil }))
     assert(schemer.valid?({ 'c' => 2.0 }))
     refute(schemer.valid?({ 'c' => 2 }))
+    refute(schemer.valid?({ 'c' => nil }))
     assert(schemer.valid?({ 'd' => 2.0 }))
     refute(schemer.valid?({ 'd' => 2 }))
+    refute(schemer.valid?({ 'd' => nil }))
     assert(schemer.valid?({ 'e' => 2 }))
     assert(schemer.valid?({ 'e' => 'anything' }))
     refute(schemer.valid?({ 'f' => '!' }))
@@ -762,6 +797,33 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'h' => '2001-02-03' }))
     refute(schemer.valid?({ 'i' => '2001-02-03' }))
     assert(schemer.valid?({ 'i' => '2001-02-03T04:05:06.123456789+07:00' }))
+  end
+
+  def test_openapi30_nullable_formats
+    schema = {
+      'properties' => {
+        'a' => { 'type' => 'integer', 'format' => 'int32', 'nullable' => true },
+        'b' => { 'type' => 'integer', 'format' => 'int64', 'nullable' => true },
+        'c' => { 'type' => 'number', 'format' => 'float', 'nullable' => true },
+        'd' => { 'type' => 'number', 'format' => 'double', 'nullable' => true },
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema, :meta_schema => JSONSchemer.openapi30)
+
+    assert(schemer.valid_schema?)
+    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => nil }))
+    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => nil }))
+    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    assert(schemer.valid?({ 'c' => 2.0 }))
+    assert(schemer.valid?({ 'c' => nil }))
+    refute(schemer.valid?({ 'c' => 2 }))
+    assert(schemer.valid?({ 'd' => 2.0 }))
+    assert(schemer.valid?({ 'd' => nil }))
+    refute(schemer.valid?({ 'd' => 2 }))
   end
 
   def test_unsupported_openapi_version
