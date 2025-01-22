@@ -4,8 +4,8 @@ module JSONSchemer
     BASE_URI = URI('https://spec.openapis.org/oas/3.1/dialect/base')
     # https://spec.openapis.org/oas/v3.1.0#data-types
     FORMATS = {
-      'int32' => proc { |instance, _format| instance.nil? || (instance.is_a?(Integer) && instance.bit_length <= 32) },
-      'int64' => proc { |instance, _format| instance.nil? || (instance.is_a?(Integer) && instance.bit_length <= 64) },
+      'int32' => proc { |instance, _format| !instance.is_a?(Integer) || instance.bit_length <= 32 },
+      'int64' => proc { |instance, _format| !instance.is_a?(Integer) || instance.bit_length <= 64 },
       'float' => proc { |instance, _format| instance.nil? || instance.is_a?(Float) },
       'double' => proc { |instance, _format| instance.nil? || instance.is_a?(Float) },
       'password' => proc { |_instance, _format| true }

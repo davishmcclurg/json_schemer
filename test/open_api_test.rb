@@ -715,28 +715,30 @@ class OpenAPITest < Minitest::Test
 
     assert(schemer.valid_schema?)
     assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => 2.pow(31).to_f }))
+    refute(schemer.valid?({ 'a' => 2.pow(31).to_s }))
     refute(schemer.valid?({ 'a' => 2.pow(32) }))
-    refute(schemer.valid?({ 'a' => nil }))
+    refute(schemer.valid?({ 'a' => 123.123 }))
     assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => 2.pow(63).to_f }))
+    refute(schemer.valid?({ 'a' => 2.pow(63).to_s }))
     refute(schemer.valid?({ 'b' => 2.pow(64) }))
-    refute(schemer.valid?({ 'b' => nil }))
+    refute(schemer.valid?({ 'b' => 123.123 }))
     assert(schemer.valid?({ 'c' => 2.0 }))
     refute(schemer.valid?({ 'c' => 2 }))
-    refute(schemer.valid?({ 'c' => nil }))
     assert(schemer.valid?({ 'd' => 2.0 }))
     refute(schemer.valid?({ 'd' => 2 }))
-    refute(schemer.valid?({ 'd' => nil }))
     assert(schemer.valid?({ 'e' => 2 }))
     assert(schemer.valid?({ 'e' => 'anything' }))
   end
 
-  def test_openapi31_nullable_formats
+  def test_openapi31_formats_multiple_types
     schema = {
       'properties' => {
-        'a' => { 'type' => ['integer', 'null'], 'format' => 'int32' },
-        'b' => { 'type' => ['integer', 'null'], 'format' => 'int64' },
+        'a' => { 'type' => ['integer', 'boolean', 'null'], 'format' => 'int32' },
+        'b' => { 'type' => ['integer', 'boolean', 'null'], 'format' => 'int64' },
         'c' => { 'type' => ['number', 'null'], 'format' => 'float' },
-        'd' => { 'type' => ['number', 'null'], 'format' => 'double' },
+        'd' => { 'type' => ['number', 'null'], 'format' => 'double' }
       }
     }
 
@@ -744,9 +746,11 @@ class OpenAPITest < Minitest::Test
 
     assert(schemer.valid_schema?)
     assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => true }))
     assert(schemer.valid?({ 'a' => nil }))
     refute(schemer.valid?({ 'a' => 2.pow(32) }))
     assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => true }))
     assert(schemer.valid?({ 'b' => nil }))
     refute(schemer.valid?({ 'b' => 2.pow(64) }))
     assert(schemer.valid?({ 'c' => 2.0 }))
@@ -776,11 +780,13 @@ class OpenAPITest < Minitest::Test
 
     assert(schemer.valid_schema?)
     assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    refute(schemer.valid?({ 'a' => 2.pow(31).to_s }))
     refute(schemer.valid?({ 'a' => 2.pow(32) }))
-    refute(schemer.valid?({ 'a' => nil }))
+    refute(schemer.valid?({ 'a' => 123.123 }))
     assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    refute(schemer.valid?({ 'a' => 2.pow(63).to_s }))
     refute(schemer.valid?({ 'b' => 2.pow(64) }))
-    refute(schemer.valid?({ 'b' => nil }))
+    refute(schemer.valid?({ 'b' => 123.123 }))
     assert(schemer.valid?({ 'c' => 2.0 }))
     refute(schemer.valid?({ 'c' => 2 }))
     refute(schemer.valid?({ 'c' => nil }))
@@ -805,7 +811,7 @@ class OpenAPITest < Minitest::Test
         'a' => { 'type' => 'integer', 'format' => 'int32', 'nullable' => true },
         'b' => { 'type' => 'integer', 'format' => 'int64', 'nullable' => true },
         'c' => { 'type' => 'number', 'format' => 'float', 'nullable' => true },
-        'd' => { 'type' => 'number', 'format' => 'double', 'nullable' => true },
+        'd' => { 'type' => 'number', 'format' => 'double', 'nullable' => true }
       }
     }
 
