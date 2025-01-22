@@ -6,8 +6,8 @@ module JSONSchemer
     FORMATS = {
       'int32' => proc { |instance, _format| !instance.is_a?(Integer) || instance.bit_length <= 32 },
       'int64' => proc { |instance, _format| !instance.is_a?(Integer) || instance.bit_length <= 64 },
-      'float' => proc { |instance, _format| instance.nil? || instance.is_a?(Float) },
-      'double' => proc { |instance, _format| instance.nil? || instance.is_a?(Float) },
+      'float' => proc { |instance, _format| !instance.is_a?(Numeric) || instance.is_a?(Float) },
+      'double' => proc { |instance, _format| !instance.is_a?(Numeric) || instance.is_a?(Float) },
       'password' => proc { |_instance, _format| true }
     }
     SCHEMA = {

@@ -726,8 +726,10 @@ class OpenAPITest < Minitest::Test
     refute(schemer.valid?({ 'b' => 123.123 }))
     assert(schemer.valid?({ 'c' => 2.0 }))
     refute(schemer.valid?({ 'c' => 2 }))
+    refute(schemer.valid?({ 'c' => 2.to_s }))
     assert(schemer.valid?({ 'd' => 2.0 }))
     refute(schemer.valid?({ 'd' => 2 }))
+    refute(schemer.valid?({ 'd' => 2.to_s }))
     assert(schemer.valid?({ 'e' => 2 }))
     assert(schemer.valid?({ 'e' => 'anything' }))
   end
@@ -737,8 +739,8 @@ class OpenAPITest < Minitest::Test
       'properties' => {
         'a' => { 'type' => ['integer', 'boolean', 'null'], 'format' => 'int32' },
         'b' => { 'type' => ['integer', 'boolean', 'null'], 'format' => 'int64' },
-        'c' => { 'type' => ['number', 'null'], 'format' => 'float' },
-        'd' => { 'type' => ['number', 'null'], 'format' => 'double' }
+        'c' => { 'type' => ['number', 'boolean', 'null'], 'format' => 'float' },
+        'd' => { 'type' => ['number', 'boolean', 'null'], 'format' => 'double' }
       }
     }
 
@@ -754,9 +756,11 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'b' => nil }))
     refute(schemer.valid?({ 'b' => 2.pow(64) }))
     assert(schemer.valid?({ 'c' => 2.0 }))
+    assert(schemer.valid?({ 'c' => true }))
     assert(schemer.valid?({ 'c' => nil }))
     refute(schemer.valid?({ 'c' => 2 }))
     assert(schemer.valid?({ 'd' => 2.0 }))
+    assert(schemer.valid?({ 'd' => true }))
     assert(schemer.valid?({ 'd' => nil }))
     refute(schemer.valid?({ 'd' => 2 }))
   end
@@ -789,10 +793,10 @@ class OpenAPITest < Minitest::Test
     refute(schemer.valid?({ 'b' => 123.123 }))
     assert(schemer.valid?({ 'c' => 2.0 }))
     refute(schemer.valid?({ 'c' => 2 }))
-    refute(schemer.valid?({ 'c' => nil }))
+    refute(schemer.valid?({ 'c' => 2.to_s }))
     assert(schemer.valid?({ 'd' => 2.0 }))
     refute(schemer.valid?({ 'd' => 2 }))
-    refute(schemer.valid?({ 'd' => nil }))
+    refute(schemer.valid?({ 'd' => 2.to_s }))
     assert(schemer.valid?({ 'e' => 2 }))
     assert(schemer.valid?({ 'e' => 'anything' }))
     refute(schemer.valid?({ 'f' => '!' }))
