@@ -695,6 +695,77 @@ class JSONSchemerTest < Minitest::Test
     assert_equal(subschemer, subsubschemer.ref('#'))
   end
 
+  def test_schema_ref_configuration
+    schema1 = {
+      'type' => 'integer',
+      '$ref' => 'schema2',
+      '$defs' => {
+        'x' => {
+          'properties' => {
+            'y' => {
+              'type' => 'string',
+              '$ref' => 'schema2',
+              'default' => 'z',
+              'pattern' => '[1z]+',
+              'format' => 'email'
+            }
+          }
+        }
+      }
+    }
+    refs = {
+      URI('json-schemer://schema/schema2') => {
+        '$ref' => 'schema3'
+      },
+      URI('json-schemer://schema/schema3') => {
+        'maximum' => 1,
+        'maxLength' => 1,
+        'pattern' => '[1z]+',
+        'format' => 'email'
+      }
+    }
+
+    ref_counts = Hash.new(0)
+    net_http_get = proc do |uri|
+      ref_counts[uri] += 1
+      refs.fetch(uri).to_json
+    end
+    regexp_counts = Hash.new(0)
+    ruby_equivalent = proc do |pattern|
+      regexp_counts[pattern] += 1
+      pattern
+    end
+
+    Net::HTTP.stub(:get, net_http_get) do
+      JSONSchemer::EcmaRegexp.stub(:ruby_equivalent, ruby_equivalent) do
+        schemer = JSONSchemer.schema(
+          schema1,
+          :format => false,
+          :insert_property_defaults => true,
+          :ref_resolver => 'net/http',
+          :regexp_resolver => 'ecma'
+        )
+        assert(schemer.valid?(1))
+        refute(schemer.valid?(2))
+        assert_equal(1, ref_counts[URI('json-schemer://schema/schema2')])
+        assert_equal(1, ref_counts[URI('json-schemer://schema/schema3')])
+        assert_equal(1, regexp_counts['[1z]+'])
+
+        subschemer = schemer.ref('#/$defs/x')
+        assert(subschemer.valid?({ 'y' => '1' }))
+        refute(subschemer.valid?({ 'y' => '2' }))
+        refute(subschemer.valid?({ 'y' => '11' }))
+        assert_equal(1, ref_counts[URI('json-schemer://schema/schema2')])
+        assert_equal(1, ref_counts[URI('json-schemer://schema/schema3')])
+        assert_equal(1, regexp_counts['[1z]+'])
+
+        data = {}
+        assert(subschemer.valid?(data))
+        assert_equal('z', data.fetch('y'))
+      end
+    end
+  end
+
   def test_published_meta_schemas
     [
       JSONSchemer::Draft202012::SCHEMA,
