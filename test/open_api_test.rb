@@ -780,8 +780,8 @@ class OpenAPITest < Minitest::Test
         'e' => { 'type' => 'string', 'format' => 'password' },
         'f' => { 'type' => 'string', 'format' => 'byte' },
         'g' => { 'type' => 'string', 'format' => 'binary' },
-        'h' => { 'format' => 'date' },
-        'i' => { 'format' => 'date-time' }
+        'h' => { 'type' => 'string', 'format' => 'date' },
+        'i' => { 'type' => 'string', 'format' => 'date-time' }
       }
     }
 
@@ -810,10 +810,12 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'g' => '!'.b }))
     refute(schemer.valid?({ 'g' => '!' }))
     refute(schemer.valid?({ 'g' => 123 }))
-    refute(schemer.valid?({ 'h' => '2001-02-03T04:05:06.123456789+07:00' }))
     assert(schemer.valid?({ 'h' => '2001-02-03' }))
-    refute(schemer.valid?({ 'i' => '2001-02-03' }))
+    refute(schemer.valid?({ 'h' => '2001-02-03T04:05:06.123456789+07:00' }))
+    refute(schemer.valid?({ 'h' => 123 }))
     assert(schemer.valid?({ 'i' => '2001-02-03T04:05:06.123456789+07:00' }))
+    refute(schemer.valid?({ 'i' => '2001-02-03' }))
+    refute(schemer.valid?({ 'i' => 123 }))
   end
 
   def test_openapi30_nullable_formats
@@ -825,7 +827,9 @@ class OpenAPITest < Minitest::Test
         'd' => { 'type' => 'number', 'format' => 'double', 'nullable' => true },
         'e' => { 'type' => 'string', 'format' => 'password', 'nullable' => true },
         'f' => { 'type' => 'string', 'format' => 'byte', 'nullable' => true },
-        'g' => { 'type' => 'string', 'format' => 'binary', 'nullable' => true }
+        'g' => { 'type' => 'string', 'format' => 'binary', 'nullable' => true },
+        'h' => { 'type' => 'string', 'format' => 'date', 'nullable' => true },
+        'i' => { 'type' => 'string', 'format' => 'date-time', 'nullable' => true }
       }
     }
 
@@ -850,11 +854,15 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'f' => 'IQ==' }))
     assert(schemer.valid?({ 'f' => nil }))
     refute(schemer.valid?({ 'f' => '!' }))
-    refute(schemer.valid?({ 'f' => 123 }))
     assert(schemer.valid?({ 'g' => '!'.b }))
     assert(schemer.valid?({ 'g' => nil }))
     refute(schemer.valid?({ 'g' => '!' }))
-    refute(schemer.valid?({ 'g' => 123 }))
+    assert(schemer.valid?({ 'h' => '2001-02-03' }))
+    assert(schemer.valid?({ 'h' => nil }))
+    refute(schemer.valid?({ 'h' => '2001-02-03T04:05:06.123456789+07:00' }))
+    assert(schemer.valid?({ 'i' => '2001-02-03T04:05:06.123456789+07:00' }))
+    assert(schemer.valid?({ 'i' => nil }))
+    refute(schemer.valid?({ 'i' => '2001-02-03' }))
   end
 
   def test_unsupported_openapi_version
