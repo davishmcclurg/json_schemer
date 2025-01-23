@@ -707,7 +707,7 @@ class OpenAPITest < Minitest::Test
         'b' => { 'type' => 'integer', 'format' => 'int64' },
         'c' => { 'type' => 'number', 'format' => 'float' },
         'd' => { 'type' => 'number', 'format' => 'double' },
-        'e' => { 'format' => 'password' }
+        'e' => { 'type' => 'string', 'format' => 'password' }
       }
     }
 
@@ -730,8 +730,8 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'd' => 2.0 }))
     refute(schemer.valid?({ 'd' => 2 }))
     refute(schemer.valid?({ 'd' => 2.to_s }))
-    assert(schemer.valid?({ 'e' => 2 }))
     assert(schemer.valid?({ 'e' => 'anything' }))
+    refute(schemer.valid?({ 'e' => 2 }))
   end
 
   def test_openapi31_formats_multiple_types
@@ -740,7 +740,8 @@ class OpenAPITest < Minitest::Test
         'a' => { 'type' => ['integer', 'boolean', 'null'], 'format' => 'int32' },
         'b' => { 'type' => ['integer', 'boolean', 'null'], 'format' => 'int64' },
         'c' => { 'type' => ['number', 'boolean', 'null'], 'format' => 'float' },
-        'd' => { 'type' => ['number', 'boolean', 'null'], 'format' => 'double' }
+        'd' => { 'type' => ['number', 'boolean', 'null'], 'format' => 'double' },
+        'e' => { 'type' => ['string', 'boolean', 'null'], 'format' => 'password' }
       }
     }
 
@@ -763,6 +764,10 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'd' => true }))
     assert(schemer.valid?({ 'd' => nil }))
     refute(schemer.valid?({ 'd' => 2 }))
+    assert(schemer.valid?({ 'e' => 'anything' }))
+    assert(schemer.valid?({ 'e' => true }))
+    assert(schemer.valid?({ 'e' => nil }))
+    refute(schemer.valid?({ 'e' => 2 }))
   end
 
   def test_openapi30_formats
@@ -772,7 +777,7 @@ class OpenAPITest < Minitest::Test
         'b' => { 'type' => 'integer', 'format' => 'int64' },
         'c' => { 'type' => 'number', 'format' => 'float' },
         'd' => { 'type' => 'number', 'format' => 'double' },
-        'e' => { 'format' => 'password' },
+        'e' => { 'type' => 'string', 'format' => 'password' },
         'f' => { 'format' => 'byte' },
         'g' => { 'format' => 'binary' },
         'h' => { 'format' => 'date' },
@@ -797,8 +802,8 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'd' => 2.0 }))
     refute(schemer.valid?({ 'd' => 2 }))
     refute(schemer.valid?({ 'd' => 2.to_s }))
-    assert(schemer.valid?({ 'e' => 2 }))
     assert(schemer.valid?({ 'e' => 'anything' }))
+    refute(schemer.valid?({ 'e' => 2 }))
     refute(schemer.valid?({ 'f' => '!' }))
     assert(schemer.valid?({ 'f' => 'IQ==' }))
     refute(schemer.valid?({ 'g' => '!' }))
@@ -815,7 +820,8 @@ class OpenAPITest < Minitest::Test
         'a' => { 'type' => 'integer', 'format' => 'int32', 'nullable' => true },
         'b' => { 'type' => 'integer', 'format' => 'int64', 'nullable' => true },
         'c' => { 'type' => 'number', 'format' => 'float', 'nullable' => true },
-        'd' => { 'type' => 'number', 'format' => 'double', 'nullable' => true }
+        'd' => { 'type' => 'number', 'format' => 'double', 'nullable' => true },
+        'e' => { 'type' => 'string', 'format' => 'password', 'nullable' => true }
       }
     }
 
@@ -834,6 +840,9 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'd' => 2.0 }))
     assert(schemer.valid?({ 'd' => nil }))
     refute(schemer.valid?({ 'd' => 2 }))
+    assert(schemer.valid?({ 'e' => 'anything' }))
+    assert(schemer.valid?({ 'e' => nil }))
+    refute(schemer.valid?({ 'e' => 2 }))
   end
 
   def test_unsupported_openapi_version
