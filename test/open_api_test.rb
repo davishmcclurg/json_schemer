@@ -778,8 +778,8 @@ class OpenAPITest < Minitest::Test
         'c' => { 'type' => 'number', 'format' => 'float' },
         'd' => { 'type' => 'number', 'format' => 'double' },
         'e' => { 'type' => 'string', 'format' => 'password' },
-        'f' => { 'format' => 'byte' },
-        'g' => { 'format' => 'binary' },
+        'f' => { 'type' => 'string', 'format' => 'byte' },
+        'g' => { 'type' => 'string', 'format' => 'binary' },
         'h' => { 'format' => 'date' },
         'i' => { 'format' => 'date-time' }
       }
@@ -804,10 +804,12 @@ class OpenAPITest < Minitest::Test
     refute(schemer.valid?({ 'd' => 2.to_s }))
     assert(schemer.valid?({ 'e' => 'anything' }))
     refute(schemer.valid?({ 'e' => 2 }))
-    refute(schemer.valid?({ 'f' => '!' }))
     assert(schemer.valid?({ 'f' => 'IQ==' }))
-    refute(schemer.valid?({ 'g' => '!' }))
+    refute(schemer.valid?({ 'f' => '!' }))
+    refute(schemer.valid?({ 'f' => 123 }))
     assert(schemer.valid?({ 'g' => '!'.b }))
+    refute(schemer.valid?({ 'g' => '!' }))
+    refute(schemer.valid?({ 'g' => 123 }))
     refute(schemer.valid?({ 'h' => '2001-02-03T04:05:06.123456789+07:00' }))
     assert(schemer.valid?({ 'h' => '2001-02-03' }))
     refute(schemer.valid?({ 'i' => '2001-02-03' }))
@@ -821,7 +823,9 @@ class OpenAPITest < Minitest::Test
         'b' => { 'type' => 'integer', 'format' => 'int64', 'nullable' => true },
         'c' => { 'type' => 'number', 'format' => 'float', 'nullable' => true },
         'd' => { 'type' => 'number', 'format' => 'double', 'nullable' => true },
-        'e' => { 'type' => 'string', 'format' => 'password', 'nullable' => true }
+        'e' => { 'type' => 'string', 'format' => 'password', 'nullable' => true },
+        'f' => { 'type' => 'string', 'format' => 'byte', 'nullable' => true },
+        'g' => { 'type' => 'string', 'format' => 'binary', 'nullable' => true }
       }
     }
 
@@ -843,6 +847,14 @@ class OpenAPITest < Minitest::Test
     assert(schemer.valid?({ 'e' => 'anything' }))
     assert(schemer.valid?({ 'e' => nil }))
     refute(schemer.valid?({ 'e' => 2 }))
+    assert(schemer.valid?({ 'f' => 'IQ==' }))
+    assert(schemer.valid?({ 'f' => nil }))
+    refute(schemer.valid?({ 'f' => '!' }))
+    refute(schemer.valid?({ 'f' => 123 }))
+    assert(schemer.valid?({ 'g' => '!'.b }))
+    assert(schemer.valid?({ 'g' => nil }))
+    refute(schemer.valid?({ 'g' => '!' }))
+    refute(schemer.valid?({ 'g' => 123 }))
   end
 
   def test_unsupported_openapi_version
