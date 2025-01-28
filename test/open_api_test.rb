@@ -812,16 +812,100 @@ class OpenAPITest < Minitest::Test
     schemer = JSONSchemer.schema(schema, :meta_schema => JSONSchemer.openapi31)
 
     assert(schemer.valid_schema?)
+    # int32
     assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => 2.pow(31).to_f }))
+    assert(schemer.valid?({ 'a' => 2.pow(31).to_s }))
     refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    refute(schemer.valid?({ 'a' => 2.pow(32).to_f }))
+    # int64
     assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => 2.pow(63).to_f }))
+    assert(schemer.valid?({ 'a' => 2.pow(63).to_s }))
     refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    refute(schemer.valid?({ 'b' => 2.pow(64).to_f }))
+    # float
+    assert(schemer.valid?({ 'c' => 2.0 }))
+    assert(schemer.valid?({ 'c' => 2.to_s }))
+    refute(schemer.valid?({ 'c' => 2 }))
+    # double
+    assert(schemer.valid?({ 'd' => 2.0 }))
+    assert(schemer.valid?({ 'd' => 2.to_s }))
+    refute(schemer.valid?({ 'd' => 2 }))
+    # password
+    assert(schemer.valid?({ 'e' => 'anything' }))
+    assert(schemer.valid?({ 'e' => 2 }))
+  end
+
+  def test_openapi31_formats_with_type
+    schema = {
+      'properties' => {
+        'a' => { 'type' => 'integer', 'format' => 'int32' },
+        'b' => { 'type' => 'integer', 'format' => 'int64' },
+        'c' => { 'type' => 'number', 'format' => 'float' },
+        'd' => { 'type' => 'number', 'format' => 'double' },
+        'e' => { 'type' => 'string', 'format' => 'password' }
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema, :meta_schema => JSONSchemer.openapi31)
+
+    assert(schemer.valid_schema?)
+    # int32
+    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => 2.pow(31).to_f }))
+    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    refute(schemer.valid?({ 'a' => 2.pow(32).to_f }))
+    # int64
+    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => 2.pow(63).to_f }))
+    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    refute(schemer.valid?({ 'b' => 2.pow(64).to_f }))
+    # float
     assert(schemer.valid?({ 'c' => 2.0 }))
     refute(schemer.valid?({ 'c' => 2 }))
+    # double
     assert(schemer.valid?({ 'd' => 2.0 }))
     refute(schemer.valid?({ 'd' => 2 }))
-    assert(schemer.valid?({ 'e' => 2 }))
+    # password
     assert(schemer.valid?({ 'e' => 'anything' }))
+    refute(schemer.valid?({ 'e' => 2 }))
+  end
+
+  def test_openapi31_formats_with_multiple_types
+    schema = {
+      'properties' => {
+        'a' => { 'type' => ['integer', 'null'], 'format' => 'int32' },
+        'b' => { 'type' => ['integer', 'null'], 'format' => 'int64' },
+        'c' => { 'type' => ['number', 'null'], 'format' => 'float' },
+        'd' => { 'type' => ['number', 'null'], 'format' => 'double' },
+        'e' => { 'type' => ['string', 'null'], 'format' => 'password' }
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema, :meta_schema => JSONSchemer.openapi31)
+
+    assert(schemer.valid_schema?)
+    # int32
+    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => nil }))
+    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    # int64
+    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => nil }))
+    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    # float
+    assert(schemer.valid?({ 'c' => 2.0 }))
+    assert(schemer.valid?({ 'c' => nil }))
+    refute(schemer.valid?({ 'c' => 2 }))
+    # double
+    assert(schemer.valid?({ 'd' => 2.0 }))
+    assert(schemer.valid?({ 'd' => nil }))
+    refute(schemer.valid?({ 'd' => 2 }))
+    # password
+    assert(schemer.valid?({ 'e' => 'anything' }))
+    assert(schemer.valid?({ 'e' => nil }))
+    refute(schemer.valid?({ 'e' => 2 }))
   end
 
   def test_openapi30_formats
@@ -842,24 +926,158 @@ class OpenAPITest < Minitest::Test
     schemer = JSONSchemer.schema(schema, :meta_schema => JSONSchemer.openapi30)
 
     assert(schemer.valid_schema?)
+    # int32
     assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => 2.pow(31).to_f }))
+    assert(schemer.valid?({ 'a' => 2.pow(31).to_s }))
+    assert(schemer.valid?({ 'a' => 2.pow(32).to_f }))
     refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    # int64
     assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => 2.pow(63).to_f }))
+    assert(schemer.valid?({ 'a' => 2.pow(63).to_s }))
+    assert(schemer.valid?({ 'b' => 2.pow(64).to_f }))
     refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    # float
+    assert(schemer.valid?({ 'c' => 2.0 }))
+    assert(schemer.valid?({ 'c' => 2.to_s }))
+    refute(schemer.valid?({ 'c' => 2 }))
+    # double
+    assert(schemer.valid?({ 'd' => 2.0 }))
+    assert(schemer.valid?({ 'd' => 2.to_s }))
+    refute(schemer.valid?({ 'd' => 2 }))
+    # password
+    assert(schemer.valid?({ 'e' => 'anything' }))
+    assert(schemer.valid?({ 'e' => 2 }))
+    # byte
+    assert(schemer.valid?({ 'f' => 'IQ==' }))
+    assert(schemer.valid?({ 'f' => 123 }))
+    refute(schemer.valid?({ 'f' => '!' }))
+    # binary
+    assert(schemer.valid?({ 'g' => '!'.b }))
+    assert(schemer.valid?({ 'g' => 123 }))
+    refute(schemer.valid?({ 'g' => '!' }))
+    # date
+    assert(schemer.valid?({ 'h' => '2001-02-03' }))
+    assert(schemer.valid?({ 'h' => 123 }))
+    refute(schemer.valid?({ 'h' => '2001-02-03T04:05:06.123456789+07:00' }))
+    # date-time
+    assert(schemer.valid?({ 'i' => '2001-02-03T04:05:06.123456789+07:00' }))
+    assert(schemer.valid?({ 'i' => 123 }))
+    refute(schemer.valid?({ 'i' => '2001-02-03' }))
+  end
+
+  def test_openapi30_formats_with_type
+    schema = {
+      'properties' => {
+        'a' => { 'type' => 'integer', 'format' => 'int32' },
+        'b' => { 'type' => 'integer', 'format' => 'int64' },
+        'c' => { 'type' => 'number', 'format' => 'float' },
+        'd' => { 'type' => 'number', 'format' => 'double' },
+        'e' => { 'type' => 'string', 'format' => 'password' },
+        'f' => { 'type' => 'string', 'format' => 'byte' },
+        'g' => { 'type' => 'string', 'format' => 'binary' },
+        'h' => { 'type' => 'string', 'format' => 'date' },
+        'i' => { 'type' => 'string', 'format' => 'date-time' }
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema, :meta_schema => JSONSchemer.openapi30)
+
+    assert(schemer.valid_schema?)
+    # int32
+    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    refute(schemer.valid?({ 'a' => 2.pow(31).to_s }))
+    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    refute(schemer.valid?({ 'a' => 2.pow(32).to_f }))
+    # int64
+    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    refute(schemer.valid?({ 'a' => 2.pow(63).to_s }))
+    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    refute(schemer.valid?({ 'b' => 2.pow(64).to_f }))
+    # float
     assert(schemer.valid?({ 'c' => 2.0 }))
     refute(schemer.valid?({ 'c' => 2 }))
+    refute(schemer.valid?({ 'c' => 2.to_s }))
+    # double
     assert(schemer.valid?({ 'd' => 2.0 }))
     refute(schemer.valid?({ 'd' => 2 }))
-    assert(schemer.valid?({ 'e' => 2 }))
+    refute(schemer.valid?({ 'd' => 2.to_s }))
+    # password
     assert(schemer.valid?({ 'e' => 'anything' }))
-    refute(schemer.valid?({ 'f' => '!' }))
+    refute(schemer.valid?({ 'e' => 2 }))
+    # byte
     assert(schemer.valid?({ 'f' => 'IQ==' }))
-    refute(schemer.valid?({ 'g' => '!' }))
+    refute(schemer.valid?({ 'f' => '!' }))
+    refute(schemer.valid?({ 'f' => 123 }))
+    # binary
     assert(schemer.valid?({ 'g' => '!'.b }))
-    refute(schemer.valid?({ 'h' => '2001-02-03T04:05:06.123456789+07:00' }))
+    refute(schemer.valid?({ 'g' => '!' }))
+    refute(schemer.valid?({ 'g' => 123 }))
+    # date
     assert(schemer.valid?({ 'h' => '2001-02-03' }))
-    refute(schemer.valid?({ 'i' => '2001-02-03' }))
+    refute(schemer.valid?({ 'h' => '2001-02-03T04:05:06.123456789+07:00' }))
+    refute(schemer.valid?({ 'h' => 123 }))
+    # date-time
     assert(schemer.valid?({ 'i' => '2001-02-03T04:05:06.123456789+07:00' }))
+    refute(schemer.valid?({ 'i' => '2001-02-03' }))
+    refute(schemer.valid?({ 'i' => 123 }))
+  end
+
+  def test_openapi30_nullable_formats
+    schema = {
+      'properties' => {
+        'a' => { 'type' => 'integer', 'format' => 'int32', 'nullable' => true },
+        'b' => { 'type' => 'integer', 'format' => 'int64', 'nullable' => true },
+        'c' => { 'type' => 'number', 'format' => 'float', 'nullable' => true },
+        'd' => { 'type' => 'number', 'format' => 'double', 'nullable' => true },
+        'e' => { 'type' => 'string', 'format' => 'password', 'nullable' => true },
+        'f' => { 'type' => 'string', 'format' => 'byte', 'nullable' => true },
+        'g' => { 'type' => 'string', 'format' => 'binary', 'nullable' => true },
+        'h' => { 'type' => 'string', 'format' => 'date', 'nullable' => true },
+        'i' => { 'type' => 'string', 'format' => 'date-time', 'nullable' => true }
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema, :meta_schema => JSONSchemer.openapi30)
+
+    assert(schemer.valid_schema?)
+    # int32
+    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => nil }))
+    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    # int64
+    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => nil }))
+    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    # float
+    assert(schemer.valid?({ 'c' => 2.0 }))
+    assert(schemer.valid?({ 'c' => nil }))
+    refute(schemer.valid?({ 'c' => 2 }))
+    # double
+    assert(schemer.valid?({ 'd' => 2.0 }))
+    assert(schemer.valid?({ 'd' => nil }))
+    refute(schemer.valid?({ 'd' => 2 }))
+    # password
+    assert(schemer.valid?({ 'e' => 'anything' }))
+    assert(schemer.valid?({ 'e' => nil }))
+    refute(schemer.valid?({ 'e' => 2 }))
+    # byte
+    assert(schemer.valid?({ 'f' => 'IQ==' }))
+    assert(schemer.valid?({ 'f' => nil }))
+    refute(schemer.valid?({ 'f' => '!' }))
+    # binary
+    assert(schemer.valid?({ 'g' => '!'.b }))
+    assert(schemer.valid?({ 'g' => nil }))
+    refute(schemer.valid?({ 'g' => '!' }))
+    # date
+    assert(schemer.valid?({ 'h' => '2001-02-03' }))
+    assert(schemer.valid?({ 'h' => nil }))
+    refute(schemer.valid?({ 'h' => '2001-02-03T04:05:06.123456789+07:00' }))
+    # date-time
+    assert(schemer.valid?({ 'i' => '2001-02-03T04:05:06.123456789+07:00' }))
+    assert(schemer.valid?({ 'i' => nil }))
+    refute(schemer.valid?({ 'i' => '2001-02-03' }))
   end
 
   def test_unsupported_openapi_version
