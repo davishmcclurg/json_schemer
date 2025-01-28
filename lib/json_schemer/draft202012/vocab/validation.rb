@@ -4,6 +4,10 @@ module JSONSchemer
     module Vocab
       module Validation
         class Type < Keyword
+          def self.valid_integer?(instance)
+            instance.is_a?(Numeric) && (instance.is_a?(Integer) || instance.floor == instance)
+          end
+
           def error(formatted_instance_location:, **)
             case value
             when 'null'
@@ -45,7 +49,7 @@ module JSONSchemer
             when 'number'
               instance.is_a?(Numeric)
             when 'integer'
-              instance.is_a?(Numeric) && (instance.is_a?(Integer) || instance.floor == instance)
+              self.class.valid_integer?(instance)
             when 'string'
               instance.is_a?(String)
             when 'array'

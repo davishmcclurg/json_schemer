@@ -4,9 +4,8 @@ module JSONSchemer
     module Vocab
       module Validation
         class Type < Draft202012::Vocab::Validation::Type
-        private
-          def valid_type(type, instance)
-            type == 'integer' ? instance.is_a?(Integer) : super
+          def self.valid_integer?(instance)
+            instance.is_a?(Integer)
           end
         end
 
