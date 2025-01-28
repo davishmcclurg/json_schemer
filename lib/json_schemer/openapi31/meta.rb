@@ -6,11 +6,11 @@ module JSONSchemer
     FORMATS = {
       'int32' => proc do |instance, _format|
         valid_type = instance.is_a?(Numeric) && (instance.is_a?(Integer) || instance.floor == instance)
-        !valid_type || instance.floor.bit_length <= 32
+        !valid_type || instance.floor.bit_length < 32
       end,
       'int64' => proc do |instance, _format|
         valid_type = instance.is_a?(Numeric) && (instance.is_a?(Integer) || instance.floor == instance)
-        !valid_type || instance.floor.bit_length <= 64
+        !valid_type || instance.floor.bit_length < 64
       end,
       'float' => proc { |instance, _format| !instance.is_a?(Numeric) || instance.is_a?(Float) },
       'double' => proc { |instance, _format| !instance.is_a?(Numeric) || instance.is_a?(Float) },

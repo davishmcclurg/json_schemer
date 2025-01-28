@@ -1,6 +1,10 @@
 require 'test_helper'
 
 class OpenAPITest < Minitest::Test
+  MAX_INT32 = 2.pow(31) - 1
+  MAX_INT64 = 2.pow(63) - 1
+  MAX_INT_WITH_ACCURATE_FLOAT = 2.pow(53)
+
   CAT_SCHEMA = {
     'type' => 'object',
     'properties' => {
@@ -183,7 +187,7 @@ class OpenAPITest < Minitest::Test
     invalid_pack_size = {
       'petType' => 'Dog',
       'name' => 'Heaven',
-      'packSize' => 2.pow(32)
+      'packSize' => 2.pow(31)
     }
     missing_pet_type = {
       'name' => 'Brian'
@@ -813,17 +817,18 @@ class OpenAPITest < Minitest::Test
 
     assert(schemer.valid_schema?)
     # int32
-    assert(schemer.valid?({ 'a' => 2.pow(31) }))
-    assert(schemer.valid?({ 'a' => 2.pow(31).to_f }))
-    assert(schemer.valid?({ 'a' => 2.pow(31).to_s }))
-    refute(schemer.valid?({ 'a' => 2.pow(32) }))
-    refute(schemer.valid?({ 'a' => 2.pow(32).to_f }))
+    assert(schemer.valid?({ 'a' => MAX_INT32 }))
+    assert(schemer.valid?({ 'a' => MAX_INT32.to_f }))
+    assert(schemer.valid?({ 'a' => MAX_INT32.to_s }))
+    refute(schemer.valid?({ 'a' => 2.pow(31) }))
+    refute(schemer.valid?({ 'a' => 2.pow(31).to_f }))
     # int64
-    assert(schemer.valid?({ 'b' => 2.pow(63) }))
-    assert(schemer.valid?({ 'b' => 2.pow(63).to_f }))
-    assert(schemer.valid?({ 'a' => 2.pow(63).to_s }))
-    refute(schemer.valid?({ 'b' => 2.pow(64) }))
-    refute(schemer.valid?({ 'b' => 2.pow(64).to_f }))
+    assert(schemer.valid?({ 'b' => MAX_INT64 }))
+    assert(schemer.valid?({ 'b' => MAX_INT_WITH_ACCURATE_FLOAT }))
+    assert(schemer.valid?({ 'b' => MAX_INT_WITH_ACCURATE_FLOAT.to_f }))
+    assert(schemer.valid?({ 'a' => MAX_INT64.to_s }))
+    refute(schemer.valid?({ 'b' => 2.pow(63) }))
+    refute(schemer.valid?({ 'b' => 2.pow(63).to_f }))
     # float
     assert(schemer.valid?({ 'c' => 2.0 }))
     assert(schemer.valid?({ 'c' => 2.to_s }))
@@ -852,15 +857,16 @@ class OpenAPITest < Minitest::Test
 
     assert(schemer.valid_schema?)
     # int32
-    assert(schemer.valid?({ 'a' => 2.pow(31) }))
-    assert(schemer.valid?({ 'a' => 2.pow(31).to_f }))
-    refute(schemer.valid?({ 'a' => 2.pow(32) }))
-    refute(schemer.valid?({ 'a' => 2.pow(32).to_f }))
+    assert(schemer.valid?({ 'a' => MAX_INT32 }))
+    assert(schemer.valid?({ 'a' => MAX_INT32.to_f }))
+    refute(schemer.valid?({ 'a' => 2.pow(31) }))
+    refute(schemer.valid?({ 'a' => 2.pow(31).to_f }))
     # int64
-    assert(schemer.valid?({ 'b' => 2.pow(63) }))
-    assert(schemer.valid?({ 'b' => 2.pow(63).to_f }))
-    refute(schemer.valid?({ 'b' => 2.pow(64) }))
-    refute(schemer.valid?({ 'b' => 2.pow(64).to_f }))
+    assert(schemer.valid?({ 'b' => MAX_INT64 }))
+    assert(schemer.valid?({ 'b' => MAX_INT_WITH_ACCURATE_FLOAT }))
+    assert(schemer.valid?({ 'b' => MAX_INT_WITH_ACCURATE_FLOAT.to_f }))
+    refute(schemer.valid?({ 'b' => 2.pow(63) }))
+    refute(schemer.valid?({ 'b' => 2.pow(63).to_f }))
     # float
     assert(schemer.valid?({ 'c' => 2.0 }))
     refute(schemer.valid?({ 'c' => 2 }))
@@ -887,13 +893,13 @@ class OpenAPITest < Minitest::Test
 
     assert(schemer.valid_schema?)
     # int32
-    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => MAX_INT32 }))
     assert(schemer.valid?({ 'a' => nil }))
-    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    refute(schemer.valid?({ 'a' => 2.pow(31) }))
     # int64
-    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => MAX_INT64 }))
     assert(schemer.valid?({ 'b' => nil }))
-    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    refute(schemer.valid?({ 'b' => 2.pow(63) }))
     # float
     assert(schemer.valid?({ 'c' => 2.0 }))
     assert(schemer.valid?({ 'c' => nil }))
@@ -927,17 +933,17 @@ class OpenAPITest < Minitest::Test
 
     assert(schemer.valid_schema?)
     # int32
-    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => MAX_INT32 }))
+    assert(schemer.valid?({ 'a' => MAX_INT32.to_f }))
+    assert(schemer.valid?({ 'a' => MAX_INT32.to_s }))
     assert(schemer.valid?({ 'a' => 2.pow(31).to_f }))
-    assert(schemer.valid?({ 'a' => 2.pow(31).to_s }))
-    assert(schemer.valid?({ 'a' => 2.pow(32).to_f }))
-    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    refute(schemer.valid?({ 'a' => 2.pow(31) }))
     # int64
-    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => MAX_INT64 }))
+    assert(schemer.valid?({ 'b' => MAX_INT64.to_f }))
+    assert(schemer.valid?({ 'a' => MAX_INT64.to_s }))
     assert(schemer.valid?({ 'b' => 2.pow(63).to_f }))
-    assert(schemer.valid?({ 'a' => 2.pow(63).to_s }))
-    assert(schemer.valid?({ 'b' => 2.pow(64).to_f }))
-    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    refute(schemer.valid?({ 'b' => 2.pow(63) }))
     # float
     assert(schemer.valid?({ 'c' => 2.0 }))
     assert(schemer.valid?({ 'c' => 2.to_s }))
@@ -986,15 +992,15 @@ class OpenAPITest < Minitest::Test
 
     assert(schemer.valid_schema?)
     # int32
-    assert(schemer.valid?({ 'a' => 2.pow(31) }))
-    refute(schemer.valid?({ 'a' => 2.pow(31).to_s }))
-    refute(schemer.valid?({ 'a' => 2.pow(32) }))
-    refute(schemer.valid?({ 'a' => 2.pow(32).to_f }))
+    assert(schemer.valid?({ 'a' => MAX_INT32 }))
+    refute(schemer.valid?({ 'a' => MAX_INT32.to_s }))
+    refute(schemer.valid?({ 'a' => 2.pow(31) }))
+    refute(schemer.valid?({ 'a' => 2.pow(31).to_f }))
     # int64
-    assert(schemer.valid?({ 'b' => 2.pow(63) }))
-    refute(schemer.valid?({ 'a' => 2.pow(63).to_s }))
-    refute(schemer.valid?({ 'b' => 2.pow(64) }))
-    refute(schemer.valid?({ 'b' => 2.pow(64).to_f }))
+    assert(schemer.valid?({ 'b' => MAX_INT64 }))
+    refute(schemer.valid?({ 'a' => MAX_INT64.to_s }))
+    refute(schemer.valid?({ 'b' => 2.pow(63) }))
+    refute(schemer.valid?({ 'b' => 2.pow(63).to_f }))
     # float
     assert(schemer.valid?({ 'c' => 2.0 }))
     refute(schemer.valid?({ 'c' => 2 }))
@@ -1043,13 +1049,13 @@ class OpenAPITest < Minitest::Test
 
     assert(schemer.valid_schema?)
     # int32
-    assert(schemer.valid?({ 'a' => 2.pow(31) }))
+    assert(schemer.valid?({ 'a' => MAX_INT32 }))
     assert(schemer.valid?({ 'a' => nil }))
-    refute(schemer.valid?({ 'a' => 2.pow(32) }))
+    refute(schemer.valid?({ 'a' => 2.pow(31) }))
     # int64
-    assert(schemer.valid?({ 'b' => 2.pow(63) }))
+    assert(schemer.valid?({ 'b' => MAX_INT64 }))
     assert(schemer.valid?({ 'b' => nil }))
-    refute(schemer.valid?({ 'b' => 2.pow(64) }))
+    refute(schemer.valid?({ 'b' => 2.pow(63) }))
     # float
     assert(schemer.valid?({ 'c' => 2.0 }))
     assert(schemer.valid?({ 'c' => nil }))
