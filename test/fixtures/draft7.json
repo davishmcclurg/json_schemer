@@ -15104,7 +15104,7 @@
           },
           "schema_pointer": "/definitions/inner/properties/bar",
           "root_schema": {
-            "$id": "http://localhost:1234/ref-and-definitions.json",
+            "$id": "http://localhost:1234/draft7/ref-and-definitions.json",
             "definitions": {
               "inner": {
                 "properties": {

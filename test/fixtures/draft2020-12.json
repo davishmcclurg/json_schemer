@@ -11500,24 +11500,6 @@
     ],
     [
       [
-        {
-          "data": "\\a",
-          "data_pointer": "",
-          "schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "format": "regex"
-          },
-          "schema_pointer": "",
-          "root_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "format": "regex"
-          },
-          "type": "format"
-        }
-      ]
-    ],
-    [
-      [
 
       ],
       [
@@ -12656,6 +12638,26 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "format": "duration"
+          },
+          "type": "format"
+        }
+      ]
+    ]
+  ],
+  "JSON-Schema-Test-Suite/tests/draft2020-12/optional/format/ecmascript-regex.json": [
+    [
+      [
+        {
+          "data": "\\a",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "regex"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "regex"
           },
           "type": "format"
         }
