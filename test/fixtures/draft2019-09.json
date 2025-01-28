@@ -1,9 +1,7 @@
 {
   "JSON-Schema-Test-Suite/tests/draft2019-09/additionalItems.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -15,8 +13,7 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "items": [
-              {
-              }
+              {}
             ],
             "additionalItems": {
               "type": "integer"
@@ -27,9 +24,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "2",
@@ -70,23 +65,13 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": 4,
@@ -96,12 +81,9 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "items": [
-              {
-              },
-              {
-              },
-              {
-              }
+              {},
+              {},
+              {}
             ],
             "additionalItems": false
           },
@@ -110,22 +92,14 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -164,9 +138,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "y",
@@ -200,8 +172,7 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "items": [
-              {
-              }
+              {}
             ],
             "additionalItems": false
           },
@@ -215,29 +186,22 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "items": [
-              {
-              }
+              {}
             ],
             "additionalItems": false
           },
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/additionalProperties.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "boom",
@@ -247,37 +211,24 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo": {
-              },
-              "bar": {
-              }
+              "foo": {},
+              "bar": {}
             },
             "patternProperties": {
-              "^v": {
-              }
+              "^v": {}
             },
             "additionalProperties": false
           },
           "type": "schema"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 2,
@@ -287,8 +238,7 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "patternProperties": {
-              "^á": {
-              }
+              "^á": {}
             },
             "additionalProperties": false
           },
@@ -297,12 +247,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 12,
@@ -314,10 +260,8 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo": {
-              },
-              "bar": {
-              }
+              "foo": {},
+              "bar": {}
             },
             "additionalProperties": {
               "type": "boolean"
@@ -328,9 +272,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -350,9 +292,7 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -368,8 +308,7 @@
             "allOf": [
               {
                 "properties": {
-                  "foo": {
-                  }
+                  "foo": {}
                 }
               }
             ],
@@ -382,14 +321,10 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "available",
@@ -421,16 +356,13 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo2": {
-              }
+              "foo2": {}
             },
             "dependentSchemas": {
-              "foo": {
-              },
+              "foo": {},
               "foo2": {
                 "properties": {
-                  "bar": {
-                  }
+                  "bar": {}
                 }
               }
             },
@@ -448,16 +380,13 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo2": {
-              }
+              "foo2": {}
             },
             "dependentSchemas": {
-              "foo": {
-              },
+              "foo": {},
               "foo2": {
                 "properties": {
-                  "bar": {
-                  }
+                  "bar": {}
                 }
               }
             },
@@ -475,16 +404,13 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo2": {
-              }
+              "foo2": {}
             },
             "dependentSchemas": {
-              "foo": {
-              },
+              "foo": {},
               "foo2": {
                 "properties": {
-                  "bar": {
-                  }
+                  "bar": {}
                 }
               }
             },
@@ -497,9 +423,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/allOf.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -638,9 +562,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -957,9 +879,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 35,
@@ -984,9 +904,7 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -1039,19 +957,13 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -1063,8 +975,7 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "allOf": [
-              {
-              },
+              {},
               {
                 "type": "number"
               }
@@ -1075,9 +986,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -1092,8 +1001,7 @@
               {
                 "type": "number"
               },
-              {
-              }
+              {}
             ]
           },
           "type": "number"
@@ -1101,9 +1009,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 123,
@@ -1467,16 +1373,12 @@
           "type": "multipleOf"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/anchor.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -1501,9 +1403,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -1530,9 +1430,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -1563,9 +1461,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -1603,15 +1499,9 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/anyOf.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": 1.5,
@@ -1688,9 +1578,7 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -1737,14 +1625,10 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -1779,15 +1663,9 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "quux",
@@ -1860,17 +1738,11 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 123,
@@ -1898,33 +1770,15 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/boolean_schema.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
       [
@@ -1991,8 +1845,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": false,
           "schema_pointer": "",
@@ -2014,9 +1867,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": false,
           "schema_pointer": "",
@@ -2028,9 +1879,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/const.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 5,
@@ -2065,12 +1914,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -2122,9 +1967,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -2181,9 +2024,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 0,
@@ -2202,9 +2043,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 0,
@@ -2239,9 +2078,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -2276,9 +2113,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -2325,9 +2160,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -2374,9 +2207,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -2423,9 +2254,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -2488,16 +2317,11 @@
           "type": "const"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -2513,9 +2337,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -2563,17 +2385,11 @@
           "type": "const"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 2,
@@ -2590,9 +2406,7 @@
           "type": "const"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 2.0,
@@ -2627,9 +2441,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 9007199254740991,
@@ -2646,9 +2458,7 @@
           "type": "const"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 9.007199254740991e+15,
@@ -2667,9 +2477,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "hellothere",
@@ -2690,15 +2498,9 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/contains.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": [
@@ -2725,9 +2527,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -2745,17 +2545,11 @@
           "type": "contains"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": [
@@ -2783,14 +2577,10 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -2826,9 +2616,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -2842,9 +2630,7 @@
           "type": "contains"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -2915,9 +2701,7 @@
           "type": "multipleOf"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -2985,14 +2769,10 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -3014,96 +2794,48 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/content.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/default.json": [
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 5,
@@ -3128,16 +2860,12 @@
           "type": "maximum"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/defs.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -3269,9 +2997,7 @@
                   "type": "string"
                 },
                 "uniqueItems": true,
-                "default": [
-
-                ]
+                "default": []
               }
             }
           },
@@ -3404,9 +3130,7 @@
                   "type": "string"
                 },
                 "uniqueItems": true,
-                "default": [
-
-                ]
+                "default": []
               }
             }
           },
@@ -3417,15 +3141,9 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/dependentRequired.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": {
@@ -3452,37 +3170,19 @@
           "type": "dependentRequired"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": {
@@ -3571,12 +3271,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -3646,12 +3342,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/dependentSchemas.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "quux",
@@ -3754,20 +3446,12 @@
           "type": "integer"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -3805,14 +3489,10 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -3919,14 +3599,12 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo": {
-              }
+              "foo": {}
             },
             "dependentSchemas": {
               "foo": {
                 "properties": {
-                  "bar": {
-                  }
+                  "bar": {}
                 },
                 "additionalProperties": false
               }
@@ -3935,9 +3613,7 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -3947,14 +3623,12 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo": {
-              }
+              "foo": {}
             },
             "dependentSchemas": {
               "foo": {
                 "properties": {
-                  "bar": {
-                  }
+                  "bar": {}
                 },
                 "additionalProperties": false
               }
@@ -3963,16 +3637,12 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/enum.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 4,
@@ -3999,9 +3669,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": null,
@@ -4011,9 +3679,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -4026,9 +3692,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -4049,9 +3713,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -4064,9 +3726,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -4076,9 +3736,7 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -4091,9 +3749,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -4106,9 +3762,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -4120,12 +3774,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "test",
@@ -4150,9 +3800,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foot",
@@ -4217,9 +3865,7 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -4275,8 +3921,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -4327,12 +3972,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "abc",
@@ -4357,9 +3998,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 0,
@@ -4402,9 +4041,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -4459,9 +4096,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -4504,9 +4139,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -4581,12 +4214,8 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -4615,12 +4244,8 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -4643,12 +4268,8 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -4677,17 +4298,11 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "hellothere",
@@ -4712,9 +4327,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/exclusiveMaximum.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 3.0,
@@ -4747,16 +4360,12 @@
           "type": "exclusiveMaximum"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/exclusiveMinimum.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1.1,
@@ -4789,422 +4398,178 @@
           "type": "exclusiveMinimum"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/format.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/if-then-else.json": [
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": -100,
@@ -5225,17 +4590,11 @@
           "type": "minimum"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 3,
@@ -5258,9 +4617,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": -100,
@@ -5284,9 +4641,7 @@
           "type": "minimum"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 3,
@@ -5312,17 +4667,11 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "else",
@@ -5367,17 +4716,11 @@
           "type": "const"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "no",
@@ -5428,9 +4771,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/infinite-loop-detection.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a string",
@@ -5499,9 +4840,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/items.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "x",
@@ -5519,17 +4858,11 @@
           "type": "integer"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -5572,26 +4905,14 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -5629,14 +4950,10 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -5653,14 +4970,10 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -5820,8 +5133,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "/0/0",
           "schema": {
             "type": "object",
@@ -5874,14 +5186,10 @@
           }
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "1",
@@ -6081,31 +5389,21 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/maxContains.json": [
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -6125,9 +5423,7 @@
           "type": "contains"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -6153,9 +5449,7 @@
           "type": "maxContains"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -6184,9 +5478,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -6216,9 +5508,7 @@
     [
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -6240,9 +5530,7 @@
           "type": "contains"
         },
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -6264,9 +5552,7 @@
           "type": "minContains"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -6300,12 +5586,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/maxItems.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": [
@@ -6326,14 +5608,10 @@
           "type": "maxItems"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -6358,12 +5636,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/maxLength.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "foo",
@@ -6380,17 +5654,11 @@
           "type": "maxLength"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -6411,12 +5679,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/maxProperties.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -6437,20 +5701,12 @@
           "type": "maxProperties"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -6473,9 +5729,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -6498,12 +5752,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/maximum.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 3.5,
@@ -6520,20 +5770,12 @@
           "type": "maximum"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": 300.5,
@@ -6554,19 +5796,13 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/minContains.json": [
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -6586,9 +5822,7 @@
           "type": "contains"
         },
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -6654,22 +5888,14 @@
           "type": "minContains"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -6689,9 +5915,7 @@
           "type": "contains"
         },
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -6805,15 +6029,9 @@
           "type": "minContains"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
       [
@@ -6862,16 +6080,12 @@
           "type": "minContains"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -6893,9 +6107,7 @@
           "type": "contains"
         },
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -6995,16 +6207,12 @@
           "type": "maxContains"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -7026,9 +6234,7 @@
           "type": "contains"
         },
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -7207,20 +6413,12 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": [
@@ -7252,17 +6450,11 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/minItems.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -7276,19 +6468,13 @@
           "type": "minItems"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -7306,12 +6492,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/minLength.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "f",
@@ -7328,9 +6510,7 @@
           "type": "minLength"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "💩",
@@ -7349,9 +6529,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "f",
@@ -7372,16 +6550,11 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/minProperties.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -7395,24 +6568,15 @@
           "type": "minProperties"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -7430,12 +6594,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/minimum.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 0.6,
@@ -7452,23 +6612,13 @@
           "type": "minimum"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": -2.0001,
@@ -7501,16 +6651,12 @@
           "type": "minimum"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/multipleOf.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 7,
@@ -7527,17 +6673,11 @@
           "type": "multipleOf"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 35,
@@ -7556,9 +6696,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 0.00751,
@@ -7597,16 +6735,12 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/not.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -7629,9 +6763,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -7686,12 +6818,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -7731,25 +6859,21 @@
           "data": 1,
           "data_pointer": "/foo",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "/properties/foo",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
               "foo": {
-                "not": {
-                }
+                "not": {}
               }
             }
           },
           "type": "not"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -7758,14 +6882,12 @@
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -7776,14 +6898,12 @@
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -7794,14 +6914,12 @@
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -7812,14 +6930,12 @@
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -7830,14 +6946,12 @@
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -7850,33 +6964,28 @@
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -7889,34 +6998,28 @@
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -8023,8 +7126,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -8058,9 +7160,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -8076,43 +7176,21 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -8157,12 +7235,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/oneOf.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 3,
@@ -8299,9 +7373,7 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -8362,9 +7434,7 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -8442,12 +7512,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -8581,9 +7647,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 123,
@@ -8594,8 +7658,7 @@
               {
                 "type": "number"
               },
-              {
-              }
+              {}
             ]
           },
           "schema_pointer": "",
@@ -8605,8 +7668,7 @@
               {
                 "type": "number"
               },
-              {
-              }
+              {}
             ]
           },
           "type": "oneOf"
@@ -8691,12 +7753,8 @@
           }
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -8747,12 +7805,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -8899,9 +7953,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 123,
@@ -8929,9 +7981,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/anchor.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -9024,9 +8074,7 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -9119,20 +8167,12 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/bignum.json": [
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -9153,9 +8193,7 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -9176,9 +8214,7 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -9221,27 +8257,17 @@
           "type": "string"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/dependencies-compatibility.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": {
@@ -9273,37 +8299,19 @@
           }
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": {
@@ -9408,12 +8416,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -9491,12 +8495,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "quux",
@@ -9599,20 +8599,12 @@
           "type": "integer"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -9650,14 +8642,10 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -9775,9 +8763,7 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -9798,9 +8784,7 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -9821,9 +8805,7 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -9844,14 +8826,10 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "߀",
@@ -9908,17 +8886,11 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "é",
@@ -9957,38 +8929,18 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "\u0001",
@@ -10189,23 +9141,13 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "LES HIVERS DE MON ENFANCE ÉTAIENT DES SAISONS LONGUES, LONGUES. NOUS VIVIONS EN TROIS LIEUX: L'ÉCOLE, L'ÉGLISE ET LA PATINOIRE; MAIS LA VRAIE VIE ÉTAIT SUR LA PATINOIRE.",
@@ -10224,9 +9166,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "Les hivers de mon enfance étaient des saisons longues, longues. Nous vivions en trois lieux: l'école, l'église et la patinoire; mais la vraie vie était sur la patinoire.",
@@ -10309,14 +9249,10 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "-%#",
@@ -10351,9 +9287,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "-%#",
@@ -10370,20 +9304,12 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "PAS DE VRAIE VIE",
@@ -10403,9 +9329,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "pas de vraie vie",
@@ -10493,14 +9417,10 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "spending the year dead for tax reasons",
@@ -10537,9 +9457,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "spending the year dead for tax reasons",
@@ -10557,56 +9475,28 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/float-overflow.json": [
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/date-time.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "1998-12-31T23:59:61Z",
@@ -10719,9 +9609,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2013-350T01:01:01",
@@ -10806,30 +9694,14 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/date.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "2020-01-32",
@@ -10846,9 +9718,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2021-02-29",
@@ -10865,9 +9735,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-02-30",
@@ -10884,9 +9752,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-03-32",
@@ -10903,9 +9769,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-04-31",
@@ -10922,9 +9786,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-05-32",
@@ -10941,9 +9803,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-06-31",
@@ -10960,9 +9820,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-07-32",
@@ -10979,9 +9837,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-08-32",
@@ -10998,9 +9854,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-09-31",
@@ -11017,9 +9871,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-10-32",
@@ -11036,9 +9888,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-11-31",
@@ -11055,9 +9905,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2020-12-32",
@@ -11202,9 +10050,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "1963-06-1৪",
@@ -11289,27 +10135,13 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/duration.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "PT1D",
@@ -11422,30 +10254,14 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "P1Y2W",
@@ -11498,27 +10314,13 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/email.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "2962",
@@ -11535,15 +10337,9 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": ".test@example.com",
@@ -11576,9 +10372,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "te..st@example.com",
@@ -11599,30 +10393,14 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/hostname.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "-a-host-name-that-starts-with--",
@@ -11751,9 +10529,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com",
@@ -11770,46 +10546,22 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/idn-email.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "2962",
@@ -11826,9 +10578,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2962",
@@ -11849,27 +10599,13 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/idn-hostname.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "〮실례.테스트",
@@ -11934,9 +10670,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "xn--X",
@@ -12065,12 +10799,8 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "ـߺ",
@@ -12167,9 +10897,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "α͵S",
@@ -12202,9 +10930,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "A׳ב",
@@ -12237,9 +10963,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "A״ב",
@@ -12272,9 +10996,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "def・abc",
@@ -12307,15 +11029,9 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "ب٠۰",
@@ -12332,12 +11048,8 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "क‍ष",
@@ -12370,55 +11082,25 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/ipv4.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "127.0.0.0.1",
@@ -12515,9 +11197,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "1২7.0.0.1",
@@ -12554,27 +11234,13 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/ipv6.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "12345::",
@@ -12591,9 +11257,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "::abcef",
@@ -12642,15 +11306,9 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": ":2:3:4:5:6:7:8",
@@ -12699,9 +11357,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "1::d6::42",
@@ -12718,12 +11374,8 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "1::2:192.168.256.1",
@@ -12756,9 +11408,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "1:2:3:4:5:::8",
@@ -12775,9 +11425,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "1:2:3:4:5:6:7",
@@ -12906,9 +11554,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "100:100:100:100:100:100:255.255.255.255.255",
@@ -12977,33 +11623,15 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/iri-reference.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "\\\\WINDOWS\\filëßåré",
@@ -13020,12 +11648,8 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "#ƒräg\\mênt",
@@ -13046,39 +11670,17 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/iri.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "http://2001:0db8:85a3:0000:0000:8a2e:0370:7334",
@@ -13147,27 +11749,13 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/json-pointer.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "/foo/bar~",
@@ -13184,63 +11772,25 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "#",
@@ -13421,27 +11971,13 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/regex.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "^(abc]",
@@ -13462,36 +11998,16 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/relative-json-pointer.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "/foo/bar",
@@ -13604,34 +12120,18 @@
           "type": "format"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/time.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "008:030:006Z",
@@ -13680,9 +12180,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "22:59:60Z",
@@ -13715,9 +12213,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "22:59:60+00:00",
@@ -13750,12 +12246,8 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "23:59:60+01:00",
@@ -13788,12 +12280,8 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "23:59:60-01:00",
@@ -13826,18 +12314,10 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "08:30:06-8:000",
@@ -13854,9 +12334,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "24:00:00Z",
@@ -14101,58 +12579,26 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/unknown.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/uri-reference.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "\\\\WINDOWS\\fileshare",
@@ -14169,12 +12615,8 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "#frag\\ment",
@@ -14195,27 +12637,13 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/uri-template.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "http://example.com/dictionary/{term:1}/{term",
@@ -14232,73 +12660,31 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/uri.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "//foo.bar/?baz=qux#quux",
@@ -14415,36 +12801,16 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/uuid.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "2eb8aa08-aa98-11ea-b4aa-73b441d1638",
@@ -14557,28 +12923,16 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/id.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 1,
@@ -14671,9 +13025,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/no-schema.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -14688,22 +13040,14 @@
           "type": "minLength"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/non-bmp-regex.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "🐉",
@@ -14770,15 +13114,9 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "hello",
@@ -14821,9 +13159,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/refOfUnknownKeyword.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": true,
@@ -14848,9 +13184,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": true,
@@ -14877,9 +13211,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 42,
@@ -14905,9 +13237,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/unknownKeyword.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": null,
@@ -15240,9 +13570,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/pattern.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "abc",
@@ -15259,39 +13587,21 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/patternProperties.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "bar",
@@ -15347,26 +13657,14 @@
           "type": "integer"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "bar",
@@ -15455,9 +13753,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": null,
@@ -15480,9 +13776,7 @@
           "type": "boolean"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 3,
@@ -15507,9 +13801,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 2,
@@ -15558,25 +13850,18 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/properties.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "/bar",
           "schema": {
             "type": "string"
@@ -15598,9 +13883,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "/foo",
           "schema": {
             "type": "integer"
@@ -15620,8 +13903,7 @@
           "type": "integer"
         },
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "/bar",
           "schema": {
             "type": "string"
@@ -15641,20 +13923,12 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -15694,9 +13968,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "/foo",
           "schema": {
             "minItems": 2
@@ -15725,14 +13997,10 @@
           "type": "minItems"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "/fxo",
           "schema": {
             "minItems": 2
@@ -15761,12 +14029,8 @@
           "type": "minItems"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "foo",
@@ -15800,12 +14064,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 2,
@@ -15840,9 +14100,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "1",
@@ -16039,20 +14297,12 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "foo",
@@ -16142,16 +14392,12 @@
           "type": "number"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/propertyNames.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foobar",
@@ -16169,23 +14415,13 @@
           "type": "maxLength"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "aaA",
@@ -16203,17 +14439,11 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -16229,19 +14459,13 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/recursiveRef.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": false,
@@ -16280,12 +14504,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -16447,9 +14667,7 @@
           "type": "object"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -16657,29 +14875,15 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -16845,9 +15049,7 @@
           "type": "object"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -17060,12 +15262,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -17227,9 +15425,7 @@
           "type": "object"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -17555,9 +15751,7 @@
           "type": "object"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -17834,9 +16028,7 @@
           "type": "object"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -17994,9 +16186,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1.1,
@@ -18052,9 +16242,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1.1,
@@ -18112,12 +16300,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/ref.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": false,
@@ -18156,9 +16340,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": true,
@@ -18183,9 +16365,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -18318,20 +16498,12 @@
           "type": "integer"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -18360,9 +16532,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -18420,9 +16590,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": -1,
@@ -18547,9 +16715,7 @@
                   "type": "string"
                 },
                 "uniqueItems": true,
-                "default": [
-
-                ]
+                "default": []
               }
             }
           },
@@ -18558,9 +16724,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 2,
@@ -18582,9 +16746,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 2,
@@ -18611,9 +16773,7 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -18634,9 +16794,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "string is invalid",
@@ -18689,9 +16847,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "1",
@@ -18813,9 +16969,7 @@
           "type": "enum"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -18880,9 +17034,7 @@
           "type": "string"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -18947,14 +17099,10 @@
           "type": "string"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -18991,9 +17139,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 50,
@@ -19027,9 +17173,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 50,
@@ -19064,9 +17208,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 12,
@@ -19099,9 +17241,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 12,
@@ -19130,9 +17270,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 12,
@@ -19161,9 +17299,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 12,
@@ -19192,9 +17328,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 12,
@@ -19223,9 +17357,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 12,
@@ -19253,9 +17385,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 12,
@@ -19285,9 +17415,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 12,
@@ -19336,9 +17464,7 @@
           "type": "integer"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -19361,9 +17487,7 @@
           "type": "integer"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -19386,14 +17510,10 @@
           "type": "integer"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 12,
@@ -19423,9 +17543,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19449,9 +17567,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19475,9 +17591,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19508,9 +17622,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 8,
@@ -19547,9 +17659,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/refRemote.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19568,9 +17678,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19595,9 +17703,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19624,9 +17730,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19651,9 +17755,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19672,9 +17774,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19693,9 +17793,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19714,12 +17812,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -19816,14 +17910,10 @@
           "type": "string"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -19866,9 +17956,7 @@
           "type": "string"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -19891,9 +17979,7 @@
           "type": "string"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -19916,9 +18002,7 @@
           "type": "string"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -19942,14 +18026,10 @@
           "type": "string"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -19979,9 +18059,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/required.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -19991,10 +18069,8 @@
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo": {
-              },
-              "bar": {
-              }
+              "foo": {},
+              "bar": {}
             },
             "required": [
               "foo"
@@ -20004,10 +18080,8 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo": {
-              },
-              "bar": {
-              }
+              "foo": {},
+              "bar": {}
             },
             "required": [
               "foo"
@@ -20021,30 +18095,18 @@
           }
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -20088,16 +18150,11 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20226,19 +18283,13 @@
           }
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/type.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 1.1,
@@ -20289,8 +18340,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20306,9 +18356,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20356,15 +18404,9 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "foo",
@@ -20399,8 +18441,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20416,9 +18457,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20498,19 +18537,12 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20526,9 +18558,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20624,14 +18654,10 @@
           "type": "object"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20729,8 +18755,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20744,9 +18769,7 @@
           "type": "array"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": true,
@@ -20863,8 +18886,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20880,9 +18902,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -20896,12 +18916,8 @@
           "type": "boolean"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": null,
@@ -21002,8 +19018,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -21019,9 +19034,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -21067,17 +19080,11 @@
           "type": "null"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 1.1,
@@ -21102,8 +19109,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -21125,9 +19131,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -21193,9 +19197,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 123,
@@ -21218,12 +19220,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 123,
@@ -21292,15 +19290,9 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": 123,
@@ -21353,17 +19345,11 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/unevaluatedItems.json": [
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -21379,12 +19365,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 42,
@@ -21404,14 +19386,10 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "bar",
@@ -21432,9 +19410,7 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -21457,9 +19433,7 @@
           "type": "string"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -21486,14 +19460,10 @@
           "type": "string"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": true,
@@ -21524,12 +19494,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "yes",
@@ -21557,25 +19523,15 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 42,
@@ -21613,9 +19569,7 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 42,
@@ -21655,9 +19609,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 42,
@@ -21726,9 +19678,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "else",
@@ -21774,9 +19724,7 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 42,
@@ -21824,9 +19772,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -21845,9 +19791,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "baz",
@@ -21879,9 +19823,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "baz",
@@ -21913,9 +19855,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "too many",
@@ -21981,9 +19921,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "test",
@@ -22022,34 +19960,18 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "b",
@@ -22074,20 +19996,12 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/unevaluatedProperties.json": [
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "fo",
@@ -22110,9 +20024,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -22129,9 +20041,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "bar",
@@ -22153,9 +20063,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "bar",
@@ -22177,17 +20085,11 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "baz",
@@ -22218,9 +20120,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "baz",
@@ -22251,25 +20151,15 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "not-baz",
@@ -22321,9 +20211,7 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "not-quux",
@@ -22377,9 +20265,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "quux",
@@ -22456,9 +20342,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "baz",
@@ -22503,9 +20387,7 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "else",
@@ -22652,9 +20534,7 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "else",
@@ -22691,9 +20571,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "baz",
@@ -22830,9 +20708,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "bar",
@@ -22866,9 +20742,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "bar",
@@ -22893,9 +20767,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "baz",
@@ -22927,9 +20799,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "baz",
@@ -22961,9 +20831,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "b",
@@ -23052,20 +20920,12 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -23140,9 +21000,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "bar",
@@ -23247,9 +21105,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "bar",
@@ -23278,9 +21134,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "test",
@@ -23348,9 +21202,7 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -23437,21 +21289,14 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "/y",
           "schema": false,
           "schema_pointer": "/unevaluatedProperties",
@@ -23468,13 +21313,10 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "/x/y",
           "schema": false,
           "schema_pointer": "/unevaluatedProperties",
@@ -23491,13 +21333,10 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "/x/x/y",
           "schema": false,
           "schema_pointer": "/unevaluatedProperties",
@@ -23518,8 +21357,7 @@
     [
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "required": [
@@ -23582,8 +21420,7 @@
           }
         },
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "required": [
@@ -23952,18 +21789,10 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": {
@@ -24142,8 +21971,7 @@
     [
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "required": [
@@ -24230,8 +22058,7 @@
           }
         },
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "required": [
@@ -24318,8 +22145,7 @@
           }
         },
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "required": [
@@ -24406,8 +22232,7 @@
           }
         },
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "required": [
@@ -24494,8 +22319,7 @@
           }
         },
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "required": [
@@ -24580,8 +22404,7 @@
           }
         },
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "required": [
@@ -24668,18 +22491,10 @@
           }
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": {
@@ -26424,12 +24239,8 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 1,
@@ -27698,12 +25509,8 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -27853,34 +25660,18 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "b",
@@ -27903,9 +25694,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -27937,16 +25726,13 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo2": {
-              }
+              "foo2": {}
             },
             "dependentSchemas": {
-              "foo": {
-              },
+              "foo": {},
               "foo2": {
                 "properties": {
-                  "bar": {
-                  }
+                  "bar": {}
                 }
               }
             },
@@ -27964,16 +25750,13 @@
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "properties": {
-              "foo2": {
-              }
+              "foo2": {}
             },
             "dependentSchemas": {
-              "foo": {
-              },
+              "foo": {},
               "foo2": {
                 "properties": {
-                  "bar": {
-                  }
+                  "bar": {}
                 }
               }
             },
@@ -27982,16 +25765,12 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/uniqueItems.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -28051,15 +25830,9 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": [
@@ -28080,9 +25853,7 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -28131,9 +25902,7 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -28165,9 +25934,7 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -28217,39 +25984,23 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": [
-            {
-            },
+            {},
             [
               1
             ],
             true,
             null,
-            {
-            },
+            {},
             1
           ],
           "data_pointer": "",
@@ -28265,9 +26016,7 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -28293,20 +26042,12 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": [
@@ -28377,12 +26118,8 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": [
@@ -28459,12 +26196,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": [
@@ -28563,91 +26296,37 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": null,
@@ -28693,12 +26372,8 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -28717,9 +26392,7 @@
           "type": "number"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ]
 }

@@ -1,9 +1,7 @@
 {
   "JSON-Schema-Test-Suite/tests/draft4/additionalItems.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -14,8 +12,7 @@
           "schema_pointer": "/additionalItems",
           "root_schema": {
             "items": [
-              {
-              }
+              {}
             ],
             "additionalItems": {
               "type": "integer"
@@ -26,23 +23,13 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": 4,
@@ -51,12 +38,9 @@
           "schema_pointer": "/additionalItems",
           "root_schema": {
             "items": [
-              {
-              },
-              {
-              },
-              {
-              }
+              {},
+              {},
+              {}
             ],
             "additionalItems": false
           },
@@ -65,22 +49,14 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -118,9 +94,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "y",
@@ -152,8 +126,7 @@
           "schema_pointer": "/additionalItems",
           "root_schema": {
             "items": [
-              {
-              }
+              {}
             ],
             "additionalItems": false
           },
@@ -166,29 +139,22 @@
           "schema_pointer": "/additionalItems",
           "root_schema": {
             "items": [
-              {
-              }
+              {}
             ],
             "additionalItems": false
           },
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/additionalProperties.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "boom",
@@ -197,37 +163,24 @@
           "schema_pointer": "/additionalProperties",
           "root_schema": {
             "properties": {
-              "foo": {
-              },
-              "bar": {
-              }
+              "foo": {},
+              "bar": {}
             },
             "patternProperties": {
-              "^v": {
-              }
+              "^v": {}
             },
             "additionalProperties": false
           },
           "type": "schema"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 2,
@@ -236,8 +189,7 @@
           "schema_pointer": "/additionalProperties",
           "root_schema": {
             "patternProperties": {
-              "^á": {
-              }
+              "^á": {}
             },
             "additionalProperties": false
           },
@@ -246,12 +198,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 12,
@@ -262,10 +210,8 @@
           "schema_pointer": "/additionalProperties",
           "root_schema": {
             "properties": {
-              "foo": {
-              },
-              "bar": {
-              }
+              "foo": {},
+              "bar": {}
             },
             "additionalProperties": {
               "type": "boolean"
@@ -276,9 +222,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -297,9 +241,7 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -314,8 +256,7 @@
             "allOf": [
               {
                 "properties": {
-                  "foo": {
-                  }
+                  "foo": {}
                 }
               }
             ],
@@ -328,16 +269,12 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/allOf.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -473,9 +410,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -786,9 +721,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 35,
@@ -812,19 +745,13 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -835,8 +762,7 @@
           "schema_pointer": "/allOf/1",
           "root_schema": {
             "allOf": [
-              {
-              },
+              {},
               {
                 "type": "number"
               }
@@ -847,9 +773,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -863,8 +787,7 @@
               {
                 "type": "number"
               },
-              {
-              }
+              {}
             ]
           },
           "type": "number"
@@ -872,9 +795,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 123,
@@ -1225,22 +1146,14 @@
           "type": "multipleOf"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/anyOf.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": 1.5,
@@ -1313,9 +1226,7 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -1360,15 +1271,9 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "quux",
@@ -1439,17 +1344,11 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 123,
@@ -1476,25 +1375,15 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/default.json": [
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 5,
@@ -1518,16 +1407,12 @@
           "type": "maximum"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/definitions.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -1604,8 +1489,7 @@
               "description": {
                 "type": "string"
               },
-              "default": {
-              },
+              "default": {},
               "multipleOf": {
                 "type": "number",
                 "minimum": 0,
@@ -1644,8 +1528,7 @@
                     "$ref": "#"
                   }
                 ],
-                "default": {
-                }
+                "default": {}
               },
               "items": {
                 "anyOf": [
@@ -1656,8 +1539,7 @@
                     "$ref": "#/definitions/schemaArray"
                   }
                 ],
-                "default": {
-                }
+                "default": {}
               },
               "maxItems": {
                 "$ref": "#/definitions/positiveInteger"
@@ -1687,32 +1569,28 @@
                     "$ref": "#"
                   }
                 ],
-                "default": {
-                }
+                "default": {}
               },
               "definitions": {
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
                 },
-                "default": {
-                }
+                "default": {}
               },
               "properties": {
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
                 },
-                "default": {
-                }
+                "default": {}
               },
               "patternProperties": {
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
                 },
-                "default": {
-                }
+                "default": {}
               },
               "dependencies": {
                 "type": "object",
@@ -1771,8 +1649,7 @@
                 "minimum"
               ]
             },
-            "default": {
-            }
+            "default": {}
           },
           "type": "enum"
         },
@@ -1848,8 +1725,7 @@
               "description": {
                 "type": "string"
               },
-              "default": {
-              },
+              "default": {},
               "multipleOf": {
                 "type": "number",
                 "minimum": 0,
@@ -1888,8 +1764,7 @@
                     "$ref": "#"
                   }
                 ],
-                "default": {
-                }
+                "default": {}
               },
               "items": {
                 "anyOf": [
@@ -1900,8 +1775,7 @@
                     "$ref": "#/definitions/schemaArray"
                   }
                 ],
-                "default": {
-                }
+                "default": {}
               },
               "maxItems": {
                 "$ref": "#/definitions/positiveInteger"
@@ -1931,32 +1805,28 @@
                     "$ref": "#"
                   }
                 ],
-                "default": {
-                }
+                "default": {}
               },
               "definitions": {
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
                 },
-                "default": {
-                }
+                "default": {}
               },
               "properties": {
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
                 },
-                "default": {
-                }
+                "default": {}
               },
               "patternProperties": {
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
                 },
-                "default": {
-                }
+                "default": {}
               },
               "dependencies": {
                 "type": "object",
@@ -2015,8 +1885,7 @@
                 "minimum"
               ]
             },
-            "default": {
-            }
+            "default": {}
           },
           "type": "array"
         }
@@ -2025,15 +1894,9 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/dependencies.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": {
@@ -2063,26 +1926,14 @@
           }
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": {
@@ -2181,12 +2032,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "quux",
@@ -2287,15 +2134,9 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": {
@@ -2479,14 +2320,12 @@
           "schema_pointer": "/dependencies/foo/additionalProperties",
           "root_schema": {
             "properties": {
-              "foo": {
-              }
+              "foo": {}
             },
             "dependencies": {
               "foo": {
                 "properties": {
-                  "bar": {
-                  }
+                  "bar": {}
                 },
                 "additionalProperties": false
               }
@@ -2495,9 +2334,7 @@
           "type": "schema"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -2506,14 +2343,12 @@
           "schema_pointer": "/dependencies/foo/additionalProperties",
           "root_schema": {
             "properties": {
-              "foo": {
-              }
+              "foo": {}
             },
             "dependencies": {
               "foo": {
                 "properties": {
-                  "bar": {
-                  }
+                  "bar": {}
                 },
                 "additionalProperties": false
               }
@@ -2522,16 +2357,12 @@
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/enum.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 4,
@@ -2556,9 +2387,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": null,
@@ -2567,9 +2396,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -2581,9 +2408,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -2603,9 +2428,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -2617,9 +2440,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -2629,9 +2450,7 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -2643,9 +2462,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -2657,9 +2474,7 @@
             "enum": [
               6,
               "foo",
-              [
-
-              ],
+              [],
               true,
               {
                 "foo": 12
@@ -2671,12 +2486,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "test",
@@ -2699,9 +2510,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foot",
@@ -2764,9 +2573,7 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -2820,8 +2627,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "type": "object",
@@ -2870,12 +2676,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "abc",
@@ -2898,9 +2700,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 0,
@@ -2939,9 +2739,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -2992,9 +2790,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -3033,9 +2829,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -3104,12 +2898,8 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -3136,12 +2926,8 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -3162,12 +2948,8 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -3194,17 +2976,11 @@
           "type": "enum"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "hellothere",
@@ -3227,131 +3003,57 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/format.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/infinite-loop-detection.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a string",
@@ -3418,9 +3120,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/items.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "x",
@@ -3437,17 +3137,11 @@
           "type": "integer"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -3488,23 +3182,13 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -3661,8 +3345,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "/0/0",
           "schema": {
             "type": "object",
@@ -3714,14 +3397,10 @@
           }
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "1",
@@ -3914,24 +3593,16 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/maxItems.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": [
@@ -3950,19 +3621,13 @@
           "type": "maxItems"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/maxLength.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "foo",
@@ -3977,22 +3642,14 @@
           "type": "maxLength"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/maxProperties.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -4011,20 +3668,12 @@
           "type": "maxProperties"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -4045,12 +3694,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/maximum.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 3.5,
@@ -4065,20 +3710,12 @@
           "type": "maximum"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": 300.5,
@@ -4095,12 +3732,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 3.5,
@@ -4117,14 +3750,10 @@
           "type": "maximum"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 3.0,
@@ -4145,17 +3774,11 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/minItems.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "minItems": 1
@@ -4167,19 +3790,13 @@
           "type": "minItems"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/minLength.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "f",
@@ -4194,9 +3811,7 @@
           "type": "minLength"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "💩",
@@ -4215,16 +3830,11 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/minProperties.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "minProperties": 1
@@ -4236,25 +3846,15 @@
           "type": "minProperties"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/minimum.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 0.6,
@@ -4269,17 +3869,11 @@
           "type": "minimum"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 0.6,
@@ -4296,14 +3890,10 @@
           "type": "minimum"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1.1,
@@ -4322,18 +3912,10 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": -2.0001,
@@ -4362,16 +3944,12 @@
           "type": "minimum"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/multipleOf.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 7,
@@ -4386,17 +3964,11 @@
           "type": "multipleOf"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 35,
@@ -4413,9 +3985,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 0.00751,
@@ -4464,16 +4034,12 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/not.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -4494,9 +4060,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1,
@@ -4547,12 +4111,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -4590,24 +4150,20 @@
           "data": 1,
           "data_pointer": "/foo",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "/properties/foo",
           "root_schema": {
             "properties": {
               "foo": {
-                "not": {
-                }
+                "not": {}
               }
             }
           },
           "type": "not"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -4615,13 +4171,11 @@
           "data": 1,
           "data_pointer": "",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -4631,13 +4185,11 @@
           "data": "foo",
           "data_pointer": "",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -4647,13 +4199,11 @@
           "data": true,
           "data_pointer": "",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -4663,13 +4213,11 @@
           "data": false,
           "data_pointer": "",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -4679,13 +4227,11 @@
           "data": null,
           "data_pointer": "",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -4697,30 +4243,25 @@
           },
           "data_pointer": "",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
@@ -4732,50 +4273,38 @@
           ],
           "data_pointer": "",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
-            "not": {
-            }
+            "not": {}
           },
           "schema_pointer": "",
           "root_schema": {
-            "not": {
-            }
+            "not": {}
           },
           "type": "not"
         }
       ]
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/oneOf.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 3,
@@ -4904,9 +4433,7 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -4939,12 +4466,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -5074,9 +4597,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 123,
@@ -5086,8 +4607,7 @@
               {
                 "type": "number"
               },
-              {
-              }
+              {}
             ]
           },
           "schema_pointer": "",
@@ -5096,8 +4616,7 @@
               {
                 "type": "number"
               },
-              {
-              }
+              {}
             ]
           },
           "type": "oneOf"
@@ -5180,12 +4699,8 @@
           }
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -5234,12 +4749,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -5251,10 +4762,8 @@
             "oneOf": [
               {
                 "properties": {
-                  "bar": {
-                  },
-                  "baz": {
-                  }
+                  "bar": {},
+                  "baz": {}
                 },
                 "required": [
                   "bar"
@@ -5262,8 +4771,7 @@
               },
               {
                 "properties": {
-                  "foo": {
-                  }
+                  "foo": {}
                 },
                 "required": [
                   "foo"
@@ -5276,10 +4784,8 @@
             "oneOf": [
               {
                 "properties": {
-                  "bar": {
-                  },
-                  "baz": {
-                  }
+                  "bar": {},
+                  "baz": {}
                 },
                 "required": [
                   "bar"
@@ -5287,8 +4793,7 @@
               },
               {
                 "properties": {
-                  "foo": {
-                  }
+                  "foo": {}
                 },
                 "required": [
                   "foo"
@@ -5307,10 +4812,8 @@
           "data_pointer": "",
           "schema": {
             "properties": {
-              "bar": {
-              },
-              "baz": {
-              }
+              "bar": {},
+              "baz": {}
             },
             "required": [
               "bar"
@@ -5321,10 +4824,8 @@
             "oneOf": [
               {
                 "properties": {
-                  "bar": {
-                  },
-                  "baz": {
-                  }
+                  "bar": {},
+                  "baz": {}
                 },
                 "required": [
                   "bar"
@@ -5332,8 +4833,7 @@
               },
               {
                 "properties": {
-                  "foo": {
-                  }
+                  "foo": {}
                 },
                 "required": [
                   "foo"
@@ -5355,8 +4855,7 @@
           "data_pointer": "",
           "schema": {
             "properties": {
-              "foo": {
-              }
+              "foo": {}
             },
             "required": [
               "foo"
@@ -5367,10 +4866,8 @@
             "oneOf": [
               {
                 "properties": {
-                  "bar": {
-                  },
-                  "baz": {
-                  }
+                  "bar": {},
+                  "baz": {}
                 },
                 "required": [
                   "bar"
@@ -5378,8 +4875,7 @@
               },
               {
                 "properties": {
-                  "foo": {
-                  }
+                  "foo": {}
                 },
                 "required": [
                   "foo"
@@ -5397,9 +4893,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 123,
@@ -5426,20 +4920,12 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/bignum.json": [
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
       [
@@ -5458,9 +4944,7 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -5481,9 +4965,7 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -5522,9 +5004,7 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -5543,9 +5023,7 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -5564,9 +5042,7 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
       [
@@ -5585,14 +5061,10 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "߀",
@@ -5643,17 +5115,11 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "é",
@@ -5688,38 +5154,18 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "\u0001",
@@ -5898,23 +5344,13 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "LES HIVERS DE MON ENFANCE ÉTAIENT DES SAISONS LONGUES, LONGUES. NOUS VIVIONS EN TROIS LIEUX: L'ÉCOLE, L'ÉGLISE ET LA PATINOIRE; MAIS LA VRAIE VIE ÉTAIT SUR LA PATINOIRE.",
@@ -5931,9 +5367,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "Les hivers de mon enfance étaient des saisons longues, longues. Nous vivions en trois lieux: l'école, l'église et la patinoire; mais la vraie vie était sur la patinoire.",
@@ -6006,14 +5440,10 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "-%#",
@@ -6044,9 +5474,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "-%#",
@@ -6061,20 +5489,12 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "PAS DE VRAIE VIE",
@@ -6084,8 +5504,7 @@
           "root_schema": {
             "type": "object",
             "patternProperties": {
-              "\\p{Letter}cole": {
-              }
+              "\\p{Letter}cole": {}
             },
             "additionalProperties": false
           },
@@ -6094,9 +5513,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "pas de vraie vie",
@@ -6106,8 +5523,7 @@
           "root_schema": {
             "type": "object",
             "patternProperties": {
-              "\\wcole": {
-              }
+              "\\wcole": {}
             },
             "additionalProperties": false
           },
@@ -6123,8 +5539,7 @@
           "root_schema": {
             "type": "object",
             "patternProperties": {
-              "\\wcole": {
-              }
+              "\\wcole": {}
             },
             "additionalProperties": false
           },
@@ -6140,8 +5555,7 @@
           "root_schema": {
             "type": "object",
             "patternProperties": {
-              "\\wcole": {
-              }
+              "\\wcole": {}
             },
             "additionalProperties": false
           },
@@ -6159,8 +5573,7 @@
           "root_schema": {
             "type": "object",
             "patternProperties": {
-              "[a-z]cole": {
-              }
+              "[a-z]cole": {}
             },
             "additionalProperties": false
           },
@@ -6176,22 +5589,17 @@
           "root_schema": {
             "type": "object",
             "patternProperties": {
-              "[a-z]cole": {
-              }
+              "[a-z]cole": {}
             },
             "additionalProperties": false
           },
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "spending the year dead for tax reasons",
@@ -6201,8 +5609,7 @@
           "root_schema": {
             "type": "object",
             "patternProperties": {
-              "^\\d+$": {
-              }
+              "^\\d+$": {}
             },
             "additionalProperties": false
           },
@@ -6218,8 +5625,7 @@
           "root_schema": {
             "type": "object",
             "patternProperties": {
-              "^\\d+$": {
-              }
+              "^\\d+$": {}
             },
             "additionalProperties": false
           },
@@ -6228,9 +5634,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "spending the year dead for tax reasons",
@@ -6240,64 +5644,35 @@
           "root_schema": {
             "type": "object",
             "patternProperties": {
-              "^\\p{digit}+$": {
-              }
+              "^\\p{digit}+$": {}
             },
             "additionalProperties": false
           },
           "type": "schema"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/float-overflow.json": [
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/format/date-time.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "1998-12-31T23:59:61Z",
@@ -6396,9 +5771,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "2013-350T01:01:01",
@@ -6473,27 +5846,13 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/format/email.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "2962",
@@ -6508,15 +5867,9 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": ".test@example.com",
@@ -6545,9 +5898,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "te..st@example.com",
@@ -6566,30 +5917,14 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/format/hostname.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "-a-host-name-that-starts-with--",
@@ -6702,9 +6037,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com",
@@ -6719,43 +6052,21 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/format/ipv4.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "127.0.0.0.1",
@@ -6840,9 +6151,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "1২7.0.0.1",
@@ -6875,27 +6184,13 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/format/ipv6.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "12345::",
@@ -6910,9 +6205,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "::abcef",
@@ -6955,15 +6248,9 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": ":2:3:4:5:6:7:8",
@@ -7006,9 +6293,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "1::d6::42",
@@ -7023,12 +6308,8 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "1::2:192.168.256.1",
@@ -7057,9 +6338,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "1:2:3:4:5:::8",
@@ -7074,9 +6353,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "1:2:3:4:5:6:7",
@@ -7189,9 +6466,7 @@
           "type": "format"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": "100:100:100:100:100:100:255.255.255.255.255",
@@ -7252,88 +6527,36 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/format/unknown.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/format/uri.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": "//foo.bar/?baz=qux#quux",
@@ -7436,12 +6659,8 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/id.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 1,
@@ -7532,15 +6751,9 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/non-bmp-regex.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "🐉",
@@ -7599,15 +6812,9 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "hello",
@@ -7666,9 +6873,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/pattern.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "abc",
@@ -7683,39 +6888,21 @@
           "type": "pattern"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/patternProperties.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "bar",
@@ -7768,26 +6955,14 @@
           "type": "integer"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "bar",
@@ -7872,9 +7047,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": null,
@@ -7896,9 +7069,7 @@
           "type": "boolean"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": 3,
@@ -7922,20 +7093,15 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/properties.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "/bar",
           "schema": {
             "type": "string"
@@ -7956,9 +7122,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "/foo",
           "schema": {
             "type": "integer"
@@ -7977,8 +7141,7 @@
           "type": "integer"
         },
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "/bar",
           "schema": {
             "type": "string"
@@ -7997,20 +7160,12 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -8049,9 +7204,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "/foo",
           "schema": {
             "minItems": 2
@@ -8079,14 +7232,10 @@
           "type": "minItems"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "/fxo",
           "schema": {
             "minItems": 2
@@ -8114,12 +7263,8 @@
           "type": "minItems"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "foo",
@@ -8152,9 +7297,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "1",
@@ -8345,20 +7488,12 @@
       ]
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "foo",
@@ -8445,19 +7580,13 @@
           "type": "number"
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/ref.json": [
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": false,
@@ -8494,9 +7623,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": true,
@@ -8520,9 +7647,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -8651,20 +7776,12 @@
           "type": "integer"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -8696,12 +7813,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": "string",
@@ -8762,14 +7875,10 @@
           "type": "number"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": -1,
@@ -8839,8 +7948,7 @@
               "description": {
                 "type": "string"
               },
-              "default": {
-              },
+              "default": {},
               "multipleOf": {
                 "type": "number",
                 "minimum": 0,
@@ -8879,8 +7987,7 @@
                     "$ref": "#"
                   }
                 ],
-                "default": {
-                }
+                "default": {}
               },
               "items": {
                 "anyOf": [
@@ -8891,8 +7998,7 @@
                     "$ref": "#/definitions/schemaArray"
                   }
                 ],
-                "default": {
-                }
+                "default": {}
               },
               "maxItems": {
                 "$ref": "#/definitions/positiveInteger"
@@ -8922,32 +8028,28 @@
                     "$ref": "#"
                   }
                 ],
-                "default": {
-                }
+                "default": {}
               },
               "definitions": {
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
                 },
-                "default": {
-                }
+                "default": {}
               },
               "properties": {
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
                 },
-                "default": {
-                }
+                "default": {}
               },
               "patternProperties": {
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "#"
                 },
-                "default": {
-                }
+                "default": {}
               },
               "dependencies": {
                 "type": "object",
@@ -9006,17 +8108,14 @@
                 "minimum"
               ]
             },
-            "default": {
-            }
+            "default": {}
           },
           "type": "minimum"
         }
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 2,
@@ -9037,9 +8136,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 2,
@@ -9065,9 +8162,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "string is invalid",
@@ -9119,9 +8214,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "1",
@@ -9147,9 +8240,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9177,9 +8268,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9245,14 +8334,10 @@
           "type": "enum"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9288,9 +8373,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9317,9 +8400,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9346,9 +8427,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9380,9 +8459,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/refRemote.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9399,9 +8476,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9425,9 +8500,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9451,9 +8524,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9470,9 +8541,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9489,9 +8558,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "a",
@@ -9508,12 +8575,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": {
@@ -9582,9 +8645,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": "foo",
@@ -9612,9 +8673,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/required.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -9623,10 +8682,8 @@
           "data_pointer": "",
           "schema": {
             "properties": {
-              "foo": {
-              },
-              "bar": {
-              }
+              "foo": {},
+              "bar": {}
             },
             "required": [
               "foo"
@@ -9635,10 +8692,8 @@
           "schema_pointer": "",
           "root_schema": {
             "properties": {
-              "foo": {
-              },
-              "bar": {
-              }
+              "foo": {},
+              "bar": {}
             },
             "required": [
               "foo"
@@ -9652,25 +8707,15 @@
           }
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": {
@@ -9712,16 +8757,11 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "required": [
@@ -9842,16 +8882,12 @@
           }
         }
       ],
-      [
-
-      ]
+      []
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/type.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 1.1,
@@ -9896,8 +8932,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "type": "integer"
@@ -9911,9 +8946,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "type": "integer"
@@ -9955,15 +8988,9 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": "foo",
@@ -9994,8 +9021,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "type": "number"
@@ -10009,9 +9035,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "type": "number"
@@ -10081,19 +9105,12 @@
           "type": "string"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "type": "string"
@@ -10107,9 +9124,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "type": "string"
@@ -10193,14 +9208,10 @@
           "type": "object"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "type": "object"
@@ -10286,8 +9297,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "type": "array"
@@ -10299,9 +9309,7 @@
           "type": "array"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": true,
@@ -10404,8 +9412,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "type": "boolean"
@@ -10419,9 +9426,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "type": "boolean"
@@ -10433,12 +9438,8 @@
           "type": "boolean"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": null,
@@ -10527,8 +9528,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "type": "null"
@@ -10542,9 +9542,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "type": "null"
@@ -10584,17 +9582,11 @@
           "type": "null"
         }
       ],
-      [
-
-      ]
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 1.1,
@@ -10617,8 +9609,7 @@
       ],
       [
         {
-          "data": {
-          },
+          "data": {},
           "data_pointer": "",
           "schema": {
             "type": [
@@ -10638,9 +9629,7 @@
       ],
       [
         {
-          "data": [
-
-          ],
+          "data": [],
           "data_pointer": "",
           "schema": {
             "type": [
@@ -10700,9 +9689,7 @@
       ]
     ],
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": 123,
@@ -10723,12 +9710,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": 123,
@@ -10791,15 +9774,9 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": 123,
@@ -10848,9 +9825,7 @@
   ],
   "JSON-Schema-Test-Suite/tests/draft4/uniqueItems.json": [
     [
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -10904,15 +9879,9 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
       [
         {
           "data": [
@@ -10931,9 +9900,7 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -10978,9 +9945,7 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -11010,9 +9975,7 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -11058,39 +10021,23 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": [
-            {
-            },
+            {},
             [
               1
             ],
             true,
             null,
-            {
-            },
+            {},
             1
           ],
           "data_pointer": "",
@@ -11104,9 +10051,7 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
+      [],
       [
         {
           "data": [
@@ -11130,20 +10075,12 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": [
@@ -11210,12 +10147,8 @@
           "type": "uniqueItems"
         }
       ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": [
@@ -11288,12 +10221,8 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
       [
         {
           "data": [
@@ -11387,91 +10316,37 @@
       ]
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ]
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
     ],
     [
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
-      [
-
-      ],
+      [],
+      [],
+      [],
+      [],
       [
         {
           "data": null,
