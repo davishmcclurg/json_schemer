@@ -1,12 +1,24 @@
 # Changelog
 
+## [2.4.0] - 2025-02-01
+
+### Bug Fixes
+
+- Store schema resource file URIs as strings to prevent conflicts: https://github.com/davishmcclurg/json_schemer/pull/189
+- Require OpenAPI `discriminator` instances to be objects: https://github.com/davishmcclurg/json_schemer/pull/206
+- Pass configuration options to subschemas: https://github.com/davishmcclurg/json_schemer/pull/208
+- Check applicable instance types in OpenAPI `format` extensions: https://github.com/davishmcclurg/json_schemer/pull/209
+- Use correct max values for OpenAPI `int32`/`int64` formats: https://github.com/davishmcclurg/json_schemer/commit/386c2a6fe089350c61775716643ef0600898060e
+
+[2.4.0]: https://github.com/davishmcclurg/json_schemer/releases/tag/v2.4.0
+
 ## [2.3.0] - 2024-05-30
 
-## Ruby Versions
+### Ruby Versions
 
 - Ruby 2.5 and 2.6 are no longer supported.
 
-## Bug Fixes
+### Bug Fixes
 
 - Remove `base64` runtime dependency: https://github.com/davishmcclurg/json_schemer/pull/182
 - Relax `uuid` format validation: https://github.com/davishmcclurg/json_schemer/pull/183
@@ -15,7 +27,7 @@
 
 ## [2.2.0] - 2024-03-02
 
-## Bug Fixes
+### Bug Fixes
 
 - Support symbol keys when accessing original instance: https://github.com/davishmcclurg/json_schemer/commit/d52c130e9967919c6cf1c9dbc3f0babfb8b01cf8
 - Support custom keywords in nested schemas: https://github.com/davishmcclurg/json_schemer/commit/93c85a5006981347c7e9a4c11b73c6bdb65d8ba2
@@ -24,7 +36,7 @@
 - Handle parse errors during schema validation: https://github.com/davishmcclurg/json_schemer/pull/171
 - Follow refs when finding default property values: https://github.com/davishmcclurg/json_schemer/pull/175
 
-## Features
+### Features
 
 - Global configuration with `Configuration` object: https://github.com/davishmcclurg/json_schemer/pull/170
 - Symbol key property defaults with `insert_property_defaults: :symbol`: https://github.com/davishmcclurg/json_schemer/commit/a72473dc84199107ddedc8998950e5b82273232a
