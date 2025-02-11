@@ -81,7 +81,9 @@ module JSONSchemer
         :instance => instance,
         :instanceLocation => Location.resolve(instance_location),
         :keywordLocation => resolved_keyword_location,
-        :absoluteKeywordLocation => source.absolute_keyword_location
+        :absoluteKeywordLocation => source.absolute_keyword_location,
+        :value => source.value,
+        :details => details,
       )
     end
 
