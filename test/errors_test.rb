@@ -152,7 +152,7 @@ class ErrorsTest < Minitest::Test
       '#' => 'C',
       'https://json-schema.org/draft/2019-09/schema' => {
         '^' => 'F',
-        'type' => '6',
+        'type' => '6 %{value}',
         '*' => 'G/7'
       },
       '^' => 'H',
@@ -200,7 +200,7 @@ class ErrorsTest < Minitest::Test
     errors.fetch('https://example.com/schema').delete('*')
     i18n(errors) do
       assert_equal('F', schemer.validate(data, :output_format => 'basic').fetch('error'))
-      assert_equal('6', schemer.validate(data).first.fetch('error'))
+      assert_equal('6 string', schemer.validate(data).first.fetch('error'))
     end
 
     errors.fetch('https://json-schema.org/draft/2019-09/schema').delete('^')
