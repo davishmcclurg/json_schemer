@@ -224,7 +224,7 @@ JSONSchemer.schema(
   # 'net/http': proc { |uri| JSON.parse(Net::HTTP.get(uri)) }
   # default: proc { |uri| raise UnknownRef, uri.to_s }
   ref_resolver: 'net/http',
-  
+
   # use different method to match regexes
   # 'ruby'/'ecma'/proc/lambda/respond_to?(:call)
   # 'ruby': proc { |pattern| Regexp.new(pattern) }
@@ -371,13 +371,15 @@ en:
         '*': fallback error for schema and all keywords, nested under meta-schema $id ($schema)
       'type': custom error for `type` keyword
       '^': custom error for schema
-      # variable interpolation (instance/instanceLocation/keywordLocation/absoluteKeywordLocation)
+      # variable interpolation (instance/instanceLocation/keywordLocation/absoluteKeywordLocation/value/details)
       '*': |
         fallback error for schema and all keywords
         instance: %{instance}
         instance location: %{instanceLocation}
         keyword location: %{keywordLocation}
         absolute keyword location: %{absoluteKeywordLocation}
+        value: %{value} - the value of the keyword - for instance `integer` for `type`
+        details: %{details} - some errors report details
 ```
 
 And output:
