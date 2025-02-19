@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "csv"
   spec.add_development_dependency "i18n"
   spec.add_development_dependency "i18n-debug"
+  spec.add_development_dependency "debug"
 
   spec.add_runtime_dependency "bigdecimal"
   spec.add_runtime_dependency "hana", "~> 1.3"

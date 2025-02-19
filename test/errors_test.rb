@@ -11,7 +11,14 @@ class ErrorsTest < Minitest::Test
         },
         {
           'x-error' => {
-            'not' => '%{instance} `%{instanceLocation}` %{keywordLocation} %{absoluteKeywordLocation}'
+            'not' => <<~ERR
+              instance: %{instance}
+              instanceLocation: %{instanceLocation}
+              keywordLocation: %{keywordLocation}
+              absoluteKeywordLocation: %{absoluteKeywordLocation}
+              value: %{value}
+              details: %{details}
+            ERR
           },
           'required' => ['b'],
           'not' => { 'required' => ['a'] }
@@ -26,9 +33,17 @@ class ErrorsTest < Minitest::Test
       'a' => 'foo',
       'b' => 'bar'
     }
-    error1, error2 = JSONSchemer.schema(schema).validate(data).map { |error| error.fetch('error') }.sort
+    error1, error2 = JSONSchemer.schema(schema).validate(data).map { |error| error.fetch('error') }
+
     assert_equal('properties a and b were provided, however only one or the other may be specified', error1)
-    assert_match(optional_space_regexp('{"a"', '=>', '"foo", "b"', '=>', '"bar"} `` /oneOf/1/not json-schemer://schema#/oneOf/1/not'), error2)
+    assert_equal(<<~ERR.gsub(/\s/,''), error2.gsub(/\s/,''))
+      instance: {"a" => "foo", "b" => "bar"}
+      instanceLocation:
+      keywordLocation: /oneOf/1/not
+      absoluteKeywordLocation: json-schemer://schema#/oneOf/1/not
+      value: {"required" => ["a"]}
+      details:
+    ERR
 
     assert_equal('schema error', JSONSchemer.schema(schema).validate(data, :output_format => 'basic').fetch('error'))
     assert_equal('oneOf error', JSONSchemer.schema(schema).validate(data, :output_format => 'detailed').fetch('error'))
@@ -125,6 +140,28 @@ class ErrorsTest < Minitest::Test
     end
   end
 
+  def test_i18n_details_as_hash
+    schema = {
+      'properties' => {
+        'yah' => {
+          'type' => 'string'
+        }
+      },
+      'required' => ['yah']
+    }
+
+    schemer = JSONSchemer.schema(schema)
+    data = {}
+
+    errors = {
+      '#/required' => 'missing %{details}',
+    }
+
+    i18n(errors) do
+      assert_equal('missing missing_keys: yah', schemer.validate(data, :output_format => 'detailed').fetch('error'))
+    end
+  end
+
   def test_i18n_error
     schema = {
       '$id' => 'https://example.com/schema',
@@ -133,7 +170,8 @@ class ErrorsTest < Minitest::Test
         'yah' => {
           'type' => 'string'
         }
-      }
+      },
+      'required' => ['yah']
     }
     schemer = JSONSchemer.schema(schema)
     data = { 'yah' => 1 }

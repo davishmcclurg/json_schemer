@@ -4,7 +4,7 @@ module JSONSchemer
   I18N_SEPARATOR = "\x1F" # unit separator
   I18N_SCOPE = 'json_schemer'
   I18N_ERRORS_SCOPE = "#{I18N_SCOPE}#{I18N_SEPARATOR}errors"
-  X_ERROR_REGEX = /%\{(instance|instanceLocation|keywordLocation|absoluteKeywordLocation)\}/
+  X_ERROR_REGEX = /%\{(instance|instanceLocation|keywordLocation|absoluteKeywordLocation|value|details)\}/
   CLASSIC_ERROR_TYPES = Hash.new do |hash, klass|
     hash[klass] = klass.name.rpartition('::').last.sub(/\A[[:alpha:]]/, &:downcase)
   end
@@ -36,7 +36,9 @@ module JSONSchemer
           '%{instance}' => instance,
           '%{instanceLocation}' => Location.resolve(instance_location),
           '%{keywordLocation}' => Location.resolve(keyword_location),
-          '%{absoluteKeywordLocation}' => source.absolute_keyword_location
+          '%{absoluteKeywordLocation}' => source.absolute_keyword_location,
+          '%{value}' => source.value,
+          '%{details}' => details,
         )
         @x_error = true
       else
@@ -83,7 +85,7 @@ module JSONSchemer
         :keywordLocation => resolved_keyword_location,
         :absoluteKeywordLocation => source.absolute_keyword_location,
         :value => source.value,
-        :details => details,
+        :details => details_string
       )
     end
 
@@ -230,6 +232,19 @@ module JSONSchemer
     end
 
   private
+
+    def details_string
+      return nil unless details
+
+      details.map do |key, value|
+        if value.respond_to?(:join)
+          "#{key}: #{value.join(', ')}"
+        else
+          "#{key}: #{value}"
+        end
+      end.join(', ')
+    end
+
 
     def default_keyword_instance(schema)
       schema.parsed.fetch('default') do
