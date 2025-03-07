@@ -43,8 +43,8 @@ module JSONSchemer
         @x_error = true
       else
         resolved_instance_location = Location.resolve(instance_location)
-        formatted_instance_location = resolved_instance_location.empty? ? 'root' : "`#{resolved_instance_location}`"
-        @error = source.error(:formatted_instance_location => formatted_instance_location, :details => details)
+        @formatted_instance_location = resolved_instance_location.empty? ? 'root' : "`#{resolved_instance_location}`"
+        @error = source.error(:formatted_instance_location => @formatted_instance_location, :details => details)
         if i18n?
           begin
             @error = i18n!
@@ -81,7 +81,7 @@ module JSONSchemer
         :separator => I18N_SEPARATOR,
         :scope => I18N_ERRORS_SCOPE,
         :instance => instance,
-        :instanceLocation => Location.resolve(instance_location),
+        :instanceLocation => @formatted_instance_location,
         :keywordLocation => resolved_keyword_location,
         :absoluteKeywordLocation => source.absolute_keyword_location,
         :value => source.value,

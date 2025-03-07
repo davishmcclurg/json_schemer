@@ -195,7 +195,7 @@ class ErrorsTest < Minitest::Test
       },
       '^' => 'H',
       'type' => '8',
-      '*' => 'I/9: %{instance} `%{instanceLocation}` %{keywordLocation} %{absoluteKeywordLocation}',
+      '*' => 'I/9: %{instance} %{instanceLocation} %{keywordLocation} %{absoluteKeywordLocation}',
 
       'https://example.com/differentschema#/properties/yah/type' => '?',
       'https://example.com/differentschema' => {
@@ -254,7 +254,7 @@ class ErrorsTest < Minitest::Test
     end
 
     errors.delete('^')
-    assert_match(optional_space_regexp('I/9: {"yah"', '=>', '1} ``  https://example.com/schema#'), i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
+    assert_match(optional_space_regexp('I/9: {"yah"', '=>', '1}','root','', 'https://example.com/schema#'), i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
 
     errors.delete('type')
     assert_equal('I/9: 1 `/yah` /properties/yah/type https://example.com/schema#/properties/yah/type', i18n(errors) { schemer.validate(data).first.fetch('error') })
