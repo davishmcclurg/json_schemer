@@ -4,7 +4,7 @@ module JSONSchemer
   I18N_SEPARATOR = "\x1F" # unit separator
   I18N_SCOPE = 'json_schemer'
   I18N_ERRORS_SCOPE = "#{I18N_SCOPE}#{I18N_SEPARATOR}errors"
-  X_ERROR_REGEX = /%\{(instance|instanceLocation|keywordLocation|absoluteKeywordLocation|value|details)\}/
+  X_ERROR_REGEX = /%\{(instance|instanceLocation|formattedInstanceLocation|keywordValue|keywordLocation|absoluteKeywordLocation|details|details__\w+)\}/
   CLASSIC_ERROR_TYPES = Hash.new do |hash, klass|
     hash[klass] = klass.name.rpartition('::').last.sub(/\A[[:alpha:]]/, &:downcase)
   end
@@ -31,20 +31,10 @@ module JSONSchemer
       return @error if defined?(@error)
       if source.x_error
         # not using sprintf because it warns: "too many arguments for format string"
-        @error = source.x_error.gsub(
-          X_ERROR_REGEX,
-          '%{instance}' => instance,
-          '%{instanceLocation}' => Location.resolve(instance_location),
-          '%{keywordLocation}' => Location.resolve(keyword_location),
-          '%{absoluteKeywordLocation}' => source.absolute_keyword_location,
-          '%{value}' => source.value,
-          '%{details}' => details,
-        )
+        @error = source.x_error.gsub(X_ERROR_REGEX, x_error_replacements)
         @x_error = true
       else
-        resolved_instance_location = Location.resolve(instance_location)
-        @formatted_instance_location = resolved_instance_location.empty? ? 'root' : "`#{resolved_instance_location}`"
-        @error = source.error(:formatted_instance_location => @formatted_instance_location, :details => details)
+        @error = source.error(:formatted_instance_location => formatted_instance_location, :details => details)
         if i18n?
           begin
             @error = i18n!
@@ -64,7 +54,6 @@ module JSONSchemer
     def i18n!
       base_uri_str = source.schema.base_uri.to_s
       meta_schema_base_uri_str = source.schema.meta_schema.base_uri.to_s
-      resolved_keyword_location = Location.resolve(keyword_location)
       error_key = source.error_key
       I18n.translate!(
         source.absolute_keyword_location,
@@ -80,21 +69,16 @@ module JSONSchemer
         ].map!(&:to_sym),
         :separator => I18N_SEPARATOR,
         :scope => I18N_ERRORS_SCOPE,
-        :instance => instance,
-        :instanceLocation => @formatted_instance_location,
-        :keywordLocation => resolved_keyword_location,
-        :absoluteKeywordLocation => source.absolute_keyword_location,
-        :value => source.value,
-        :details => details_string
+        **interpolation_variables
       )
     end
 
     def to_output_unit
       out = {
         'valid' => valid,
-        'keywordLocation' => Location.resolve(keyword_location),
+        'keywordLocation' => resolved_keyword_location,
         'absoluteKeywordLocation' => source.absolute_keyword_location,
-        'instanceLocation' => Location.resolve(instance_location)
+        'instanceLocation' => resolved_instance_location
       }
       if valid
         out['annotation'] = annotation if annotation
@@ -110,7 +94,7 @@ module JSONSchemer
       schema = source.schema
       out = {
         'data' => instance,
-        'data_pointer' => Location.resolve(instance_location),
+        'data_pointer' => resolved_instance_location,
         'schema' => schema.value,
         'schema_pointer' => schema.schema_pointer,
         'root_schema' => schema.root.value,
@@ -233,18 +217,17 @@ module JSONSchemer
 
   private
 
-    def details_string
-      return nil unless details
-
-      details.map do |key, value|
-        if value.respond_to?(:join)
-          "#{key}: #{value.join(', ')}"
-        else
-          "#{key}: #{value}"
-        end
-      end.join(', ')
+    def resolved_instance_location
+      @resolved_instance_location ||= Location.resolve(instance_location)
     end
 
+    def formatted_instance_location
+      @formatted_instance_location ||= resolved_instance_location.empty? ? 'root' : "`#{resolved_instance_location}`"
+    end
+
+    def resolved_keyword_location
+      @resolved_keyword_location ||= Location.resolve(keyword_location)
+    end
 
     def default_keyword_instance(schema)
       schema.parsed.fetch('default') do
@@ -254,6 +237,23 @@ module JSONSchemer
           break default
         end
       end
+    end
+
+    def interpolation_variables
+      @interpolation_variables ||= {
+        :instance => instance,
+        :instanceLocation => resolved_instance_location,
+        :formattedInstanceLocation => formatted_instance_location,
+        :keywordValue => source.value,
+        :keywordLocation => resolved_keyword_location,
+        :absoluteKeywordLocation => source.absolute_keyword_location,
+        :details => details,
+        **details&.transform_keys { |key| "details__#{key}".to_sym }
+      }
+    end
+
+    def x_error_replacements
+      @x_error_replacements ||= interpolation_variables.transform_keys { |key| "%{#{key}}" }
     end
   end
 end

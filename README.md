@@ -313,27 +313,36 @@ schemer.validate('1').map { _1.fetch('error') }
 schemer.validate(1, :output_format => 'basic').fetch('error')
 # => "custom error for schema"
 
-# variable interpolation (instance/instanceLocation/keywordLocation/absoluteKeywordLocation)
+# variable interpolation (instance/instanceLocation/formattedInstanceLocation/keywordValue/keywordLocation/absoluteKeywordLocation/details)
 schemer = JSONSchemer.schema({
   '$id' => 'https://example.com/schema',
   'properties' => {
     'abc' => {
-      'type' => 'string',
+      'type' => 'object',
+      'required' => ['xyz'],
       'x-error' => <<~ERROR
         instance: %{instance}
         instance location: %{instanceLocation}
+        formatted instance location: %{formattedInstanceLocation}
+        keyword value: %{keywordValue}
         keyword location: %{keywordLocation}
         absolute keyword location: %{absoluteKeywordLocation}
+        details: %{details}
+        details__missing_keys: %{details__missing_keys}
       ERROR
     }
   }
 })
 
-puts schemer.validate({ 'abc' => 1 }).first.fetch('error')
-# instance: 1
+puts schemer.validate({ 'abc' => {} }).first.fetch('error')
+# instance: {}
 # instance location: /abc
-# keyword location: /properties/abc/type
-# absolute keyword location: https://example.com/schema#/properties/abc/type
+# formatted instance location: `/abc`
+# keyword value: ["xyz"]
+# keyword location: /properties/abc/required
+# absolute keyword location: https://example.com/schema#/properties/abc/required
+# details: {"missing_keys" => ["xyz"]}
+# details__missing_keys: ["xyz"]
 ```
 
 ### I18n
@@ -358,28 +367,30 @@ Example translations file:
 en:
   json_schemer:
     errors:
-      'https://example.com/schema#/properties/abc/type': custom error for absolute keyword location
-      'https://example.com/schema':
-        '#/properties/abc/type': custom error for keyword location, nested under schema $id
-        'type': custom error for `type` keyword, nested under schema $id
-        '^': custom error for schema, nested under schema $id
-        '*': fallback error for schema and all keywords, nested under schema $id
-      '#/properties/abc/type': custom error for keyword location
-      'http://json-schema.org/draft-07/schema#':
-        'type': custom error for `type` keyword, nested under meta-schema $id ($schema)
-        '^': custom error for schema, nested under meta-schema $id
-        '*': fallback error for schema and all keywords, nested under meta-schema $id ($schema)
-      'type': custom error for `type` keyword
-      '^': custom error for schema
-      # variable interpolation (instance/instanceLocation/keywordLocation/absoluteKeywordLocation/value/details)
-      '*': |
-        fallback error for schema and all keywords
+      # variable interpolation (instance/instanceLocation/formattedInstanceLocation/keywordValue/keywordLocation/absoluteKeywordLocation/details)
+      'https://example.com/schema#/properties/abc/required': |
+        custom error for absolute keyword location
         instance: %{instance}
         instance location: %{instanceLocation}
+        formatted instance location: %{formattedInstanceLocation}
+        keyword value: %{keywordValue}
         keyword location: %{keywordLocation}
         absolute keyword location: %{absoluteKeywordLocation}
-        value: %{value} - the value of the keyword - for instance `integer` for `type`
-        details: %{details} - some errors report details
+        details: %{details}
+        details__missing_keys: %{details__missing_keys}
+      'https://example.com/schema':
+        '#/properties/abc/required': custom error for keyword location, nested under schema $id
+        'required': custom error for `required` keyword, nested under schema $id
+        '^': custom error for schema, nested under schema $id
+        '*': fallback error for schema and all keywords, nested under schema $id
+      '#/properties/abc/required': custom error for keyword location
+      'http://json-schema.org/draft-07/schema#':
+        'required': custom error for `required` keyword, nested under meta-schema $id ($schema)
+        '^': custom error for schema, nested under meta-schema $id
+        '*': fallback error for schema and all keywords, nested under meta-schema $id ($schema)
+      'required': custom error for `required` keyword
+      '^': custom error for schema
+      '*': fallback error for schema and all keywords
 ```
 
 And output:
@@ -393,32 +404,45 @@ schemer = JSONSchemer.schema({
   '$schema' => 'http://json-schema.org/draft-07/schema#', # $META_SCHEMA_ID=http://json-schema.org/draft-07/schema#
   'properties' => {
     'abc' => {
-      'type' => 'integer'                                 # $KEYWORD=type
-    }                                                     # $KEYWORD_LOCATION=#/properties/abc/type
-  }                                                       # $ABSOLUTE_KEYWORD_LOCATION=https://example.com/schema#/properties/abc/type
+      'required' => ['xyz']                               # $KEYWORD=required
+    }                                                     # $KEYWORD_LOCATION=#/properties/abc/required
+  }                                                       # $ABSOLUTE_KEYWORD_LOCATION=https://example.com/schema#/properties/abc/required
 })
 
-schemer.validate({ 'abc' => 'not-an-integer' }).first
-# => {"data"=>"not-an-integer",
-#     "data_pointer"=>"/abc",
-#     "schema"=>{"type"=>"integer"},
-#     "schema_pointer"=>"/properties/abc",
-#     "root_schema"=>{"$id"=>"https://example.com/schema", "$schema"=>"http://json-schema.org/draft-07/schema#", "properties"=>{"abc"=>{"type"=>"integer"}}},
-#     "type"=>"integer",
-#     "error"=>"custom error for absolute keyword location",
-#     "i18n"=>true
+schemer.validate({ 'abc' => {} }).first
+# => {"data" => {},
+#     "data_pointer" => "/abc",
+#     "schema" => {"required" => ["xyz"]},
+#     "schema_pointer" => "/properties/abc",
+#     "root_schema" => {"$id" => "https://example.com/schema", "$schema" => "http://json-schema.org/draft-07/schema#", "properties" => {"abc" => {"required" => ["xyz"]}}},
+#     "type" => "required",
+#     "error" =>
+#      "custom error for absolute keyword location\ninstance: {}\ninstance location: /abc\nformatted instance location: `/abc`\nkeyword value: [\"xyz\"]\nkeyword location: /properties/abc/required\nabsolute keyword location: https://example.com/schema#/properties/abc/required\ndetails: {\"missing_keys\" => [\"xyz\"]}\ndetails__missing_keys: [\"xyz\"]\n",
+#     "i18n" => true,
+#     "details" => {"missing_keys" => ["xyz"]}}
+
+puts schemer.validate({ 'abc' => {} }).first.fetch('error')
+# custom error for absolute keyword location
+# instance: {}
+# instance location: /abc
+# formatted instance location: `/abc`
+# keyword value: ["xyz"]
+# keyword location: /properties/abc/required
+# absolute keyword location: https://example.com/schema#/properties/abc/required
+# details: {"missing_keys" => ["xyz"]}
+# details__missing_keys: ["xyz"]
 ```
 
 In the example above, custom error messsages are looked up using the following keys (in order until one is found):
 
-1. `en.json_schemer.errors.'https://example.com/schema#/properties/abc/type'`
-2. `en.json_schemer.errors.'https://example.com/schema'.'#/properties/abc/type'`
-3. `en.json_schemer.errors.'#/properties/abc/type'`
-4. `en.json_schemer.errors.'https://example.com/schema'.type`
+1. `en.json_schemer.errors.'https://example.com/schema#/properties/abc/required'`
+2. `en.json_schemer.errors.'https://example.com/schema'.'#/properties/abc/required'`
+3. `en.json_schemer.errors.'#/properties/abc/required'`
+4. `en.json_schemer.errors.'https://example.com/schema'.required`
 5. `en.json_schemer.errors.'https://example.com/schema'.*`
-6. `en.json_schemer.errors.'http://json-schema.org/draft-07/schema#'.type`
+6. `en.json_schemer.errors.'http://json-schema.org/draft-07/schema#'.required`
 7. `en.json_schemer.errors.'http://json-schema.org/draft-07/schema#'.*`
-8. `en.json_schemer.errors.type`
+8. `en.json_schemer.errors.required`
 9. `en.json_schemer.errors.*`
 
 ## OpenAPI
