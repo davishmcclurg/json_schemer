@@ -80,6 +80,7 @@ module JSONSchemer
   VOCABULARIES = {
     'https://json-schema.org/draft/2020-12/vocab/core' => Draft202012::Vocab::CORE,
     'https://json-schema.org/draft/2020-12/vocab/applicator' => Draft202012::Vocab::APPLICATOR,
+    'https://spec.openapis.org/oas/3.1/vocab/base' => OpenAPI31::Vocab::BASE,
     'https://json-schema.org/draft/2020-12/vocab/unevaluated' => Draft202012::Vocab::UNEVALUATED,
     'https://json-schema.org/draft/2020-12/vocab/validation' => Draft202012::Vocab::VALIDATION,
     'https://json-schema.org/draft/2020-12/vocab/format-annotation' => Draft202012::Vocab::FORMAT_ANNOTATION,
@@ -97,8 +98,6 @@ module JSONSchemer
     'json-schemer://draft7' => Draft7::Vocab::ALL,
     'json-schemer://draft6' => Draft6::Vocab::ALL,
     'json-schemer://draft4' => Draft4::Vocab::ALL,
-
-    'https://spec.openapis.org/oas/3.1/vocab/base' => OpenAPI31::Vocab::BASE,
     'json-schemer://openapi30' => OpenAPI30::Vocab::BASE
   }
   VOCABULARY_ORDER = VOCABULARIES.transform_values.with_index { |_vocabulary, index| index }
