@@ -30,6 +30,7 @@ module JSONSchemer
     def error
       return @error if defined?(@error)
       if source.x_error
+        x_error_replacements = interpolation_variables.transform_keys { |key| "%{#{key}}" }
         # not using sprintf because it warns: "too many arguments for format string"
         @error = source.x_error.gsub(X_ERROR_REGEX, x_error_replacements)
         @x_error = true
@@ -240,7 +241,7 @@ module JSONSchemer
     end
 
     def interpolation_variables
-      @interpolation_variables ||= {
+      interpolation_variables = {
         :instance => instance,
         :instanceLocation => resolved_instance_location,
         :formattedInstanceLocation => formatted_instance_location,
@@ -248,12 +249,11 @@ module JSONSchemer
         :keywordLocation => resolved_keyword_location,
         :absoluteKeywordLocation => source.absolute_keyword_location,
         :details => details,
-        **details&.transform_keys { |key| "details__#{key}".to_sym }
       }
-    end
-
-    def x_error_replacements
-      @x_error_replacements ||= interpolation_variables.transform_keys { |key| "%{#{key}}" }
+      details&.each do |key, value|
+        interpolation_variables["details__#{key}".to_sym] = value
+      end
+      interpolation_variables
     end
   end
 end
