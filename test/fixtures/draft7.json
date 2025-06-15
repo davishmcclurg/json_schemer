@@ -8242,6 +8242,34 @@
           },
           "type": "format"
         }
+      ],
+      [
+        {
+          "data": "user1@oceania.org, user2@oceania.org",
+          "data_pointer": "",
+          "schema": {
+            "format": "email"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "email"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "\"Winston Smith\" <winston.smith@recdep.minitrue> (Records Department)",
+          "data_pointer": "",
+          "schema": {
+            "format": "email"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "email"
+          },
+          "type": "format"
+        }
       ]
     ]
   ],
@@ -8385,7 +8413,35 @@
       [],
       [],
       [],
-      []
+      [],
+      [
+        {
+          "data": "",
+          "data_pointer": "",
+          "schema": {
+            "format": "hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": ".",
+          "data_pointer": "",
+          "schema": {
+            "format": "hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "hostname"
+          },
+          "type": "format"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft7/optional/format/idn-email.json": [
@@ -8858,6 +8914,82 @@
       [],
       [],
       [],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": "",
+          "data_pointer": "",
+          "schema": {
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "data": ".",
+          "data_pointer": "",
+          "schema": {
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "。",
+          "data_pointer": "",
+          "schema": {
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "．",
+          "data_pointer": "",
+          "schema": {
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "｡",
+          "data_pointer": "",
+          "schema": {
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
       [],
       [],
       [],
@@ -11824,6 +11956,53 @@
             "propertyNames": false
           },
           "type": "schema"
+        }
+      ],
+      []
+    ],
+    [
+      [],
+      [
+        {
+          "data": "bar",
+          "data_pointer": "",
+          "schema": {
+            "const": "foo"
+          },
+          "schema_pointer": "/propertyNames",
+          "root_schema": {
+            "propertyNames": {
+              "const": "foo"
+            }
+          },
+          "type": "const"
+        }
+      ],
+      []
+    ],
+    [
+      [],
+      [],
+      [
+        {
+          "data": "baz",
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              "foo",
+              "bar"
+            ]
+          },
+          "schema_pointer": "/propertyNames",
+          "root_schema": {
+            "propertyNames": {
+              "enum": [
+                "foo",
+                "bar"
+              ]
+            }
+          },
+          "type": "enum"
         }
       ],
       []

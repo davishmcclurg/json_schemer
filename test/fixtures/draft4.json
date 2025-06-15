@@ -5912,6 +5912,34 @@
           },
           "type": "format"
         }
+      ],
+      [
+        {
+          "data": "user1@oceania.org, user2@oceania.org",
+          "data_pointer": "",
+          "schema": {
+            "format": "email"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "email"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "\"Winston Smith\" <winston.smith@recdep.minitrue> (Records Department)",
+          "data_pointer": "",
+          "schema": {
+            "format": "email"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "email"
+          },
+          "type": "format"
+        }
       ]
     ]
   ],
@@ -6055,7 +6083,35 @@
       [],
       [],
       [],
-      []
+      [],
+      [
+        {
+          "data": "",
+          "data_pointer": "",
+          "schema": {
+            "format": "hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": ".",
+          "data_pointer": "",
+          "schema": {
+            "format": "hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "format": "hostname"
+          },
+          "type": "format"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft4/optional/format/ipv4.json": [

@@ -10160,6 +10160,22 @@
       ],
       [
         {
+          "data": "4DT12H30M5S",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "duration"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "duration"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
           "data": "P",
           "data_pointer": "",
           "schema": {
@@ -10388,6 +10404,38 @@
           },
           "type": "format"
         }
+      ],
+      [
+        {
+          "data": "user1@oceania.org, user2@oceania.org",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "email"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "email"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "\"Winston Smith\" <winston.smith@recdep.minitrue> (Records Department)",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "email"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "email"
+          },
+          "type": "format"
+        }
       ]
     ]
   ],
@@ -10550,7 +10598,39 @@
       [],
       [],
       [],
-      []
+      [],
+      [
+        {
+          "data": "",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": ".",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "hostname"
+          },
+          "type": "format"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2019-09/optional/format/idn-email.json": [
@@ -11086,6 +11166,92 @@
       [],
       [],
       [],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": "",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "data": ".",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "。",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "．",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "｡",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
       [],
       [],
       [],
@@ -14457,6 +14623,55 @@
             "propertyNames": false
           },
           "type": "schema"
+        }
+      ],
+      []
+    ],
+    [
+      [],
+      [
+        {
+          "data": "bar",
+          "data_pointer": "",
+          "schema": {
+            "const": "foo"
+          },
+          "schema_pointer": "/propertyNames",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "propertyNames": {
+              "const": "foo"
+            }
+          },
+          "type": "const"
+        }
+      ],
+      []
+    ],
+    [
+      [],
+      [],
+      [
+        {
+          "data": "baz",
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              "foo",
+              "bar"
+            ]
+          },
+          "schema_pointer": "/propertyNames",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "propertyNames": {
+              "enum": [
+                "foo",
+                "bar"
+              ]
+            }
+          },
+          "type": "enum"
         }
       ],
       []

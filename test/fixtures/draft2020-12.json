@@ -11259,6 +11259,22 @@
       ],
       [
         {
+          "data": "4DT12H30M5S",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "duration"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "duration"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
           "data": "P",
           "data_pointer": "",
           "schema": {
@@ -11544,6 +11560,38 @@
           },
           "type": "format"
         }
+      ],
+      [
+        {
+          "data": "user1@oceania.org, user2@oceania.org",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "email"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "email"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "\"Winston Smith\" <winston.smith@recdep.minitrue> (Records Department)",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "email"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "email"
+          },
+          "type": "format"
+        }
       ]
     ]
   ],
@@ -11706,7 +11754,39 @@
       [],
       [],
       [],
-      []
+      [],
+      [
+        {
+          "data": "",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": ".",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "hostname"
+          },
+          "type": "format"
+        }
+      ]
     ]
   ],
   "JSON-Schema-Test-Suite/tests/draft2020-12/optional/format/idn-email.json": [
@@ -12242,6 +12322,92 @@
       [],
       [],
       [],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": "",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ]
+    ],
+    [
+      [
+        {
+          "data": ".",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "。",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "．",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
+      [
+        {
+          "data": "｡",
+          "data_pointer": "",
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "idn-hostname"
+          },
+          "schema_pointer": "",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "format": "idn-hostname"
+          },
+          "type": "format"
+        }
+      ],
       [],
       [],
       [],
@@ -15699,6 +15865,27 @@
     ],
     [
       [],
+      [
+        {
+          "data": "aaA",
+          "data_pointer": "",
+          "schema": {
+            "pattern": "^a+$"
+          },
+          "schema_pointer": "/propertyNames",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "propertyNames": {
+              "pattern": "^a+$"
+            }
+          },
+          "type": "pattern"
+        }
+      ],
+      []
+    ],
+    [
+      [],
       []
     ],
     [
@@ -15713,6 +15900,55 @@
             "propertyNames": false
           },
           "type": "schema"
+        }
+      ],
+      []
+    ],
+    [
+      [],
+      [
+        {
+          "data": "bar",
+          "data_pointer": "",
+          "schema": {
+            "const": "foo"
+          },
+          "schema_pointer": "/propertyNames",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "propertyNames": {
+              "const": "foo"
+            }
+          },
+          "type": "const"
+        }
+      ],
+      []
+    ],
+    [
+      [],
+      [],
+      [
+        {
+          "data": "baz",
+          "data_pointer": "",
+          "schema": {
+            "enum": [
+              "foo",
+              "bar"
+            ]
+          },
+          "schema_pointer": "/propertyNames",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "propertyNames": {
+              "enum": [
+                "foo",
+                "bar"
+              ]
+            }
+          },
+          "type": "enum"
         }
       ],
       []
@@ -19887,7 +20123,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "unevaluatedProperties": {
               "type": "string",
               "minLength": 3
@@ -19907,7 +20142,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "unevaluatedProperties": false
           },
           "type": "schema"
@@ -19924,7 +20158,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -19946,7 +20179,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "patternProperties": {
               "^foo": {
                 "type": "string"
@@ -19966,13 +20198,33 @@
       [],
       [
         {
+          "data": 1,
+          "data_pointer": "/bar",
+          "schema": {
+            "type": "string"
+          },
+          "schema_pointer": "/additionalProperties",
+          "root_schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "unevaluatedProperties": false
+          },
+          "type": "string"
+        }
+      ]
+    ],
+    [
+      [],
+      [
+        {
           "data": "baz",
           "data_pointer": "/baz",
           "schema": false,
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20003,7 +20255,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20042,7 +20293,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20094,7 +20344,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20148,7 +20397,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20191,7 +20439,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20225,7 +20472,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "if": {
               "properties": {
                 "foo": {
@@ -20270,7 +20516,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "if": {
               "properties": {
                 "foo": {
@@ -20316,7 +20561,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "if": {
               "properties": {
                 "foo": {
@@ -20350,7 +20594,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "if": {
               "properties": {
                 "foo": {
@@ -20382,7 +20625,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "if": {
               "properties": {
                 "foo": {
@@ -20417,7 +20659,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "if": {
               "properties": {
                 "foo": {
@@ -20454,7 +20695,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "if": {
               "properties": {
                 "foo": {
@@ -20488,7 +20728,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "if": {
               "properties": {
                 "foo": {
@@ -20522,7 +20761,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "if": {
               "properties": {
                 "foo": {
@@ -20554,7 +20792,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "if": {
               "properties": {
                 "foo": {
@@ -20591,7 +20828,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20625,7 +20861,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20650,7 +20885,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "$ref": "#/$defs/bar",
             "properties": {
               "foo": {
@@ -20682,7 +20916,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "unevaluatedProperties": false,
             "properties": {
               "foo": {
@@ -20729,7 +20962,6 @@
                 "$id": "./baseSchema",
                 "$comment": "unevaluatedProperties comes first so it's more likely to catch bugs with implementations that are sensitive to keyword ordering",
                 "unevaluatedProperties": false,
-                "type": "object",
                 "properties": {
                   "foo": {
                     "type": "string"
@@ -20814,7 +21046,6 @@
           "schema_pointer": "/allOf/0/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20838,7 +21069,6 @@
           "schema_pointer": "/allOf/0/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20860,7 +21090,6 @@
           "schema_pointer": "/allOf/0/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
                 "type": "string"
@@ -20887,7 +21116,6 @@
           "schema_pointer": "/allOf/0/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "allOf": [
               {
                 "properties": {
@@ -20913,7 +21141,6 @@
           "schema_pointer": "/allOf/1/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "allOf": [
               {
                 "properties": {
@@ -20939,7 +21166,6 @@
           "schema_pointer": "/allOf/1/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "allOf": [
               {
                 "properties": {
@@ -20963,7 +21189,6 @@
           "schema_pointer": "/allOf/1/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "allOf": [
               {
                 "properties": {
@@ -20992,7 +21217,6 @@
           "schema_pointer": "/allOf/1/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "allOf": [
               {
                 "unevaluatedProperties": true
@@ -21021,10 +21245,8 @@
           "schema_pointer": "/properties/foo/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "foo": {
-                "type": "object",
                 "properties": {
                   "bar": {
                     "type": "string"
@@ -21060,7 +21282,6 @@
           "schema_pointer": "/allOf/0/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "allOf": [
               {
                 "properties": {
@@ -21089,7 +21310,6 @@
           "schema_pointer": "/allOf/0/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "allOf": [
               {
                 "properties": {
@@ -21119,7 +21339,6 @@
           "schema_pointer": "/anyOf/0/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "allOf": [
               {
                 "properties": {
@@ -21147,7 +21366,6 @@
           "schema_pointer": "/anyOf/0/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "allOf": [
               {
                 "properties": {
@@ -21180,7 +21398,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "x": {
                 "$ref": "#"
@@ -21200,7 +21417,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "x": {
                 "$ref": "#"
@@ -21220,7 +21436,6 @@
           "schema_pointer": "/unevaluatedProperties",
           "root_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
             "properties": {
               "x": {
                 "$ref": "#"
