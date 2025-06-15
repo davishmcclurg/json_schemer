@@ -40,7 +40,7 @@ module JSONSchemer
       ARABIC_EXTENDED_DIGITS_REGEX = /[\u{06F0}-\u{06F9}]/.freeze
 
       def valid_hostname?(data)
-        data.split('.').map do |a_label|
+        data.split('.', -1).map do |a_label|
           return false if a_label.size > 63
           u_label = SimpleIDN.to_unicode(a_label)
           # https://datatracker.ietf.org/doc/html/rfc5891#section-4.2.3.1

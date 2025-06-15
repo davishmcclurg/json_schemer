@@ -741,4 +741,8 @@ class FormatTest < Minitest::Test
     refute(JSONSchemer.schema({ 'format' => 'date-time' }).valid?('1998-12-31T23:58:60Z'))
     refute(JSONSchemer.schema({ 'format' => 'date-time' }).valid?('1998-12-31 23:58:60Z'))
   end
+
+  def test_hostname_trailing_dot
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?('example.'))
+  end
 end
