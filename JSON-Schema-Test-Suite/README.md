@@ -227,6 +227,7 @@ This suite is being used by:
 
 ### C++
 
+* [Blaze](https://github.com/sourcemeta/blaze)
 * [Modern C++ JSON schema validator](https://github.com/pboettch/json-schema-validator)
 * [Valijson](https://github.com/tristanpenman/valijson)
 
@@ -293,7 +294,7 @@ Node-specific support is maintained in a [separate repository](https://github.co
 
 ### .NET
 
-* [JsonSchema.Net](https://github.com/gregsdennis/json-everything)
+* [JsonSchema.Net](https://github.com/json-everything/json-everything)
 * [Newtonsoft.Json.Schema](https://github.com/JamesNK/Newtonsoft.Json.Schema)
 
 ### Perl
@@ -339,6 +340,7 @@ Node-specific support is maintained in a [separate repository](https://github.co
 ### Swift
 
 * [JSONSchema](https://github.com/kylef/JSONSchema.swift)
+* [swift-json-schema](https://github.com/ajevans99/swift-json-schema)
 
 If you use it as well, please fork and send a pull request adding yourself to
 the list :).
