@@ -742,7 +742,43 @@ class FormatTest < Minitest::Test
     refute(JSONSchemer.schema({ 'format' => 'date-time' }).valid?('1998-12-31 23:58:60Z'))
   end
 
-  def test_hostname_trailing_dot
-    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?('example.'))
+  def test_hostname_label_separator
+    assert(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\u002Ecom"))
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\u3002com"))
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\uFF0Ecom"))
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\uFF61com"))
+  end
+
+  def test_idn_hostname_label_separator
+    assert(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\u002Ecom"))
+    assert(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\u3002com"))
+    assert(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\uFF0Ecom"))
+    assert(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\uFF61com"))
+
+    # label too long if separators are ignored
+    assert(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("παράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμα\u002Ecom"))
+    assert(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("παράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμα\u3002com"))
+    assert(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("παράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμα\uFF0Ecom"))
+    assert(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("παράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμα\uFF61com"))
+
+    # label too long if separators are respected
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("παράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμα\u002Ecom"))
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("παράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμα\u3002com"))
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("παράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμα\uFF0Ecom"))
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("παράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμα\uFF61com"))
+  end
+
+  def test_hostname_trailing_separator
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\u002E"))
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\u3002"))
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\uFF0E"))
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\uFF61"))
+  end
+
+  def test_idn_hostname_trailing_separator
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\u002E"))
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\u3002"))
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\uFF0E"))
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\uFF61"))
   end
 end

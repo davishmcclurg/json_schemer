@@ -12,7 +12,10 @@ module JSONSchemer
       # https://datatracker.ietf.org/doc/html/rfc5891#section-4.2.3.2
       LEADING_CHARACTER_CLASS = "[#{LABEL_CHARACTER_CLASS}&&[^#{MARKS}]]"
       LABEL_REGEX_STRING = "#{LEADING_CHARACTER_CLASS}([#{LABEL_CHARACTER_CLASS}\-]*#{LABEL_CHARACTER_CLASS})?"
-      HOSTNAME_REGEX = /\A(#{LABEL_REGEX_STRING}\.)*#{LABEL_REGEX_STRING}\z/i.freeze
+      # https://datatracker.ietf.org/doc/html/rfc3490#section-3.1
+      LABEL_SEPARATOR_CHARACTER_CLASS = '[\u{002E}\u{3002}\u{FF0E}\u{FF61}]'
+      LABEL_SEPARATOR_REGEX = /#{LABEL_SEPARATOR_CHARACTER_CLASS}/.freeze
+      HOSTNAME_REGEX = /\A(#{LABEL_REGEX_STRING}#{LABEL_SEPARATOR_CHARACTER_CLASS})*#{LABEL_REGEX_STRING}\z/i.freeze
       # bin/hostname_character_classes
       VIRAMA_CHARACTER_CLASS = '[\u{094D}\u{09CD}\u{0A4D}\u{0ACD}\u{0B4D}\u{0BCD}\u{0C4D}\u{0CCD}\u{0D3B}\u{0D3C}\u{0D4D}\u{0DCA}\u{0E3A}\u{0EBA}\u{0F84}\u{1039}\u{103A}\u{1714}\u{1715}\u{1734}\u{17D2}\u{1A60}\u{1B44}\u{1BAA}\u{1BAB}\u{1BF2}\u{1BF3}\u{2D7F}\u{A806}\u{A82C}\u{A8C4}\u{A953}\u{A9C0}\u{AAF6}\u{ABED}\u{10A3F}\u{11046}\u{11070}\u{1107F}\u{110B9}\u{11133}\u{11134}\u{111C0}\u{11235}\u{112EA}\u{1134D}\u{11442}\u{114C2}\u{115BF}\u{1163F}\u{116B6}\u{1172B}\u{11839}\u{1193D}\u{1193E}\u{119E0}\u{11A34}\u{11A47}\u{11A99}\u{11C3F}\u{11D44}\u{11D45}\u{11D97}\u{11F41}\u{11F42}]'
       JOINING_TYPE_L_CHARACTER_CLASS = '[\u{A872}\u{10ACD}\u{10AD7}\u{10D00}\u{10FCB}]'
@@ -40,7 +43,7 @@ module JSONSchemer
       ARABIC_EXTENDED_DIGITS_REGEX = /[\u{06F0}-\u{06F9}]/.freeze
 
       def valid_hostname?(data)
-        data.split('.', -1).map do |a_label|
+        data.split(LABEL_SEPARATOR_REGEX, -1).map do |a_label|
           return false if a_label.size > 63
           u_label = SimpleIDN.to_unicode(a_label)
           # https://datatracker.ietf.org/doc/html/rfc5891#section-4.2.3.1
