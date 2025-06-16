@@ -768,14 +768,22 @@ class FormatTest < Minitest::Test
     refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("παράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμαπαράδειγμα\uFF61com"))
   end
 
-  def test_hostname_trailing_separator
+  def test_hostname_separator_position
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("\u002Eexample"))
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("\u3002example"))
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("\uFF0Eexample"))
+    refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("\uFF61example"))
     refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\u002E"))
     refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\u3002"))
     refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\uFF0E"))
     refute(JSONSchemer.schema({ 'format' => 'hostname' }).valid?("example\uFF61"))
   end
 
-  def test_idn_hostname_trailing_separator
+  def test_idn_hostname_separator_position
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("\u002Eexample"))
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("\u3002example"))
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("\uFF0Eexample"))
+    refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("\uFF61example"))
     refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\u002E"))
     refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\u3002"))
     refute(JSONSchemer.schema({ 'format' => 'idn-hostname' }).valid?("example\uFF0E"))
