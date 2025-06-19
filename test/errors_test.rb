@@ -11,7 +11,15 @@ class ErrorsTest < Minitest::Test
         },
         {
           'x-error' => {
-            'not' => '%{instance} `%{instanceLocation}` %{keywordLocation} %{absoluteKeywordLocation}'
+            'not' => <<~ERR
+              instance: %{instance}
+              instanceLocation: %{instanceLocation}
+              formattedInstanceLocation: %{formattedInstanceLocation}
+              keywordValue: %{keywordValue}
+              keywordLocation: %{keywordLocation}
+              absoluteKeywordLocation: %{absoluteKeywordLocation}
+              details: %{details}
+            ERR
           },
           'required' => ['b'],
           'not' => { 'required' => ['a'] }
@@ -26,9 +34,18 @@ class ErrorsTest < Minitest::Test
       'a' => 'foo',
       'b' => 'bar'
     }
-    error1, error2 = JSONSchemer.schema(schema).validate(data).map { |error| error.fetch('error') }.sort
+    error1, error2 = JSONSchemer.schema(schema).validate(data).map { |error| error.fetch('error') }
+
     assert_equal('properties a and b were provided, however only one or the other may be specified', error1)
-    assert_match(optional_space_regexp('{"a"', '=>', '"foo", "b"', '=>', '"bar"} `` /oneOf/1/not json-schemer://schema#/oneOf/1/not'), error2)
+    assert_equal(<<~ERR.gsub(/\s/,''), error2.gsub(/\s/,''))
+      instance: {"a" => "foo", "b" => "bar"}
+      instanceLocation:
+      formattedInstanceLocation: root
+      keywordValue: {"required" => ["a"]}
+      keywordLocation: /oneOf/1/not
+      absoluteKeywordLocation: json-schemer://schema#/oneOf/1/not
+      details:
+    ERR
 
     assert_equal('schema error', JSONSchemer.schema(schema).validate(data, :output_format => 'basic').fetch('error'))
     assert_equal('oneOf error', JSONSchemer.schema(schema).validate(data, :output_format => 'detailed').fetch('error'))
@@ -125,6 +142,47 @@ class ErrorsTest < Minitest::Test
     end
   end
 
+  def test_x_error_details_as_hash
+    schema = {
+      'properties' => {
+        'yah' => {
+          'type' => 'string'
+        }
+      },
+      'required' => ['yah'],
+      'x-error' => {
+        'required' => 'missing %{details} %{details__missing_keys}'
+      }
+    }
+
+    schemer = JSONSchemer.schema(schema)
+    data = {}
+
+    assert_match(optional_space_regexp('missing {"missing_keys"', '=>', '["yah"]} ["yah"]'), schemer.validate(data, :output_format => 'detailed').fetch('error'))
+  end
+
+  def test_i18n_details_as_hash
+    schema = {
+      'properties' => {
+        'yah' => {
+          'type' => 'string'
+        }
+      },
+      'required' => ['yah']
+    }
+
+    schemer = JSONSchemer.schema(schema)
+    data = {}
+
+    errors = {
+      '#/required' => 'missing %{details} %{details__missing_keys}',
+    }
+
+    i18n(errors) do
+      assert_match(optional_space_regexp('missing {"missing_keys"', '=>', '["yah"]} ["yah"]'), schemer.validate(data, :output_format => 'detailed').fetch('error'))
+    end
+  end
+
   def test_i18n_error
     schema = {
       '$id' => 'https://example.com/schema',
@@ -156,8 +214,8 @@ class ErrorsTest < Minitest::Test
         '*' => 'G/7'
       },
       '^' => 'H',
-      'type' => '8',
-      '*' => 'I/9: %{instance} `%{instanceLocation}` %{keywordLocation} %{absoluteKeywordLocation}',
+      'type' => '8 %{keywordValue}',
+      '*' => 'I/9: %{instance} %{instanceLocation} %{formattedInstanceLocation} %{keywordLocation} %{absoluteKeywordLocation} %{details}',
 
       'https://example.com/differentschema#/properties/yah/type' => '?',
       'https://example.com/differentschema' => {
@@ -212,14 +270,14 @@ class ErrorsTest < Minitest::Test
     errors.fetch('https://json-schema.org/draft/2019-09/schema').delete('*')
     i18n(errors) do
       assert_equal('H', schemer.validate(data, :output_format => 'basic').fetch('error'))
-      assert_equal('8', schemer.validate(data).first.fetch('error'))
+      assert_equal('8 string', schemer.validate(data).first.fetch('error'))
     end
 
     errors.delete('^')
-    assert_match(optional_space_regexp('I/9: {"yah"', '=>', '1} ``  https://example.com/schema#'), i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
+    assert_match(optional_space_regexp('I/9: {"yah"', '=>', '1}  root  https://example.com/schema# '), i18n(errors) { schemer.validate(data, :output_format => 'basic').fetch('error') })
 
     errors.delete('type')
-    assert_equal('I/9: 1 `/yah` /properties/yah/type https://example.com/schema#/properties/yah/type', i18n(errors) { schemer.validate(data).first.fetch('error') })
+    assert_equal('I/9: 1 /yah `/yah` /properties/yah/type https://example.com/schema#/properties/yah/type ', i18n(errors) { schemer.validate(data).first.fetch('error') })
 
     i18n(errors) do
       assert_equal(true, schemer.validate(data).first.fetch('i18n'))
