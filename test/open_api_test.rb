@@ -72,6 +72,164 @@ class OpenAPITest < Minitest::Test
     'hungry' => 'kinda'
   }
 
+  def test_openapi_3_2_accepted
+    openapi = JSONSchemer.openapi({
+      'openapi' => '3.2.0',
+      'info' => { 'title' => 'Test', 'version' => '1.0' },
+      'paths' => {},
+      'components' => {
+        'schemas' => {
+          'Widget' => {
+            'type' => 'object',
+            'properties' => {
+              'name' => { 'type' => 'string' }
+            }
+          }
+        }
+      }
+    })
+    schema = openapi.schema('Widget')
+    assert(schema.valid?({ 'name' => 'hello' }))
+    refute(schema.valid?({ 'name' => 42 }))
+    assert(openapi.valid?, 'OpenAPI 3.2.0 document should pass meta schema validation')
+  end
+
+  def test_openapi_3_2_1_accepted
+    openapi = JSONSchemer.openapi({
+      'openapi' => '3.2.1',
+      'info' => { 'title' => 'Test', 'version' => '1.0' },
+      'paths' => {}
+    })
+    assert(openapi.valid?, 'OpenAPI 3.2.1 document should pass validation')
+  end
+
+  def test_openapi_3_3_rejected
+    assert_raises(JSONSchemer::UnsupportedOpenAPIVersion) do
+      JSONSchemer.openapi({
+        'openapi' => '3.3.0',
+        'info' => { 'title' => 'Test', 'version' => '1.0' },
+        'paths' => {}
+      })
+    end
+  end
+
+  def test_openapi_3_2_document_with_self_field
+    openapi = JSONSchemer.openapi({
+      'openapi' => '3.2.0',
+      '$self' => 'https://example.com/api/openapi.json',
+      'info' => { 'title' => 'Test', 'version' => '1.0' },
+      'paths' => {}
+    })
+    assert(openapi.valid?, 'OpenAPI 3.2 document with $self should pass validation')
+  end
+
+  def test_openapi_3_2_server_with_name
+    openapi = JSONSchemer.openapi({
+      'openapi' => '3.2.0',
+      'info' => { 'title' => 'Test', 'version' => '1.0' },
+      'servers' => [
+        { 'url' => 'https://api.example.com', 'name' => 'production' }
+      ],
+      'paths' => {}
+    })
+    assert(openapi.valid?, 'Server with name field should pass validation')
+  end
+
+  def test_openapi_3_2_path_item_with_query_and_additional_operations
+    openapi = JSONSchemer.openapi({
+      'openapi' => '3.2.0',
+      'info' => { 'title' => 'Test', 'version' => '1.0' },
+      'paths' => {
+        '/search' => {
+          'query' => {
+            'operationId' => 'searchQuery',
+            'responses' => { '200' => { 'description' => 'OK' } }
+          },
+          'additionalOperations' => {
+            'COPY' => {
+              'operationId' => 'copySearch',
+              'responses' => { '200' => { 'description' => 'Copied' } }
+            }
+          }
+        }
+      }
+    })
+    assert(openapi.valid?, 'Path item with query and additionalOperations should pass validation')
+  end
+
+  def test_openapi_3_2_components_with_media_types
+    openapi = JSONSchemer.openapi({
+      'openapi' => '3.2.0',
+      'info' => { 'title' => 'Test', 'version' => '1.0' },
+      'components' => {
+        'mediaTypes' => {
+          'jsonBody' => {
+            'schema' => { 'type' => 'object' }
+          }
+        }
+      }
+    })
+    assert(openapi.valid?, 'Components with mediaTypes should pass validation')
+  end
+
+  def test_openapi_3_2_example_with_data_value_and_serialized_value
+    openapi = JSONSchemer.openapi({
+      'openapi' => '3.2.0',
+      'info' => { 'title' => 'Test', 'version' => '1.0' },
+      'paths' => {
+        '/items' => {
+          'get' => {
+            'operationId' => 'listItems',
+            'responses' => {
+              '200' => {
+                'description' => 'OK',
+                'content' => {
+                  'application/json' => {
+                    'examples' => {
+                      'sample' => {
+                        'summary' => 'A sample',
+                        'dataValue' => { 'id' => 1 },
+                        'serializedValue' => '{"id":1}'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+    assert(openapi.valid?, 'Example with dataValue and serializedValue should pass validation')
+  end
+
+  def test_openapi_3_2_parameter_with_querystring
+    openapi = JSONSchemer.openapi({
+      'openapi' => '3.2.0',
+      'info' => { 'title' => 'Test', 'version' => '1.0' },
+      'paths' => {
+        '/search' => {
+          'get' => {
+            'operationId' => 'search',
+            'parameters' => [
+              {
+                'name' => 'qs',
+                'in' => 'querystring',
+                'content' => {
+                  'application/x-www-form-urlencoded' => {
+                    'schema' => { 'type' => 'string' }
+                  }
+                }
+              }
+            ],
+            'responses' => { '200' => { 'description' => 'OK' } }
+          }
+        }
+      }
+    })
+    assert(openapi.valid?, 'Parameter with in=querystring should pass validation')
+  end
+
   def test_discriminator_specification_example
     openapi = {
       'openapi' => '3.1.0',

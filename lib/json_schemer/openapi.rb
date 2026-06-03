@@ -6,7 +6,7 @@ module JSONSchemer
 
       version = document['openapi']
       case version
-      when /\A3\.1\.\d+\z/
+      when /\A3\.[12]\.\d+\z/
         @document_schema = JSONSchemer.openapi31_document
         meta_schema = document.fetch('jsonSchemaDialect') { OpenAPI31::BASE_URI.to_s }
       when /\A3\.0\.\d+\z/
