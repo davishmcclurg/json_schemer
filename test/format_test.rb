@@ -733,6 +733,19 @@ class FormatTest < Minitest::Test
     end
   end
 
+  def test_date_format_allows_gregorian_reform_gap_dates
+    # 1582-10-05 through 1582-10-14 do not exist in the Italian reform calendar
+    # but are valid dates in the proleptic Gregorian calendar used by RFC 3339
+    schema = JSONSchemer.schema({ 'type' => 'string', 'format' => 'date' }, :format => true)
+    (5..14).each do |day|
+      date = format('1582-10-%02d', day)
+      assert(schema.valid?(date), "#{date} should be a valid date")
+    end
+    assert(schema.valid?('1582-10-04'))
+    assert(schema.valid?('1582-10-15'))
+    refute(schema.valid?('1582-13-01'))
+  end
+
   def test_date_time_space_separator
     assert(JSONSchemer.schema({ 'format' => 'date-time' }).valid?('2023-11-01T23:00:00Z'))
     assert(JSONSchemer.schema({ 'format' => 'date-time' }).valid?('2023-11-01 23:00:00Z'))
