@@ -300,6 +300,7 @@ class OpenAPITest < Minitest::Test
     assert_equal(['/components/schemas/Dog/properties/bark'], schemer.validate(INVALID_DOG).map { |error| error.fetch('schema_pointer') })
     assert(schemer.valid?(LIZARD))
     assert_equal(['/components/schemas/Lizard/properties/lovesRocks'], schemer.validate(INVALID_LIZARD).map { |error| error.fetch('schema_pointer') })
+    assert_nil(schemer.parsed.fetch('anyOf').valid_instance?(CAT, JSONSchemer::Schema::Context.new(CAT, [], nil, true, nil)))
   end
 
   def test_one_of_discriminator
@@ -334,6 +335,7 @@ class OpenAPITest < Minitest::Test
     assert_equal(['/components/schemas/Dog/properties/bark'], schemer.validate(INVALID_DOG).map { |error| error.fetch('schema_pointer') })
     assert(schemer.valid?(LIZARD))
     assert_equal(['/components/schemas/Lizard/properties/lovesRocks'], schemer.validate(INVALID_LIZARD).map { |error| error.fetch('schema_pointer') })
+    assert_nil(schemer.parsed.fetch('oneOf').valid_instance?(CAT, JSONSchemer::Schema::Context.new(CAT, [], nil, true, nil)))
   end
 
   def test_all_any_one_without_discriminator
@@ -341,6 +343,7 @@ class OpenAPITest < Minitest::Test
     refute(JSONSchemer.schema({ 'allOf' => [true, true, false] }, :meta_schema => JSONSchemer.openapi31).valid?({}))
     assert(JSONSchemer.schema({ 'anyOf' => [true, true, false] }, :meta_schema => JSONSchemer.openapi31).valid?({}))
     refute(JSONSchemer.schema({ 'anyOf' => [false, false, false] }, :meta_schema => JSONSchemer.openapi31).valid?({}))
+    assert(JSONSchemer.schema({ 'anyOf' => [true] }, :meta_schema => JSONSchemer.openapi31).validate({}, :output_format => 'flag').fetch('valid'))
     assert(JSONSchemer.schema({ 'oneOf' => [true, false, false] }, :meta_schema => JSONSchemer.openapi31).valid?({}))
     refute(JSONSchemer.schema({ 'oneOf' => [true, true, false] }, :meta_schema => JSONSchemer.openapi31).valid?({}))
   end

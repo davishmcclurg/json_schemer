@@ -43,11 +43,34 @@ module JSONSchemer
     def deep_stringify_keys(obj)
       case obj
       when Hash
-        obj.each_with_object({}) do |(key, value), out|
-          out[stringify(key)] = deep_stringify_keys(value)
+        out = nil
+        obj.each do |key, value|
+          stringified_key = stringify(key)
+          stringified_value = deep_stringify_keys(value)
+          if out
+            out[stringified_key] = stringified_value
+          elsif !key.is_a?(String) || !stringified_value.equal?(value)
+            out = {}
+            obj.each do |previous_key, previous_value|
+              break if previous_key.equal?(key)
+              out[previous_key] = previous_value
+            end
+            out[stringified_key] = stringified_value
+          end
         end
+        out || obj
       when Array
-        obj.map { |item| deep_stringify_keys(item) }
+        out = nil
+        obj.each_with_index do |item, index|
+          stringified_item = deep_stringify_keys(item)
+          if out
+            out << stringified_item
+          elsif !stringified_item.equal?(item)
+            out = obj.take(index)
+            out << stringified_item
+          end
+        end
+        out || obj
       else
         obj
       end

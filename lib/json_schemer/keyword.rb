@@ -18,6 +18,10 @@ module JSONSchemer
       nil
     end
 
+    def valid_instance?(_instance, _context)
+      nil
+    end
+
     def absolute_keyword_location
       @absolute_keyword_location ||= "#{parent.absolute_keyword_location}/#{fragment_encode(escaped_keyword)}"
     end
@@ -52,5 +56,6 @@ module JSONSchemer
       options[:regexp_resolver] ||= schema.regexp_resolver
       Schema.new(value, self, root, keyword, **options)
     end
+
   end
 end

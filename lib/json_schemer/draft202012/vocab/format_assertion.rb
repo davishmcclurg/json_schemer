@@ -16,6 +16,7 @@ module JSONSchemer
             valid = parsed == false || parsed.call(instance, value)
             result(instance, instance_location, keyword_location, valid, :annotation => value)
           end
+
         end
       end
     end

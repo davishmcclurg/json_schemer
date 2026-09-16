@@ -82,6 +82,219 @@ class JSONSchemerTest < Minitest::Test
     assert_equal({ 'missing_keys' => ['a'] }, error.fetch('details'))
   end
 
+  def test_validate_stringified_keys_option_trusts_input_keys
+    schema = JSONSchemer.schema({
+      'type' => 'object',
+      'properties' => {
+        'id' => { 'type' => 'integer' }
+      },
+      'required' => ['id']
+    })
+
+    assert(schema.valid?({ :id => 1 }))
+    refute(schema.valid?({ :id => 1 }, :stringified_keys => true))
+    assert(schema.valid?({ 'id' => 1 }, :stringified_keys => true))
+  end
+
+  def test_validate_stringified_keys_option_with_insert_property_defaults
+    schema = JSONSchemer.schema({
+      'type' => 'object',
+      'properties' => {
+        'id' => { 'default' => 1 }
+      }
+    }, :insert_property_defaults => true)
+    data = {}
+
+    assert(schema.valid?(data, :stringified_keys => true))
+    assert_equal({ 'id' => 1 }, data)
+  end
+
+  def test_valid_uses_boolean_fast_path_for_common_keywords
+    schema = JSONSchemer.schema({
+      'allOf' => [
+        {
+          'type' => 'object',
+          'properties' => {
+            'id' => { 'type' => 'integer', 'minimum' => 1 },
+            'name' => { 'type' => 'string', 'minLength' => 2, 'pattern' => '^ok' },
+            'tags' => { 'type' => 'array', 'minItems' => 1, 'uniqueItems' => true, 'items' => { 'enum' => ['a', 'b'] } }
+          },
+          'required' => ['id', 'name', 'tags'],
+          'additionalProperties' => { 'const' => true }
+        }
+      ]
+    })
+
+    assert(schema.valid?({ 'id' => 1, 'name' => 'ok', 'tags' => ['a'], 'extra' => true }, :stringified_keys => true))
+    refute(schema.valid?({ 'id' => 0, 'name' => 'ok', 'tags' => ['a'], 'extra' => true }, :stringified_keys => true))
+    refute(schema.valid?({ 'id' => 1, 'name' => 'no', 'tags' => ['a'], 'extra' => true }, :stringified_keys => true))
+    refute(schema.valid?({ 'id' => 1, 'name' => 'ok', 'tags' => ['c'], 'extra' => true }, :stringified_keys => true))
+    refute(schema.valid?({ 'id' => 1, 'name' => 'ok', 'tags' => ['a'], 'extra' => false }, :stringified_keys => true))
+  end
+
+  def test_valid_boolean_fast_path_combinators
+    assert(JSONSchemer.schema({ 'anyOf' => [{ 'type' => 'string' }, { 'type' => 'integer' }] }).valid?(1))
+    refute(JSONSchemer.schema({ 'anyOf' => [{ 'type' => 'string' }, { 'type' => 'integer' }] }).valid?(true))
+    refute(JSONSchemer.schema({ 'anyOf' => [] }).valid?(true))
+    assert(JSONSchemer.schema({ 'oneOf' => [{ 'type' => 'string' }, { 'type' => 'integer' }] }).valid?(1))
+    refute(JSONSchemer.schema({ 'oneOf' => [{ 'type' => 'number' }, { 'type' => 'integer' }] }).valid?(1))
+    refute(JSONSchemer.schema({ 'not' => { 'type' => 'integer' } }).valid?(1))
+  end
+
+  def test_validate_with_unsupported_type_value
+    assert(JSONSchemer.schema({ 'type' => nil }).validate(1, :output_format => 'flag').fetch('valid'))
+  end
+
+  def test_valid_boolean_fast_path_falls_back_for_prefix_items_annotations
+    schema = JSONSchemer.schema({
+      'type' => 'array',
+      'prefixItems' => [{ 'type' => 'integer' }],
+      'items' => false
+    })
+
+    assert(schema.valid?([1]))
+    refute(schema.valid?([1, 2]))
+  end
+
+  def test_valid_boolean_fast_path_required_access_mode
+    schema = JSONSchemer.schema({
+      'type' => 'object',
+      'required' => ['readOnlyProperty', 'writeOnlyProperty'],
+      'properties' => {
+        'readOnlyProperty' => { 'readOnly' => true },
+        'writeOnlyProperty' => { 'writeOnly' => true }
+      }
+    })
+
+    assert(schema.valid?({ 'writeOnlyProperty' => 1 }, :access_mode => 'write'))
+    assert(schema.valid?({ 'readOnlyProperty' => 1 }, :access_mode => 'read'))
+    refute(schema.valid?({}, :access_mode => 'write'))
+    refute(schema.valid?({}, :access_mode => 'read'))
+  end
+
+  def test_valid_boolean_fast_path_non_assertive_x_error
+    assert(JSONSchemer.schema({ 'x-error' => 'custom error' }).valid?(1))
+  end
+
+  def test_valid_boolean_fast_path_pattern_properties_annotations
+    schema = JSONSchemer.schema({
+      'type' => 'object',
+      'patternProperties' => {
+        '^known' => { 'type' => 'string' }
+      },
+      'additionalProperties' => false
+    })
+
+    assert(schema.valid?({ 'knownProperty' => 'ok' }))
+    refute(schema.valid?({ 'other' => 'ok' }))
+    assert_valid_matches_flag(schema, { 'knownProperty' => 'ok' })
+    assert_valid_matches_flag(schema, { 'other' => 'ok' })
+    assert_nil(schema.parsed.fetch('additionalProperties').valid_instance?({ 'knownProperty' => 'ok' }, JSONSchemer::Schema::Context.new({}, [], nil, true, nil)))
+  end
+
+  def test_valid_boolean_fast_path_builtin_keyword_equivalence
+    csv_encoding = proc do |instance|
+      [true, Base64.urlsafe_decode64(instance).force_encoding('utf-8')]
+    end
+    csv_media_type = proc do |instance|
+      [true, CSV.parse(instance)]
+    end
+
+    cases = [
+      [{ 'if' => { 'required' => ['kind'] }, 'then' => { 'required' => ['value'] }, 'else' => { 'maxProperties' => 0 } }, { 'kind' => 'x', 'value' => 1 }],
+      [{ 'if' => { 'required' => ['kind'] }, 'then' => { 'required' => ['value'] }, 'else' => { 'maxProperties' => 0 } }, { 'kind' => 'x' }],
+      [{ 'dependentSchemas' => { 'credit_card' => { 'required' => ['billing_address'] } } }, { 'credit_card' => 1, 'billing_address' => 'x' }],
+      [{ 'dependentSchemas' => { 'credit_card' => { 'required' => ['billing_address'] } } }, { 'credit_card' => 1 }],
+      [{ 'type' => 'array', 'contains' => { 'type' => 'integer' }, 'minContains' => 2, 'maxContains' => 2 }, [1, 'x', 2]],
+      [{ 'type' => 'array', 'contains' => { 'type' => 'integer' }, 'minContains' => 2, 'maxContains' => 2 }, [1, 2, 3]],
+      [{ 'propertyNames' => { 'pattern' => '^x' } }, { 'x1' => true }],
+      [{ 'propertyNames' => { 'pattern' => '^x' } }, { 'y1' => true }],
+      [{ 'dependencies' => { 'a' => ['b'], 'b' => { 'minProperties' => 2 } } }, { 'a' => 1, 'b' => 2 }],
+      [{ 'dependencies' => { 'a' => ['b'], 'b' => { 'minProperties' => 2 } } }, { 'a' => 1 }],
+      [{ 'dependentRequired' => { 'a' => ['b'] } }, { 'a' => 1, 'b' => 2 }],
+      [{ 'dependentRequired' => { 'a' => ['b'] } }, { 'a' => 1 }],
+      [{ 'type' => 'array', 'prefixItems' => [{ 'type' => 'integer' }], 'unevaluatedItems' => false }, [1]],
+      [{ 'type' => 'array', 'prefixItems' => [{ 'type' => 'integer' }], 'unevaluatedItems' => false }, [1, 2]],
+      [{ 'type' => 'object', 'properties' => { 'a' => true }, 'patternProperties' => { '^b' => true }, 'unevaluatedProperties' => false }, { 'a' => 1, 'b1' => 2 }],
+      [{ 'type' => 'object', 'properties' => { 'a' => true }, 'patternProperties' => { '^b' => true }, 'unevaluatedProperties' => false }, { 'a' => 1, 'c' => 2 }],
+      [{ 'format' => 'email' }, 'a@example.com', { :format => true }],
+      [{ 'format' => 'email' }, 'invalid', { :format => true }],
+      [{ 'readOnly' => true }, 'value', {}, { :access_mode => 'read' }],
+      [{ 'readOnly' => true }, 'value', {}, { :access_mode => 'write' }],
+      [{ 'writeOnly' => true }, 'value', {}, { :access_mode => 'write' }],
+      [{ 'writeOnly' => true }, 'value', {}, { :access_mode => 'read' }],
+      [{ 'contentEncoding' => 'urlsafe_base64', 'contentMediaType' => 'text/csv', 'contentSchema' => { 'type' => 'array' } }, Base64.urlsafe_encode64('a,b'), { :content_encodings => { 'urlsafe_base64' => csv_encoding }, :content_media_types => { 'text/csv' => csv_media_type } }]
+    ]
+
+    cases.each do |schema_value, instance, schema_options, valid_options|
+      assert_valid_matches_flag(JSONSchemer.schema(schema_value, **(schema_options || {})), instance, **(valid_options || {}))
+    end
+  end
+
+  def test_valid_boolean_fast_path_draft_specific_keyword_equivalence
+    draft201909_schema = {
+      '$schema' => 'https://json-schema.org/draft/2019-09/schema',
+      'items' => [{ 'type' => 'integer' }],
+      'additionalItems' => false,
+      'unevaluatedItems' => false
+    }
+    assert_valid_matches_flag(JSONSchemer.schema(draft201909_schema), [1])
+    assert_valid_matches_flag(JSONSchemer.schema(draft201909_schema), [1, 2])
+
+    draft7_schema = {
+      '$schema' => 'http://json-schema.org/draft-07/schema#',
+      'items' => [{ 'type' => 'integer' }],
+      'additionalItems' => false
+    }
+    assert_valid_matches_flag(JSONSchemer.schema(draft7_schema), [1])
+    assert_valid_matches_flag(JSONSchemer.schema(draft7_schema), [1, 2])
+
+    draft4_schema = {
+      '$schema' => 'http://json-schema.org/draft-04/schema#',
+      'maximum' => 10,
+      'exclusiveMaximum' => true,
+      'minimum' => 0,
+      'exclusiveMinimum' => true
+    }
+    assert_valid_matches_flag(JSONSchemer.schema(draft4_schema), 5)
+    assert_valid_matches_flag(JSONSchemer.schema(draft4_schema), 10)
+    assert_valid_matches_flag(JSONSchemer.schema(draft4_schema), 0)
+  end
+
+  def test_valid_boolean_fast_path_recursive_ref_annotations
+    schema = JSONSchemer.schema({
+      '$schema' => 'https://json-schema.org/draft/2019-09/schema',
+      '$id' => 'https://example.com/tree',
+      '$recursiveAnchor' => true,
+      'type' => 'object',
+      'properties' => {
+        'data' => true,
+        'children' => {
+          'type' => 'array',
+          'items' => { '$recursiveRef' => '#' }
+        }
+      },
+      'unevaluatedProperties' => false
+    })
+
+    assert_valid_matches_flag(schema, { 'data' => 1, 'children' => [{ 'data' => 2 }] })
+    assert_valid_matches_flag(schema, { 'data' => 1, 'children' => [{ 'other' => 2 }] })
+  end
+
+  def test_required_validate_access_mode_details
+    schema = JSONSchemer.schema({
+      'type' => 'object',
+      'required' => ['readOnlyProperty', 'writeOnlyProperty'],
+      'properties' => {
+        'readOnlyProperty' => { 'readOnly' => true },
+        'writeOnlyProperty' => { 'writeOnly' => true }
+      }
+    })
+
+    assert(schema.validate({ 'writeOnlyProperty' => 1 }, :output_format => 'flag', :access_mode => 'write').fetch('valid'))
+    assert(schema.validate({ 'readOnlyProperty' => 1 }, :output_format => 'flag', :access_mode => 'read').fetch('valid'))
+  end
+
   def test_it_handles_json_strings
     schema = JSONSchemer.schema('{ "type": "integer" }')
     assert(schema.valid?(1))
@@ -941,5 +1154,9 @@ private
 
   def annotation(result, keyword_location)
     result.fetch('annotations').find { |annotation| annotation.fetch('keywordLocation') == keyword_location }['annotation']
+  end
+
+  def assert_valid_matches_flag(schema, instance, **options)
+    assert_equal(schema.validate(instance, :output_format => 'flag', **options).fetch('valid'), schema.valid?(instance, **options))
   end
 end

@@ -12,6 +12,7 @@ module JSONSchemer
             valid = parsed != true || !context.access_mode || context.access_mode == 'read'
             result(instance, instance_location, keyword_location, valid, :annotation => value)
           end
+
         end
 
         class WriteOnly < Keyword
@@ -23,6 +24,7 @@ module JSONSchemer
             valid = parsed != true || !context.access_mode || context.access_mode == 'write'
             result(instance, instance_location, keyword_location, valid, :annotation => value)
           end
+
         end
       end
     end

@@ -22,7 +22,8 @@ GEM
     i18n-debug (1.2.0)
       i18n (< 2)
     jruby-openssl (0.15.5-java)
-    minitest (5.25.4)
+    memory_profiler (1.1.0)
+    minitest (5.27.0)
     openssl (3.3.2)
     openssl (3.3.2-java)
       jruby-openssl (~> 0.14)
@@ -47,6 +48,7 @@ DEPENDENCIES
   i18n
   i18n-debug
   json_schemer!
+  memory_profiler (~> 1.1)
   minitest (~> 5.0)
   openssl (~> 3.3.2)
   rake (~> 13.0)

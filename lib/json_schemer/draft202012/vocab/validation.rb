@@ -38,6 +38,17 @@ module JSONSchemer
             end
           end
 
+          def valid_instance?(instance, _context)
+            case parsed
+            when String
+              valid_type(parsed, instance)
+            when Array
+              parsed.any? { |type| valid_type(type, instance) }
+            else
+              true
+            end
+          end
+
         private
 
           def valid_type(type, instance)
@@ -70,6 +81,10 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !value || value.include?(instance))
           end
+
+          def valid_instance?(instance, _context)
+            !value || value.include?(instance)
+          end
         end
 
         class Const < Keyword
@@ -79,6 +94,10 @@ module JSONSchemer
 
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, value == instance)
+          end
+
+          def valid_instance?(instance, _context)
+            value == instance
           end
         end
 
@@ -90,6 +109,10 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(Numeric) || BigDecimal(instance.to_s).modulo(value).zero?)
           end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(Numeric) || BigDecimal(instance.to_s).modulo(value).zero?
+          end
         end
 
         class Maximum < Keyword
@@ -99,6 +122,10 @@ module JSONSchemer
 
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(Numeric) || instance <= value)
+          end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(Numeric) || instance <= value
           end
         end
 
@@ -110,6 +137,10 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(Numeric) || instance < value)
           end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(Numeric) || instance < value
+          end
         end
 
         class Minimum < Keyword
@@ -119,6 +150,10 @@ module JSONSchemer
 
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(Numeric) || instance >= value)
+          end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(Numeric) || instance >= value
           end
         end
 
@@ -130,6 +165,10 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(Numeric) || instance > value)
           end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(Numeric) || instance > value
+          end
         end
 
         class MaxLength < Keyword
@@ -140,6 +179,10 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(String) || instance.size <= value)
           end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(String) || instance.size <= value
+          end
         end
 
         class MinLength < Keyword
@@ -149,6 +192,10 @@ module JSONSchemer
 
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(String) || instance.size >= value)
+          end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(String) || instance.size >= value
           end
         end
 
@@ -164,6 +211,10 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(String) || parsed.match?(instance))
           end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(String) || parsed.match?(instance)
+          end
         end
 
         class MaxItems < Keyword
@@ -173,6 +224,10 @@ module JSONSchemer
 
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(Array) || instance.size <= value)
+          end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(Array) || instance.size <= value
           end
         end
 
@@ -184,6 +239,10 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(Array) || instance.size >= value)
           end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(Array) || instance.size >= value
+          end
         end
 
         class UniqueItems < Keyword
@@ -193,6 +252,10 @@ module JSONSchemer
 
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(Array) || value == false || instance.size == instance.uniq.size)
+          end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(Array) || value == false || instance.size == instance.uniq.size
           end
         end
 
@@ -206,6 +269,7 @@ module JSONSchemer
             evaluated_items = context.adjacent_results.fetch(Applicator::Contains).annotation
             result(instance, instance_location, keyword_location, evaluated_items.size <= value)
           end
+
         end
 
         class MinContains < Keyword
@@ -218,6 +282,7 @@ module JSONSchemer
             evaluated_items = context.adjacent_results.fetch(Applicator::Contains).annotation
             result(instance, instance_location, keyword_location, evaluated_items.size >= value)
           end
+
         end
 
         class MaxProperties < Keyword
@@ -228,6 +293,10 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(Hash) || instance.size <= value)
           end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(Hash) || instance.size <= value
+          end
         end
 
         class MinProperties < Keyword
@@ -237,6 +306,10 @@ module JSONSchemer
 
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, !instance.is_a?(Hash) || instance.size >= value)
+          end
+
+          def valid_instance?(instance, _context)
+            !instance.is_a?(Hash) || instance.size >= value
           end
         end
 
@@ -260,8 +333,37 @@ module JSONSchemer
               required_keys -= inapplicable_access_mode_keys
             end
 
-            missing_keys = required_keys - instance.keys
-            result(instance, instance_location, keyword_location, missing_keys.none?, :details => { 'missing_keys' => missing_keys })
+            missing_keys = nil
+            required_keys.each do |required_key|
+              next if instance.key?(required_key)
+              missing_keys ||= []
+              missing_keys << required_key
+            end
+
+            details = { 'missing_keys' => missing_keys } if missing_keys
+            result(instance, instance_location, keyword_location, !missing_keys, :details => details)
+          end
+
+          def valid_instance?(instance, context)
+            return true unless instance.is_a?(Hash)
+
+            required_keys = value
+
+            if context.access_mode && schema.parsed.key?('properties')
+              inapplicable_access_mode_keys = []
+              schema.parsed.fetch('properties').parsed.each do |property, subschema|
+                read_only, write_only = subschema.parsed.values_at('readOnly', 'writeOnly')
+                inapplicable_access_mode_keys << property if context.access_mode == 'write' && read_only&.parsed == true
+                inapplicable_access_mode_keys << property if context.access_mode == 'read' && write_only&.parsed == true
+              end
+              required_keys -= inapplicable_access_mode_keys
+            end
+
+            required_keys.each do |required_key|
+              return false unless instance.key?(required_key)
+            end
+
+            true
           end
         end
 
@@ -283,6 +385,7 @@ module JSONSchemer
 
             result(instance, instance_location, keyword_location, nested.all?(&:valid), nested)
           end
+
         end
       end
     end

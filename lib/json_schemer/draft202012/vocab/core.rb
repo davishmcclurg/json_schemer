@@ -12,6 +12,10 @@ module JSONSchemer
             end
             value
           end
+
+          def valid_instance?(_instance, _context)
+            true
+          end
         end
 
         class Vocabulary < Keyword
@@ -31,6 +35,10 @@ module JSONSchemer
               schema.keyword_order = schema.keywords.transform_values.with_index { |_keyword_class, index| index }
             end
           end
+
+          def valid_instance?(_instance, _context)
+            true
+          end
         end
 
         class Id < Keyword
@@ -40,6 +48,10 @@ module JSONSchemer
               root.resources[:lexical][uri] = schema
             end
           end
+
+          def valid_instance?(_instance, _context)
+            true
+          end
         end
 
         class Anchor < Keyword
@@ -47,6 +59,10 @@ module JSONSchemer
             URI.join(schema.base_uri, "##{value}").tap do |uri|
               root.resources[:lexical][uri] = schema
             end
+          end
+
+          def valid_instance?(_instance, _context)
+            true
           end
         end
 
@@ -66,6 +82,10 @@ module JSONSchemer
           def validate(instance, instance_location, keyword_location, context)
             ref_schema.validate_instance(instance, instance_location, keyword_location, context)
           end
+
+          def valid_instance?(instance, context)
+            ref_schema.valid_instance?(instance, context)
+          end
         end
 
         class DynamicAnchor < Keyword
@@ -74,6 +94,10 @@ module JSONSchemer
               root.resources[:lexical][uri] = schema
               root.resources[:dynamic][uri] = schema
             end
+          end
+
+          def valid_instance?(_instance, _context)
+            true
           end
         end
 
@@ -107,6 +131,22 @@ module JSONSchemer
 
             schema.validate_instance(instance, instance_location, keyword_location, context)
           end
+
+          def valid_instance?(instance, context)
+            schema = ref_schema
+
+            if dynamic_anchor
+              context.dynamic_scope.each do |ancestor|
+                dynamic_uri = URI.join(ancestor.base_uri, "##{dynamic_anchor}")
+                if ancestor.root.resources.fetch(:dynamic).key?(dynamic_uri)
+                  schema = ancestor.root.resources.fetch(:dynamic).fetch(dynamic_uri)
+                  break
+                end
+              end
+            end
+
+            schema.valid_instance?(instance, context)
+          end
         end
 
         class Defs < Keyword
@@ -115,13 +155,25 @@ module JSONSchemer
               out[key] = subschema(subschema, key)
             end
           end
+
+          def valid_instance?(_instance, _context)
+            true
+          end
         end
 
-        class Comment < Keyword; end
+        class Comment < Keyword
+          def valid_instance?(_instance, _context)
+            true
+          end
+        end
 
         class XError < Keyword
           def message(error_key)
             value.is_a?(Hash) ? (value[error_key] || value[CATCHALL]) : value
+          end
+
+          def valid_instance?(_instance, _context)
+            true
           end
         end
 
@@ -152,6 +204,10 @@ module JSONSchemer
 
           def validate(instance, instance_location, keyword_location, _context)
             result(instance, instance_location, keyword_location, true, :annotation => value)
+          end
+
+          def valid_instance?(_instance, _context)
+            true
           end
         end
       end

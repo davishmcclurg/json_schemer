@@ -22,17 +22,29 @@ module JSONSchemer
             return result(instance, instance_location, keyword_location, true) unless instance.is_a?(Array)
 
             nested = if parsed.is_a?(Array)
-              instance.take(parsed.size).map.with_index do |item, index|
-                parsed.fetch(index).validate_instance(item, join_location(instance_location, index.to_s), join_location(keyword_location, index.to_s), context)
+              valid = true
+              nested_results = []
+              limit = instance.size < parsed.size ? instance.size : parsed.size
+              limit.times do |index|
+                nested_result = parsed.fetch(index).validate_instance(instance.fetch(index), join_location(instance_location, index.to_s), join_location(keyword_location, index.to_s), context)
+                valid &&= nested_result.valid
+                nested_results << nested_result
               end
+              nested_results
             else
-              instance.map.with_index do |item, index|
-                parsed.validate_instance(item, join_location(instance_location, index.to_s), keyword_location, context)
+              valid = true
+              nested_results = []
+              instance.each_with_index do |item, index|
+                nested_result = parsed.validate_instance(item, join_location(instance_location, index.to_s), keyword_location, context)
+                valid &&= nested_result.valid
+                nested_results << nested_result
               end
+              nested_results
             end
 
-            result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => (nested.size - 1))
+            result(instance, instance_location, keyword_location, valid, nested, :annotation => (nested.size - 1))
           end
+
         end
 
         class AdditionalItems < Keyword
@@ -50,12 +62,19 @@ module JSONSchemer
             evaluated_index = context.adjacent_results[Items]&.annotation
             offset = evaluated_index ? (evaluated_index + 1) : instance.size
 
-            nested = instance.slice(offset..-1).map.with_index do |item, index|
-              parsed.validate_instance(item, join_location(instance_location, (offset + index).to_s), keyword_location, context)
+            valid = true
+            nested = []
+            index = offset
+            while index < instance.size
+              nested_result = parsed.validate_instance(instance.fetch(index), join_location(instance_location, index.to_s), keyword_location, context)
+              valid &&= nested_result.valid
+              nested << nested_result
+              index += 1
             end
 
-            result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => nested.any?)
+            result(instance, instance_location, keyword_location, valid, nested, :annotation => nested.any?)
           end
+
         end
 
         class UnevaluatedItems < Keyword
@@ -76,11 +95,15 @@ module JSONSchemer
               collect_unevaluated_items(adjacent_result, instance_location, unevaluated_items)
             end
 
-            nested = unevaluated_items.map do |index|
-              parsed.validate_instance(instance.fetch(index), join_location(instance_location, index.to_s), keyword_location, context)
+            valid = true
+            nested = []
+            unevaluated_items.each do |index|
+              nested_result = parsed.validate_instance(instance.fetch(index), join_location(instance_location, index.to_s), keyword_location, context)
+              valid &&= nested_result.valid
+              nested << nested_result
             end
 
-            result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => nested.any?)
+            result(instance, instance_location, keyword_location, valid, nested, :annotation => nested.any?)
           end
 
         private

@@ -19,6 +19,7 @@ module JSONSchemer
             valid = !instance.is_a?(Numeric) || !value || !maximum || instance < maximum
             result(instance, instance_location, keyword_location, valid)
           end
+
         end
 
         class ExclusiveMinimum < Keyword
@@ -31,6 +32,7 @@ module JSONSchemer
             valid = !instance.is_a?(Numeric) || !value || !minimum || instance > minimum
             result(instance, instance_location, keyword_location, valid)
           end
+
         end
       end
     end

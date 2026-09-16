@@ -15,6 +15,7 @@ module JSONSchemer
 
             result(instance, instance_location, keyword_location, true, :annotation => annotation)
           end
+
         end
 
         class ContentMediaType < Keyword
@@ -30,6 +31,7 @@ module JSONSchemer
 
             result(instance, instance_location, keyword_location, true, :annotation => annotation)
           end
+
         end
 
         class ContentSchema < Keyword
@@ -45,6 +47,7 @@ module JSONSchemer
 
             result(instance, instance_location, keyword_location, true, :annotation => annotation.to_output_unit)
           end
+
         end
       end
     end

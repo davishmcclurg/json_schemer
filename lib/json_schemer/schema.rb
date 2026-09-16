@@ -102,15 +102,18 @@ module JSONSchemer
     end
 
     def valid?(instance, **options)
-      validate(instance, :output_format => 'flag', **options).fetch('valid')
+      valid = validate_instance_boolean(instance, **options)
+      valid.nil? ? validate(instance, :output_format => 'flag', **options).fetch('valid') : valid
     end
 
-    def validate(instance, output_format: @configuration.output_format, resolve_enumerators: @configuration.resolve_enumerators, access_mode: @configuration.access_mode)
+    def validate(instance, output_format: @configuration.output_format, resolve_enumerators: @configuration.resolve_enumerators, access_mode: @configuration.access_mode, stringified_keys: false)
       instance_location = Location.root
       context = Context.new(instance, [], nil, (!insert_property_defaults && output_format == 'flag'), access_mode)
-      result = validate_instance(deep_stringify_keys(instance), instance_location, root_keyword_location, context)
+      validation_instance = stringified_keys ? instance : deep_stringify_keys(instance)
+      result = validate_instance(validation_instance, instance_location, root_keyword_location, context)
       if insert_property_defaults && result.insert_property_defaults(context, &property_default_resolver)
-        result = validate_instance(deep_stringify_keys(instance), instance_location, root_keyword_location, context)
+        validation_instance = stringified_keys ? instance : deep_stringify_keys(instance)
+        result = validate_instance(validation_instance, instance_location, root_keyword_location, context)
       end
       output = result.output(output_format)
       resolve_enumerators!(output) if resolve_enumerators
@@ -166,6 +169,36 @@ module JSONSchemer
         end
 
         result(instance, instance_location, keyword_location, valid, nested)
+      ensure
+        context.dynamic_scope.pop
+        context.adjacent_results = original_adjacent_results
+      end
+    end
+
+    def validate_instance_boolean(instance, stringified_keys: false, access_mode: @configuration.access_mode, **)
+      return nil if insert_property_defaults || root.custom_keywords.any?
+
+      context = Context.new(instance, [], nil, true, access_mode)
+      instance = stringified_keys ? instance : deep_stringify_keys(instance)
+      valid_instance?(instance, context)
+    end
+
+    def valid_instance?(instance, context)
+      return false if value == false
+      return true if value == true || value.empty?
+
+      context.dynamic_scope.push(self)
+      original_adjacent_results = context.adjacent_results
+      context.adjacent_results = {}
+
+      begin
+        parsed.each_value do |keyword_instance|
+          valid = keyword_instance.valid_instance?(instance, context)
+          return nil if valid.nil?
+          return false unless valid
+        end
+
+        true
       ensure
         context.dynamic_scope.pop
         context.adjacent_results = original_adjacent_results

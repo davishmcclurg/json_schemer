@@ -19,16 +19,25 @@ module JSONSchemer
           ensure
             self.skip_ref_once = nil
           end
+
         end
 
         class AnyOf < Draft202012::Vocab::Applicator::AnyOf
           def validate(*)
             schema.parsed.key?('discriminator') ? nil : super
           end
+
+          def valid_instance?(_instance, _context)
+            schema.parsed.key?('discriminator') ? nil : super
+          end
         end
 
         class OneOf < Draft202012::Vocab::Applicator::OneOf
           def validate(*)
+            schema.parsed.key?('discriminator') ? nil : super
+          end
+
+          def valid_instance?(_instance, _context)
             schema.parsed.key?('discriminator') ? nil : super
           end
         end
@@ -119,6 +128,10 @@ module JSONSchemer
             result(instance, instance_location, keyword_location, subschema_result.valid, subschema_result.nested)
           ensure
             self.skip_ref_once = nil
+          end
+
+          def valid_instance?(_instance, _context)
+            nil
           end
         end
       end

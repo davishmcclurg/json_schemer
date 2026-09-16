@@ -27,12 +27,19 @@ module JSONSchemer
 
             offset = items.size
 
-            nested = instance.slice(offset..-1).map.with_index do |item, index|
-              parsed.validate_instance(item, join_location(instance_location, (offset + index).to_s), keyword_location, context)
+            valid = true
+            nested = []
+            index = offset
+            while index < instance.size
+              nested_result = parsed.validate_instance(instance.fetch(index), join_location(instance_location, index.to_s), keyword_location, context)
+              valid &&= nested_result.valid
+              nested << nested_result
+              index += 1
             end
 
-            result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => nested.any?)
+            result(instance, instance_location, keyword_location, valid, nested, :annotation => nested.any?)
           end
+
         end
 
         class ContentEncoding < Draft202012::Vocab::Content::ContentEncoding
@@ -47,6 +54,7 @@ module JSONSchemer
 
             result(instance, instance_location, keyword_location, valid, :annotation => annotation)
           end
+
         end
 
         class ContentMediaType < Draft202012::Vocab::Content::ContentMediaType
@@ -62,6 +70,7 @@ module JSONSchemer
 
             result(instance, instance_location, keyword_location, valid, :annotation => annotation)
           end
+
         end
       end
     end

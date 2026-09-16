@@ -38,6 +38,7 @@ module JSONSchemer
 
             schema.validate_instance(instance, instance_location, keyword_location, context)
           end
+
         end
       end
     end

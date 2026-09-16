@@ -25,11 +25,15 @@ module JSONSchemer
               collect_unevaluated_items(adjacent_result, unevaluated_items)
             end
 
-            nested = unevaluated_items.map do |index|
-              parsed.validate_instance(instance.fetch(index), join_location(instance_location, index.to_s), keyword_location, context)
+            valid = true
+            nested = []
+            unevaluated_items.each do |index|
+              nested_result = parsed.validate_instance(instance.fetch(index), join_location(instance_location, index.to_s), keyword_location, context)
+              valid &&= nested_result.valid
+              nested << nested_result
             end
 
-            result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => nested.any?)
+            result(instance, instance_location, keyword_location, valid, nested, :annotation => nested.any?)
           end
 
         private
@@ -73,15 +77,18 @@ module JSONSchemer
               collect_evaluated_keys(adjacent_result, evaluated_keys)
             end
 
-            evaluated = instance.reject do |key, _value|
-              evaluated_keys.include?(key)
+            valid = true
+            nested = []
+            evaluated = []
+            instance.each do |key, value|
+              next if evaluated_keys.include?(key)
+              nested_result = parsed.validate_instance(value, join_location(instance_location, key), keyword_location, context)
+              valid &&= nested_result.valid
+              nested << nested_result
+              evaluated << key
             end
 
-            nested = evaluated.map do |key, value|
-              parsed.validate_instance(value, join_location(instance_location, key), keyword_location, context)
-            end
-
-            result(instance, instance_location, keyword_location, nested.all?(&:valid), nested, :annotation => evaluated.keys)
+            result(instance, instance_location, keyword_location, valid, nested, :annotation => evaluated)
           end
 
         private
