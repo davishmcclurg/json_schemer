@@ -3,7 +3,7 @@ module JSONSchemer
   Configuration = Struct.new(
     :base_uri, :meta_schema, :vocabulary, :format, :formats, :content_encodings, :content_media_types, :keywords,
     :before_property_validation, :after_property_validation, :insert_property_defaults, :property_default_resolver,
-    :ref_resolver, :regexp_resolver, :output_format, :resolve_enumerators, :access_mode,
+    :ref_resolver, :regexp_resolver, :output_format, :resolve_enumerators, :access_mode, :stringified_keys,
     keyword_init: true
   ) do
     def initialize(
@@ -23,7 +23,8 @@ module JSONSchemer
       regexp_resolver: 'ruby',
       output_format: 'classic',
       resolve_enumerators: false,
-      access_mode: nil
+      access_mode: nil,
+      stringified_keys: false
     )
       super
     end

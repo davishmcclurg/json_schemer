@@ -197,6 +197,14 @@ class ConfigurationTest < Minitest::Test
     )
   end
 
+  def test_stringified_keys
+    run_configuration_test(
+      :stringified_keys,
+      default: false,
+      test: true
+    )
+  end
+
   def test_configuration_option_and_override
     configuration = JSONSchemer::Configuration.new
     configuration.format = false

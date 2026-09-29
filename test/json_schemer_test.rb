@@ -82,6 +82,54 @@ class JSONSchemerTest < Minitest::Test
     assert_equal({ 'missing_keys' => ['a'] }, error.fetch('details'))
   end
 
+  def test_stringified_keys_option_trusts_schema_keys
+    schema = JSONSchemer.schema({ :type => 'integer' }, :stringified_keys => true)
+
+    assert_equal({ :type => 'integer' }, schema.value)
+    assert(schema.valid?('not an integer'))
+  end
+
+  def test_stringified_keys_option_defaults_validation_to_trusted_instance_keys
+    schema = JSONSchemer.schema({
+      'type' => 'object',
+      'properties' => {
+        'id' => { 'type' => 'integer' }
+      },
+      'required' => ['id']
+    }, :stringified_keys => true)
+
+    refute(schema.valid?({ :id => 1 }))
+    assert(schema.valid?({ 'id' => 1 }))
+    assert(schema.valid?({ :id => 1 }, :stringified_keys => false))
+  end
+
+  def test_stringified_keys_validation_option_trusts_input_keys
+    schema = JSONSchemer.schema({
+      'type' => 'object',
+      'properties' => {
+        'id' => { 'type' => 'integer' }
+      },
+      'required' => ['id']
+    })
+
+    assert(schema.valid?({ :id => 1 }))
+    refute(schema.valid?({ :id => 1 }, :stringified_keys => true))
+    assert(schema.valid?({ 'id' => 1 }, :stringified_keys => true))
+  end
+
+  def test_stringified_keys_option_with_insert_property_defaults
+    schema = JSONSchemer.schema({
+      'type' => 'object',
+      'properties' => {
+        'id' => { 'default' => 1 }
+      }
+    }, :insert_property_defaults => true, :stringified_keys => true)
+    data = {}
+
+    assert(schema.valid?(data))
+    assert_equal({ 'id' => 1 }, data)
+  end
+
   def test_it_handles_json_strings
     schema = JSONSchemer.schema('{ "type": "integer" }')
     assert(schema.valid?(1))
