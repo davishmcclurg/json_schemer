@@ -937,6 +937,23 @@ class JSONSchemerTest < Minitest::Test
     refute(draft7_schemer.valid?(Base64.urlsafe_encode64("#{data}\"")))
   end
 
+  def test_non_finite_floats_are_not_integers
+    [
+      JSONSchemer.draft202012,
+      JSONSchemer.draft201909,
+      JSONSchemer.draft7,
+      JSONSchemer.draft6,
+      JSONSchemer.draft4,
+      JSONSchemer.openapi31,
+      JSONSchemer.openapi30
+    ].each do |meta_schema|
+      schemer = JSONSchemer.schema({ 'type' => 'integer' }, :meta_schema => meta_schema)
+      [Float::INFINITY, -Float::INFINITY].each do |instance|
+        refute(schemer.valid?(instance))
+      end
+    end
+  end
+
 private
 
   def annotation(result, keyword_location)
