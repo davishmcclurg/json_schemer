@@ -5,7 +5,8 @@ module JSONSchemer
       module Validation
         class Type < Keyword
           def self.valid_integer?(instance)
-            instance.is_a?(Numeric) && (instance.is_a?(Integer) || instance.floor == instance)
+            return false unless instance.is_a?(Numeric)
+            instance.is_a?(Integer) || (instance.finite? && instance.floor == instance)
           end
 
           def error(formatted_instance_location:, **)
