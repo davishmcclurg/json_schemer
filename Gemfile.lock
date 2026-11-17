@@ -38,8 +38,8 @@ GEM
 
 PLATFORMS
   arm64-darwin
+  java
   ruby
-  universal-java
 
 DEPENDENCIES
   base64
