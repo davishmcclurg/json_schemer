@@ -37,7 +37,7 @@ GEM
     simpleidn (0.3.0)
 
 PLATFORMS
-  arm64-darwin-27
+  arm64-darwin
   ruby
   universal-java
 
