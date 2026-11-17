@@ -95,7 +95,7 @@ module JSONSchemer
 
       def valid_date_time?(data)
         return false if HOUR_24_REGEX.match?(data)
-        datetime = DateTime.rfc3339(data)
+        datetime = DateTime.rfc3339(data, Date::GREGORIAN)
         return false if LEAP_SECOND_REGEX.match?(data) && datetime.new_offset.strftime('%H:%M') != '23:59'
         DATE_TIME_OFFSET_REGEX.match?(data)
       rescue ArgumentError
