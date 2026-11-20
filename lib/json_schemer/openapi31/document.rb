@@ -109,7 +109,11 @@ module JSONSchemer
         'properties' => {
           'openapi' => {
             'type' => 'string',
-            'pattern' => '^3\.1\.\d+(-.+)?$'
+            'pattern' => '^3\.[12]\.\d+(-.+)?$'
+          },
+          '$self' => {
+            'type' => 'string',
+            'format' => 'uri-reference'
           },
           'info' => {
             '$ref' => '#/$defs/info'
@@ -272,6 +276,9 @@ module JSONSchemer
               'url' => {
                 'type' => 'string'
               },
+              'name' => {
+                'type' => 'string'
+              },
               'description' => {
                 'type' => 'string'
               },
@@ -375,10 +382,16 @@ module JSONSchemer
                 'additionalProperties' => {
                   '$ref' => '#/$defs/path-item-or-reference'
                 }
+              },
+              'mediaTypes' => {
+                'type' => 'object',
+                'additionalProperties' => {
+                  '$ref' => '#/$defs/media-type-or-reference'
+                }
               }
             },
             'patternProperties' => {
-              '^(schemas|responses|parameters|examples|requestBodies|headers|securitySchemes|links|callbacks|pathItems)$' => {
+              '^(schemas|responses|parameters|examples|requestBodies|headers|securitySchemes|links|callbacks|pathItems|mediaTypes)$' => {
                 '$comment' => 'Enumerating all of the property names in the regex above is necessary for unevaluatedProperties to work as expected',
                 'propertyNames' => {
                   'pattern' => '^[a-zA-Z0-9._-]+$'
@@ -444,6 +457,15 @@ module JSONSchemer
               },
               'trace' => {
                 '$ref' => '#/$defs/operation'
+              },
+              'query' => {
+                '$ref' => '#/$defs/operation'
+              },
+              'additionalOperations' => {
+                'type' => 'object',
+                'additionalProperties' => {
+                  '$ref' => '#/$defs/operation'
+                }
               }
             },
             '$ref' => '#/$defs/specification-extensions',
@@ -551,6 +573,7 @@ module JSONSchemer
               'in' => {
                 'enum' => [
                   'query',
+                  'querystring',
                   'header',
                   'path',
                   'cookie'
@@ -858,6 +881,20 @@ module JSONSchemer
             ],
             'unevaluatedProperties' => false
           },
+          'media-type-or-reference' => {
+            'if' => {
+              'type' => 'object',
+              'required' => [
+                '$ref'
+              ]
+            },
+            'then' => {
+              '$ref' => '#/$defs/reference'
+            },
+            'else' => {
+              '$ref' => '#/$defs/media-type'
+            }
+          },
           'encoding' => {
             '$comment' => 'https://spec.openapis.org/oas/v3.1.0#encoding-object',
             'type' => 'object',
@@ -1023,6 +1060,10 @@ module JSONSchemer
               'externalValue' => {
                 'type' => 'string',
                 'format' => 'uri'
+              },
+              'dataValue' => true,
+              'serializedValue' => {
+                'type' => 'string'
               }
             },
             'not' => {

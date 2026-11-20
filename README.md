@@ -1,6 +1,6 @@
 # JSONSchemer
 
-JSON Schema validator. Supports drafts 4, 6, 7, 2019-09, 2020-12, OpenAPI 3.0, and OpenAPI 3.1.
+JSON Schema validator. Supports drafts 4, 6, 7, 2019-09, 2020-12, OpenAPI 3.0, OpenAPI 3.1, and OpenAPI 3.2.
 
 ## Installation
 
@@ -446,6 +446,8 @@ In the example above, custom error messsages are looked up using the following k
 9. `en.json_schemer.errors.*`
 
 ## OpenAPI
+
+Supports OpenAPI 3.0, 3.1, and 3.2. OpenAPI 3.2 uses the same JSON Schema dialect as 3.1, so schema validation uses the same codepath. All 3.2.0 structural additions (`$self`, Server `name`, `query` method, `additionalOperations`, `mediaTypes`, Example `dataValue`/`serializedValue`, Parameter `querystring`) are recognized by document validation.
 
 ```ruby
 document = JSONSchemer.openapi({
